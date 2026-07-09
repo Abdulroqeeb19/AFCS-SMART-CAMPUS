@@ -5,13 +5,14 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { CollapsibleSection } from '@/components/collapsible-section'
 import type { ParadeTask } from '@/lib/database.types'
-import { CheckCircle2, Clock, AlertTriangle, User, Calendar } from 'lucide-react'
+import { CheckCircle2, Clock, AlertTriangle, User, Calendar, Trash2 } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { format } from 'date-fns'
 
 interface Props {
   tasks: ParadeTask[]
   onStatusUpdate?: (id: string, status: string) => void
+  onDelete?: (id: string) => void
 }
 
 const statusConfig = {
@@ -23,7 +24,7 @@ const statusConfig = {
 
 const priorityOrder = { urgent: 0, high: 1, normal: 2, low: 3 }
 
-export function ParadeTasks({ tasks, onStatusUpdate }: Props) {
+export function ParadeTasks({ tasks, onStatusUpdate, onDelete }: Props) {
   const { isAdminOrCommandant } = useAuth()
 
   if (tasks.length === 0) {
@@ -88,7 +89,7 @@ export function ParadeTasks({ tasks, onStatusUpdate }: Props) {
                       )}
                     </div>
                   </div>
-                  {isAdminOrCommandant && task.status !== 'completed' && task.status !== 'cancelled' && onStatusUpdate && (
+                  {isAdminOrCommandant && onStatusUpdate && (
                     <div className="flex items-center gap-1 shrink-0">
                       {task.status === 'pending' && (
                         <Button onClick={() => onStatusUpdate(task.id, 'in_progress')} size="sm" variant="ghost" className="text-xs h-7">
@@ -98,6 +99,11 @@ export function ParadeTasks({ tasks, onStatusUpdate }: Props) {
                       {task.status === 'in_progress' && (
                         <Button onClick={() => onStatusUpdate(task.id, 'completed')} size="sm" variant="ghost" className="text-xs h-7 text-emerald-600">
                           Done
+                        </Button>
+                      )}
+                      {(task.status === 'completed' || task.status === 'cancelled') && onDelete && (
+                        <Button onClick={() => onDelete(task.id)} size="sm" variant="ghost" className="text-xs h-7 text-red-400 hover:text-red-600">
+                          <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       )}
                     </div>

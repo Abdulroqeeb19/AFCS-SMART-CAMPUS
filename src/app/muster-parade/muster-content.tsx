@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 
 import type { ParadeSession, ParadeTask, ParadeAcknowledgement, ParadeBriefing, Staff } from '@/lib/database.types'
-import { Shield, RefreshCw, Plus, CheckCircle2, ListChecks, AlertCircle, Send, Loader2 } from 'lucide-react'
+import { Shield, RefreshCw, Plus, CheckCircle2, ListChecks, AlertCircle, Send, Loader2, Trash2 } from 'lucide-react'
 
 interface ParadeWithRelations extends ParadeSession {
   briefings?: ParadeBriefing[]
@@ -84,6 +84,20 @@ export function MusterContent() {
     } finally {
       setCreating(false)
     }
+  }
+
+  const handleDeleteTask = async (taskId: string) => {
+    const paradeId = sessions.find((s) => s.tasks?.some((t) => t.id === taskId))?.id
+    if (!paradeId) return
+    await fetch(`/api/parades/${paradeId}/tasks?id=${taskId}`, { method: 'DELETE' })
+    loadSessions()
+  }
+
+  const handleCleanupOld = async () => {
+    const paradeId = sessions[0]?.id
+    if (!paradeId) return
+    await fetch(`/api/parades/${paradeId}/tasks?older_than_weeks=2`, { method: 'DELETE' })
+    loadSessions()
   }
 
   const handleAddTask = async () => {
@@ -167,6 +181,11 @@ export function MusterContent() {
             <Badge variant="default">{allTasks.filter((t) => t.status !== 'completed').length} open</Badge>
           </CardTitle>
           <div className="flex items-center gap-2">
+            {isAdminOrCommandant && stats.completed > 0 && (
+              <Button onClick={handleCleanupOld} size="sm" variant="outline" className="gap-1 text-red-600 border-red-200 hover:bg-red-50">
+                <Trash2 className="h-3 w-3" /> Clean up old
+              </Button>
+            )}
             <Button onClick={loadSessions} variant="ghost" size="sm" className="gap-1">
               <RefreshCw className="h-3 w-3" /> Refresh
             </Button>
@@ -214,6 +233,7 @@ export function MusterContent() {
             <ParadeTasks
               tasks={allTasks}
               onStatusUpdate={isAdminOrCommandant ? handleTaskStatus : undefined}
+              onDelete={isAdminOrCommandant ? handleDeleteTask : undefined}
             />
           ) : (
             <div className="text-center py-10">

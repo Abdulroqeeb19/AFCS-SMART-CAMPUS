@@ -95,7 +95,53 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
   }
 
-  return NextResponse.json(data, { status: 201 })
+  return NextResponse.json(data)
+}
+
+export async function DELETE(request: Request) {
+  const supabase = createAdminClient()
+  const admin = await requireAdmin(supabase, request)
+  if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
+
+  const { searchParams } = new URL(request.url)
+  const taskId = searchParams.get('id')
+  const olderThanWeeks = searchParams.get('older_than_weeks')
+
+  // Batch delete: completed tasks older than N weeks
+  if (olderThanWeeks) {
+    const weeks = parseInt(olderThanWeeks)
+    if (isNaN(weeks) || weeks < 1) return NextResponse.json({ error: 'Invalid weeks' }, { status: 400 })
+
+    const cutoff = new Date()
+    cutoff.setDate(cutoff.getDate() - weeks * 7)
+
+    const { data: toDelete } = await supabase
+      .from('parade_tasks')
+      .select('id')
+      .eq('status', 'completed')
+      .lt('completed_at', cutoff.toISOString())
+
+    if (!toDelete?.length) return NextResponse.json({ deleted: 0 })
+
+    const ids = toDelete.map((t) => t.id)
+
+    await supabase.from('task_responses').delete().in('task_id', ids)
+    await supabase.from('telegram_task_messages').delete().in('task_id', ids)
+    const { error } = await supabase.from('parade_tasks').delete().in('id', ids)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    return NextResponse.json({ deleted: ids.length })
+  }
+
+  // Single task delete
+  if (!taskId) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
+
+  await supabase.from('task_responses').delete().eq('task_id', taskId)
+  await supabase.from('telegram_task_messages').delete().eq('task_id', taskId)
+  const { error } = await supabase.from('parade_tasks').delete().eq('id', taskId)
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  return NextResponse.json({ deleted: 1 })
 }
 
 export async function PATCH(request: Request) {
