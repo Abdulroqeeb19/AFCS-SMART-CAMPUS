@@ -486,8 +486,8 @@ export function DashboardContent() {
                 <CardContent className="p-4 flex items-center gap-3">
                   <Shield className="h-5 w-5 text-blue-500" />
                   <div>
-                    <p className="text-sm font-medium text-zinc-900">Muster Parade</p>
-                    <p className="text-xs text-zinc-400">Briefings & tasks</p>
+                    <p className="text-sm font-medium text-zinc-900">Tasks</p>
+                    <p className="text-xs text-zinc-400">Task management</p>
                   </div>
                 </CardContent>
               </Card>

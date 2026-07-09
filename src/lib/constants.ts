@@ -54,9 +54,9 @@ export const SIDEBAR_SECTIONS = [
     ],
   },
   {
-    label: 'Parade',
+    label: 'Tasks',
     items: [
-      { href: '/muster-parade', label: 'Muster Parade', icon: 'Shield', roles: ['commandant', 'admin'] as const },
+      { href: '/muster-parade', label: 'Tasks', icon: 'Shield', roles: ['commandant', 'admin'] as const },
     ],
   },
   {

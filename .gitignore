@@ -26,7 +26,8 @@
 *.pptx
 .wwebjs_cache/
 .wwjs-session/
-*Supabase*
+*Supabase*.html
+*Supabase*_files/
 
 # debug
 npm-debug.log*

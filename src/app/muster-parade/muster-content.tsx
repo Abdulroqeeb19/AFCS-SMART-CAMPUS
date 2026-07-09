@@ -2,16 +2,14 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '@/contexts/auth-context'
-import { ParadeSessions } from '@/components/parade/parade-sessions'
-import { ParadeBriefingComposer } from '@/components/parade/parade-briefing-composer'
 import { ParadeTasks } from '@/components/parade/parade-tasks'
-import { StatsSkeleton, TableSkeleton } from '@/components/skeleton'
+import { TableSkeleton } from '@/components/skeleton'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 
-import type { ParadeSession, ParadeBriefing, ParadeTask, ParadeAcknowledgement, Staff } from '@/lib/database.types'
-import { Shield, RefreshCw, Plus, CheckCircle2, Users, MessageSquare, ListChecks, AlertCircle, Send } from 'lucide-react'
+import type { ParadeSession, ParadeTask, ParadeAcknowledgement, ParadeBriefing, Staff } from '@/lib/database.types'
+import { Shield, RefreshCw, Plus, CheckCircle2, Users, ListChecks, AlertCircle, Send } from 'lucide-react'
 
 interface ParadeWithRelations extends ParadeSession {
   briefings?: ParadeBriefing[]
@@ -26,12 +24,8 @@ export function MusterContent() {
   const [activeParade, setActiveParade] = useState<ParadeWithRelations | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [showCreate, setShowCreate] = useState(false)
   const [showAddTask, setShowAddTask] = useState(false)
   const [allStaff, setAllStaff] = useState<Staff[]>([])
-
-  const [createType, setCreateType] = useState('morning')
-  const [createDate, setCreateDate] = useState(new Date().toISOString().split('T')[0])
 
   const [taskForm, setTaskForm] = useState({
     description: '',
@@ -56,7 +50,7 @@ export function MusterContent() {
       }
       if (staffRes.ok) setAllStaff(await staffRes.json())
     } catch {
-      setError('Failed to load parade data')
+      setError('Failed to load data')
     } finally {
       setLoading(false)
     }
@@ -64,35 +58,6 @@ export function MusterContent() {
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadSessions() }, [loadSessions])
-
-  const handleStatusUpdate = async (id: string, status: string) => {
-    await fetch(`/api/parades/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status }),
-    })
-    loadSessions()
-  }
-
-  const handleCreate = async () => {
-    await fetch('/api/parades', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ conducted_by: user?.id || null, type: createType, date: createDate }),
-    })
-    setShowCreate(false)
-    loadSessions()
-  }
-
-  const handleAddBriefing = async (briefing: { title: string; content: string; priority: string; category: string }) => {
-    if (!activeParade) return
-    await fetch(`/api/parades/${activeParade.id}/briefings`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...briefing, created_by: user?.id || null }),
-    })
-    loadSessions()
-  }
 
   const handleTaskStatus = async (id: string, status: string) => {
     await fetch(`/api/parades/${activeParade?.id}/tasks`, {
@@ -130,19 +95,23 @@ export function MusterContent() {
     loadSessions()
   }
 
-  const activeBriefings = activeParade?.briefings || []
+  const allTasks = sessions.flatMap((s) => s.tasks || [])
   const activeTasks = activeParade?.tasks || []
   const activeAcks = activeParade?.acknowledgements || []
   const alreadyAcknowledged = activeAcks.some((a) => a.staff_id === user?.id)
 
+  const stats = {
+    total: allTasks.length,
+    open: allTasks.filter((t) => t.status !== 'completed').length,
+    completed: allTasks.filter((t) => t.status === 'completed').length,
+    highUrgent: allTasks.filter((t) => t.priority === 'high' || t.priority === 'urgent').filter((t) => t.status !== 'completed').length,
+  }
+
   if (loading) {
     return (
       <div className="space-y-6">
-        <StatsSkeleton />
-        <div className="grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2"><TableSkeleton rows={3} /></div>
-          <div><TableSkeleton rows={4} /></div>
-        </div>
+        <div className="grid gap-4 grid-cols-4"><TableSkeleton rows={1} /></div>
+        <TableSkeleton rows={5} />
       </div>
     )
   }
@@ -161,36 +130,24 @@ export function MusterContent() {
     )
   }
 
-  const stats = {
-    scheduled: sessions.filter((s) => s.status === 'scheduled').length,
-    ongoing: sessions.filter((s) => s.status === 'ongoing').length,
-    completed: sessions.filter((s) => s.status === 'completed').length,
-    totalBriefings: sessions.reduce((sum, s) => sum + (s.briefings?.length || 0), 0),
-    totalTasks: sessions.reduce((sum, s) => sum + (s.tasks?.filter((t) => t.status !== 'completed').length || 0), 0),
-  }
-
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <Card><CardContent className="p-4 text-center">
-          <p className="text-xs font-medium text-zinc-500 uppercase">Scheduled</p>
-          <p className="text-2xl font-bold text-blue-600">{stats.scheduled}</p>
+          <p className="text-xs font-medium text-zinc-500 uppercase">Total Tasks</p>
+          <p className="text-2xl font-bold text-blue-600">{stats.total}</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
-          <p className="text-xs font-medium text-zinc-500 uppercase">Ongoing</p>
-          <p className="text-2xl font-bold text-amber-600">{stats.ongoing}</p>
+          <p className="text-xs font-medium text-zinc-500 uppercase">Open</p>
+          <p className="text-2xl font-bold text-amber-600">{stats.open}</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
           <p className="text-xs font-medium text-zinc-500 uppercase">Completed</p>
           <p className="text-2xl font-bold text-emerald-600">{stats.completed}</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
-          <p className="text-xs font-medium text-zinc-500 uppercase">Briefings</p>
-          <p className="text-2xl font-bold text-violet-600">{stats.totalBriefings}</p>
-        </CardContent></Card>
-        <Card><CardContent className="p-4 text-center">
-          <p className="text-xs font-medium text-zinc-500 uppercase">Open Tasks</p>
-          <p className="text-2xl font-bold text-red-600">{stats.totalTasks}</p>
+          <p className="text-xs font-medium text-zinc-500 uppercase">High / Urgent</p>
+          <p className="text-2xl font-bold text-red-600">{stats.highUrgent}</p>
         </CardContent></Card>
       </div>
 
@@ -199,76 +156,70 @@ export function MusterContent() {
           <Card>
             <CardHeader className="flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-sm">
-                <Shield className="h-4 w-4 text-blue-500" />
-                Parade Sessions
+                <ListChecks className="h-4 w-4 text-emerald-500" />
+                Tasks
+                <Badge variant="default">{allTasks.filter((t) => t.status !== 'completed').length} open</Badge>
               </CardTitle>
               <div className="flex items-center gap-2">
                 <Button onClick={loadSessions} variant="ghost" size="sm" className="gap-1">
                   <RefreshCw className="h-3 w-3" /> Refresh
                 </Button>
-                {isAdminOrCommandant && (
-                  <Button onClick={() => setShowCreate(!showCreate)} size="sm" className="gap-1.5">
-                    <Plus className="h-3.5 w-3.5" /> New
+                {isAdminOrCommandant && activeParade && (
+                  <Button onClick={() => setShowAddTask(!showAddTask)} size="sm" className="gap-1.5">
+                    <Plus className="h-3.5 w-3.5" /> Add Task
                   </Button>
                 )}
               </div>
             </CardHeader>
             <CardContent>
-              {showCreate && (
-                <Card className="mb-4 border-dashed border-blue-300 bg-blue-50/50">
-                  <CardContent className="p-4 space-y-3">
-                    <p className="text-sm font-medium text-zinc-700">Create a new parade session</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <select value={createType} onChange={(e) => setCreateType(e.target.value)}
-                        className="h-9 rounded-lg border border-blue-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="morning">Morning Parade</option>
-                        <option value="evening">Evening Parade</option>
-                        <option value="special">Special Parade</option>
-                      </select>
-                      <input type="date" value={createDate} onChange={(e) => setCreateDate(e.target.value)}
-                        className="h-9 rounded-lg border border-blue-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                      <Button onClick={handleCreate} className="gap-2">
-                        <Shield className="h-4 w-4" /> Create
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+              {showAddTask && (
+                <div className="mb-4 space-y-3 rounded-lg border border-emerald-200 bg-emerald-50/50 p-3">
+                  <textarea
+                    placeholder="Task description"
+                    value={taskForm.description}
+                    onChange={(e) => setTaskForm({ ...taskForm, description: e.target.value })}
+                    className="w-full min-h-[60px] rounded-lg border border-emerald-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-y"
+                  />
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <select value={taskForm.assigned_to} onChange={(e) => setTaskForm({ ...taskForm, assigned_to: e.target.value })}
+                      className="h-9 rounded-lg border border-emerald-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                      <option value="">Assign to...</option>
+                      {allStaff.map((s) => (
+                        <option key={s.id} value={s.id}>{s.full_name}</option>
+                      ))}
+                    </select>
+                    <select value={taskForm.priority} onChange={(e) => setTaskForm({ ...taskForm, priority: e.target.value })}
+                      className="h-9 rounded-lg border border-emerald-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                      <option value="low">Low Priority</option>
+                      <option value="normal">Normal</option>
+                      <option value="high">High</option>
+                      <option value="urgent">Urgent</option>
+                    </select>
+                    <input type="date" value={taskForm.deadline} onChange={(e) => setTaskForm({ ...taskForm, deadline: e.target.value })}
+                      className="h-9 rounded-lg border border-emerald-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                  </div>
+                  <Button onClick={handleAddTask} size="sm" className="gap-1.5">
+                    <Send className="h-3.5 w-3.5" /> Create Task
+                  </Button>
+                </div>
               )}
-              <ParadeSessions
-                sessions={sessions}
-                loading={false}
-                onStart={(id) => handleStatusUpdate(id, 'ongoing')}
-                onComplete={(id) => handleStatusUpdate(id, 'completed')}
-                onCancel={(id) => handleStatusUpdate(id, 'cancelled')}
-              />
+              {activeParade ? (
+                <ParadeTasks
+                  tasks={activeTasks}
+                  onStatusUpdate={isAdminOrCommandant ? handleTaskStatus : undefined}
+                />
+              ) : (
+                <p className="text-xs text-zinc-400 text-center py-8">No active session. Create one to assign tasks.</p>
+              )}
             </CardContent>
           </Card>
-
-          {activeParade && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-sm">
-                  <MessageSquare className="h-4 w-4 text-blue-500" />
-                  Briefings & Instructions
-                  <Badge variant="info">{activeBriefings.length}</Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ParadeBriefingComposer
-                  briefings={activeBriefings}
-                  paradeId={activeParade.id}
-                  onAdd={handleAddBriefing}
-                />
-              </CardContent>
-            </Card>
-          )}
         </div>
 
         <div className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm">
-                <Users className="h-4 w-4 text-violet-500" />
+                <Shield className="h-4 w-4 text-blue-500" />
                 Current Parade
               </CardTitle>
             </CardHeader>
@@ -287,26 +238,21 @@ export function MusterContent() {
                   <Badge variant={activeParade.status === 'ongoing' ? 'warning' : activeParade.status === 'completed' ? 'success' : 'info'}>
                     {activeParade.status.charAt(0).toUpperCase() + activeParade.status.slice(1)}
                   </Badge>
-                  {activeParade.conductor && (
-                    <p className="text-xs text-zinc-500">Conducted by: <span className="font-medium text-zinc-700">{activeParade.conductor.full_name}</span></p>
-                  )}
 
-                  <div className="flex items-center gap-2 pt-2">
-                    {!alreadyAcknowledged && activeParade.status !== 'cancelled' && (
-                      <Button onClick={handleAcknowledge} size="sm" variant="outline" className="gap-1.5 w-full">
-                        <CheckCircle2 className="h-3.5 w-3.5" /> Acknowledge Parade
-                      </Button>
-                    )}
-                    {alreadyAcknowledged && (
-                      <p className="text-xs text-emerald-600 flex items-center gap-1">
-                        <CheckCircle2 className="h-3 w-3" /> Acknowledged
-                      </p>
-                    )}
-                  </div>
+                  {!alreadyAcknowledged && activeParade.status !== 'cancelled' && (
+                    <Button onClick={handleAcknowledge} size="sm" variant="outline" className="gap-1.5 w-full">
+                      <CheckCircle2 className="h-3.5 w-3.5" /> Acknowledge Parade
+                    </Button>
+                  )}
+                  {alreadyAcknowledged && (
+                    <p className="text-xs text-emerald-600 flex items-center gap-1">
+                      <CheckCircle2 className="h-3 w-3" /> Acknowledged
+                    </p>
+                  )}
 
                   <div className="pt-2 border-t border-zinc-100">
                     <p className="text-xs font-medium text-zinc-500 mb-2">
-                      <CheckCircle2 className="h-3 w-3 inline mr-1" />
+                      <Users className="h-3 w-3 inline mr-1" />
                       {activeAcks.length} staff acknowledged
                     </p>
                     {activeAcks.length > 0 && (
@@ -324,64 +270,10 @@ export function MusterContent() {
                   </div>
                 </div>
               ) : (
-                <p className="text-xs text-zinc-400 text-center py-6">No active parade session. Create one to get started.</p>
+                <p className="text-xs text-zinc-400 text-center py-6">No active parade session.</p>
               )}
             </CardContent>
           </Card>
-
-          {activeParade && (
-            <Card>
-              <CardHeader className="flex-row items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-sm">
-                  <ListChecks className="h-4 w-4 text-emerald-500" />
-                  Tasks
-                  <Badge variant="default">{activeTasks.filter((t) => t.status !== 'completed').length} open</Badge>
-                </CardTitle>
-                {isAdminOrCommandant && (
-                  <Button onClick={() => setShowAddTask(!showAddTask)} size="sm" variant="outline" className="gap-1.5">
-                    <Plus className="h-3.5 w-3.5" /> Add Task
-                  </Button>
-                )}
-              </CardHeader>
-              <CardContent>
-                {showAddTask && (
-                  <div className="mb-4 space-y-3 rounded-lg border border-emerald-200 bg-emerald-50/50 p-3">
-                    <textarea
-                      placeholder="Task description"
-                      value={taskForm.description}
-                      onChange={(e) => setTaskForm({ ...taskForm, description: e.target.value })}
-                      className="w-full min-h-[60px] rounded-lg border border-emerald-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-y"
-                    />
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                      <select value={taskForm.assigned_to} onChange={(e) => setTaskForm({ ...taskForm, assigned_to: e.target.value })}
-                        className="h-9 rounded-lg border border-emerald-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        <option value="">Assign to...</option>
-                        {allStaff.map((s) => (
-                          <option key={s.id} value={s.id}>{s.full_name}</option>
-                        ))}
-                      </select>
-                      <select value={taskForm.priority} onChange={(e) => setTaskForm({ ...taskForm, priority: e.target.value })}
-                        className="h-9 rounded-lg border border-emerald-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        <option value="low">Low Priority</option>
-                        <option value="normal">Normal</option>
-                        <option value="high">High</option>
-                        <option value="urgent">Urgent</option>
-                      </select>
-                      <input type="date" value={taskForm.deadline} onChange={(e) => setTaskForm({ ...taskForm, deadline: e.target.value })}
-                        className="h-9 rounded-lg border border-emerald-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-                    </div>
-                    <Button onClick={handleAddTask} size="sm" className="gap-1.5">
-                      <Send className="h-3.5 w-3.5" /> Create Task
-                    </Button>
-                  </div>
-                )}
-                <ParadeTasks
-                  tasks={activeTasks}
-                  onStatusUpdate={isAdminOrCommandant ? handleTaskStatus : undefined}
-                />
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
     </div>
