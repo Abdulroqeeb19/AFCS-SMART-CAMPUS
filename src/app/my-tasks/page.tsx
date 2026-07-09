@@ -5,10 +5,10 @@ import { useAuth } from '@/contexts/auth-context'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { StatsSkeleton, TableSkeleton } from '@/components/skeleton'
+import { TableSkeleton } from '@/components/skeleton'
 import {
   ListChecks, Shield, Calendar, RefreshCw, AlertCircle, CheckCircle2,
-  Clock, X,
+  Clock, Plus, Trash2, Send,
 } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -25,14 +25,6 @@ interface TaskItem {
 }
 
 type StatusFilter = 'all' | 'pending' | 'in_progress' | 'completed'
-type TypeFilter = 'all' | 'parade_task' | 'duty_roster'
-
-const priorityConfig: Record<string, { label: string; variant: 'default' | 'warning' | 'danger' }> = {
-  low: { label: 'Low', variant: 'default' },
-  normal: { label: 'Normal', variant: 'default' },
-  high: { label: 'High', variant: 'warning' },
-  urgent: { label: 'URGENT', variant: 'danger' },
-}
 
 const STATUS_TABS: { id: StatusFilter; label: string }[] = [
   { id: 'all', label: 'All' },
@@ -41,19 +33,14 @@ const STATUS_TABS: { id: StatusFilter; label: string }[] = [
   { id: 'completed', label: 'Completed' },
 ]
 
-const TYPE_TABS: { id: TypeFilter; label: string; icon: typeof Shield }[] = [
-  { id: 'all', label: 'All', icon: ListChecks },
-  { id: 'parade_task', label: 'Parade', icon: Shield },
-  { id: 'duty_roster', label: 'Duty', icon: Calendar },
-]
-
-export default function MyTasksPage() {
+export default function DailyTodoPage() {
   const { user } = useAuth()
   const [tasks, setTasks] = useState<TaskItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
+  const [newTodo, setNewTodo] = useState('')
+  const [adding, setAdding] = useState(false)
 
   const loadTasks = async () => {
     try {
@@ -62,9 +49,7 @@ export default function MyTasksPage() {
       const res = await fetch('/api/tasks/mine')
       if (!res.ok) { setError('Failed to load tasks'); return }
       const data = await res.json()
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const paradeTasks: any[] = data.paradeTasks || []
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const dutyRosters: any[] = data.dutyRosters || []
       const combined: TaskItem[] = [
         ...paradeTasks.map((t) => ({
@@ -118,12 +103,34 @@ export default function MyTasksPage() {
     loadTasks()
   }
 
+  const handleAddTodo = async () => {
+    if (!newTodo.trim()) return
+    setAdding(true)
+    try {
+      await fetch('/api/tasks/mine', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description: newTodo.trim() }),
+      })
+      setNewTodo('')
+      loadTasks()
+    } finally {
+      setAdding(false)
+    }
+  }
+
+  const handleDeleteTodo = async (task: TaskItem) => {
+    if (task.type === 'parade_task') {
+      await fetch(`/api/tasks/mine?id=${task.id}`, { method: 'DELETE' })
+    }
+    loadTasks()
+  }
+
   const filtered = useMemo(() => {
     let result = [...tasks]
     if (statusFilter !== 'all') result = result.filter((t) => t.status === statusFilter)
-    if (typeFilter !== 'all') result = result.filter((t) => t.type === typeFilter)
     return result
-  }, [tasks, statusFilter, typeFilter])
+  }, [tasks, statusFilter])
 
   const grouped = useMemo(() => {
     const overdue = filtered.filter(
@@ -159,7 +166,7 @@ export default function MyTasksPage() {
   if (loading) {
     return (
       <div className="space-y-6 max-w-4xl mx-auto">
-        <StatsSkeleton />
+        <TableSkeleton rows={1} />
         <TableSkeleton rows={5} />
       </div>
     )
@@ -168,13 +175,12 @@ export default function MyTasksPage() {
   const countBy = (s: string) => tasks.filter((t) => t.status === s).length
   const pendingCount = countBy('pending') + countBy('in_progress')
   const completedCount = countBy('completed')
-  const cancelledCount = countBy('cancelled')
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold text-[#001A4D]">My Tasks</h1>
-        <p className="text-zinc-500 text-sm mt-0.5">Your assigned duties, parade tasks, and action items</p>
+        <h1 className="text-2xl font-bold text-[#001A4D]">Daily To-Do</h1>
+        <p className="text-zinc-500 text-sm mt-0.5">Your personal daily checklist</p>
         <div className="flex items-center gap-2 mt-2">
           <span className="h-1 w-8 rounded-full bg-[#001A4D]" />
           <span className="h-1 w-8 rounded-full bg-[#C9A84C]" />
@@ -183,7 +189,7 @@ export default function MyTasksPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 grid-cols-4">
+      <div className="grid gap-4 grid-cols-3">
         <Card><CardContent className="p-4 text-center">
           <p className="text-xs font-medium text-zinc-500 uppercase">Total</p>
           <p className="text-2xl font-bold text-blue-600">{tasks.length}</p>
@@ -196,10 +202,6 @@ export default function MyTasksPage() {
           <p className="text-xs font-medium text-zinc-500 uppercase">Completed</p>
           <p className="text-2xl font-bold text-emerald-600">{completedCount}</p>
         </CardContent></Card>
-        <Card><CardContent className="p-4 text-center">
-          <p className="text-xs font-medium text-zinc-500 uppercase">Cancelled</p>
-          <p className="text-2xl font-bold text-zinc-400">{cancelledCount}</p>
-        </CardContent></Card>
       </div>
 
       {error && (
@@ -211,6 +213,24 @@ export default function MyTasksPage() {
           </Button>
         </div>
       )}
+
+      <Card className="border-emerald-200 bg-emerald-50/50">
+        <CardContent className="p-4">
+          <form onSubmit={(e) => { e.preventDefault(); handleAddTodo() }} className="flex items-center gap-2">
+            <input
+              type="text"
+              placeholder="Add a new to-do item..."
+              value={newTodo}
+              onChange={(e) => setNewTodo(e.target.value)}
+              className="flex-1 h-10 rounded-lg border border-emerald-300 bg-white px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            />
+            <Button type="submit" size="sm" className="gap-1.5 h-10" disabled={adding || !newTodo.trim()}>
+              {adding ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
+              Add
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
 
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <div className="flex gap-1 rounded-xl bg-zinc-100 p-1">
@@ -233,34 +253,9 @@ export default function MyTasksPage() {
             </button>
           ))}
         </div>
-
-        <div className="flex gap-1">
-          {TYPE_TABS.map((tab) => {
-            const Icon = tab.icon
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setTypeFilter(tab.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  typeFilter === tab.id
-                    ? 'bg-[#001A4D] text-white'
-                    : 'text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100'
-                }`}
-              >
-                <Icon className="h-3 w-3" />
-                {tab.label}
-              </button>
-            )
-          })}
-          {typeFilter !== 'all' && (
-            <button
-              onClick={() => setTypeFilter('all')}
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100"
-            >
-              <X className="h-3 w-3" />
-            </button>
-          )}
-        </div>
+        <Button onClick={loadTasks} variant="ghost" size="sm" className="gap-1">
+          <RefreshCw className="h-3 w-3" /> Refresh
+        </Button>
       </div>
 
       {filtered.length === 0 && !error && (
@@ -268,14 +263,14 @@ export default function MyTasksPage() {
           <CardContent className="p-12 text-center">
             <ListChecks className="h-14 w-14 text-zinc-300 mx-auto mb-3 stroke-1" />
             <p className="text-sm font-medium text-zinc-500">
-              {statusFilter !== 'all' || typeFilter !== 'all'
-                ? 'No tasks match the current filters'
-                : 'No tasks assigned to you'}
+              {statusFilter !== 'all'
+                ? 'No tasks match the current filter'
+                : 'Nothing on your to-do list yet'}
             </p>
             <p className="text-xs text-zinc-400 mt-1">
-              {statusFilter !== 'all' || typeFilter !== 'all'
-                ? 'Try adjusting the filters above'
-                : 'Parade tasks and duty rosters assigned to you will appear here'}
+              {statusFilter !== 'all'
+                ? 'Try adjusting the filter above'
+                : 'Add an item using the input above'}
             </p>
           </CardContent>
         </Card>
@@ -320,16 +315,11 @@ export default function MyTasksPage() {
                             }`}>
                               {task.description}
                             </span>
-                            {task.priority !== 'normal' && task.type === 'parade_task' && (
-                              <Badge variant={priorityConfig[task.priority]?.variant || 'default'}>
-                                {priorityConfig[task.priority]?.label}
-                              </Badge>
-                            )}
                             <Badge variant={
                               task.status === 'completed' ? 'success' :
                               task.status === 'in_progress' ? 'warning' :
                               task.status === 'pending' ? 'default' :
-                              task.status === 'cancelled' ? 'danger' : 'default'
+                              'danger'
                             } className="text-[10px]">
                               {task.status === 'in_progress' ? 'In Progress' : task.status.charAt(0).toUpperCase() + task.status.slice(1)}
                             </Badge>
@@ -358,32 +348,26 @@ export default function MyTasksPage() {
                           {task.status === 'pending' && (
                             <Button
                               onClick={() => updateTaskStatus(task, 'in_progress')}
-                              size="sm"
-                              variant="ghost"
-                              className="text-xs h-7"
+                              size="sm" variant="ghost" className="text-xs h-7"
                             >
                               Start
                             </Button>
                           )}
                           {task.status === 'in_progress' && (
-                            <>
-                              <Button
-                                onClick={() => updateTaskStatus(task, 'completed')}
-                                size="sm"
-                                variant="ghost"
-                                className="text-xs h-7 text-emerald-600"
-                              >
-                                Done
-                              </Button>
-                              <Button
-                                onClick={() => updateTaskStatus(task, 'cancelled')}
-                                size="sm"
-                                variant="ghost"
-                                className="text-xs h-7 text-red-400 hover:text-red-600"
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
-                            </>
+                            <Button
+                              onClick={() => updateTaskStatus(task, 'completed')}
+                              size="sm" variant="ghost" className="text-xs h-7 text-emerald-600"
+                            >
+                              Done
+                            </Button>
+                          )}
+                          {task.type === 'parade_task' && (
+                            <Button
+                              onClick={() => handleDeleteTodo(task)}
+                              size="sm" variant="ghost" className="text-xs h-7 text-red-400 hover:text-red-600"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
                           )}
                         </div>
                       </div>

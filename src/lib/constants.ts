@@ -31,7 +31,7 @@ export const SIDEBAR_SECTIONS = [
     items: [
       { href: '/dashboard', label: 'Commandant Dashboard', icon: 'LayoutDashboard', roles: ['commandant'] as const },
       { href: '/admin', label: 'Admin Dashboard', icon: 'LayoutDashboard', roles: ['admin'] as const },
-      { href: '/my-tasks', label: 'My Tasks', icon: 'ListChecks', roles: ['commandant', 'admin', 'support'] as const },
+      { href: '/my-tasks', label: 'Daily To-Do', icon: 'ListChecks', roles: ['commandant', 'admin', 'support'] as const },
       { href: '/check-in', label: 'Check In', icon: 'ClipboardCheck', roles: ['commandant', 'admin', 'support'] as const },
       { href: '/check-out', label: 'Check Out', icon: 'LogOut', roles: ['commandant', 'admin', 'support'] as const },
       { href: '/staff', label: 'Manage Staff', icon: 'Users', roles: ['commandant', 'admin'] as const },
@@ -54,9 +54,9 @@ export const SIDEBAR_SECTIONS = [
     ],
   },
   {
-    label: 'Tasks',
+    label: 'Tasks Assignment',
     items: [
-      { href: '/muster-parade', label: 'Tasks', icon: 'Shield', roles: ['commandant', 'admin'] as const },
+      { href: '/muster-parade', label: 'Tasks Assignment', icon: 'Shield', roles: ['commandant', 'admin'] as const },
     ],
   },
   {

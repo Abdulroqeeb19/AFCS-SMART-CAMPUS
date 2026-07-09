@@ -464,8 +464,8 @@ export function DashboardContent() {
                 <CardContent className="p-4 flex items-center gap-3">
                   <ListChecks className="h-5 w-5 text-violet-500" />
                   <div>
-                    <p className="text-sm font-medium text-zinc-900">My Tasks</p>
-                    <p className="text-xs text-zinc-400">Parade & duties</p>
+                    <p className="text-sm font-medium text-zinc-900">Daily To-Do</p>
+                    <p className="text-xs text-zinc-400">Your personal checklist</p>
                   </div>
                 </CardContent>
               </Card>
@@ -486,8 +486,8 @@ export function DashboardContent() {
                 <CardContent className="p-4 flex items-center gap-3">
                   <Shield className="h-5 w-5 text-blue-500" />
                   <div>
-                    <p className="text-sm font-medium text-zinc-900">Tasks</p>
-                    <p className="text-xs text-zinc-400">Task management</p>
+                    <p className="text-sm font-medium text-zinc-900">Tasks Assignment</p>
+                    <p className="text-xs text-zinc-400">Assign & track tasks</p>
                   </div>
                 </CardContent>
               </Card>
