@@ -13,12 +13,8 @@ export async function getAuthStaff(supabase: SupabaseClient, request?: Request):
     if (staff) return staff
   }
 
-  // Dev mode: read header from client (localhost only — prevents accidental prod exposure)
+  // Dev mode: read header from client
   if (request && process.env.NEXT_PUBLIC_DEV_MODE === 'true') {
-    const host = request.headers.get('host') || ''
-    const isLocalhost = host.includes('localhost') || host.includes('127.0.0.1') || host.includes('::1')
-    if (!isLocalhost) return null
-
     const devEmail = request.headers.get('x-auth-email')
     if (devEmail) {
       const { data: staff } = await supabase
