@@ -1280,6 +1280,7 @@ export interface Database {
           is_active: boolean
           cron_schedule: string | null
           config: Json
+          last_run_at: string | null
           created_at: string
         }
         Insert: {
@@ -1291,6 +1292,7 @@ export interface Database {
           is_active?: boolean
           cron_schedule?: string | null
           config?: Json
+          last_run_at?: string | null
           created_at?: string
         }
         Update: {
@@ -1302,9 +1304,54 @@ export interface Database {
           is_active?: boolean
           cron_schedule?: string | null
           config?: Json
+          last_run_at?: string | null
           created_at?: string
         }
         Relationships: []
+      }
+      scheduled_broadcasts: {
+        Row: {
+          id: string
+          title: string | null
+          content: string
+          target_roles: string[] | null
+          scheduled_for: string
+          status: string
+          created_by: string | null
+          sent_at: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          title?: string | null
+          content: string
+          target_roles?: string[] | null
+          scheduled_for: string
+          status?: string
+          created_by?: string | null
+          sent_at?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string | null
+          content?: string
+          target_roles?: string[] | null
+          scheduled_for?: string
+          status?: string
+          created_by?: string | null
+          sent_at?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduled_broadcasts_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       system_prompts: {
         Row: {

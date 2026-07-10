@@ -15,10 +15,15 @@ const HELP_TEXT = `*AFCS Smart Campus — Telegram Commands*
 /summary — Quick stats snapshot
 /help — This message
 
-*Admin / Commandant only:*
+ *Admin / Commandant only:*
 /assign STAFF_ID DESCRIPTION — Assign a task
 /delete TASK_ID — Remove a task
-/broadcast MESSAGE — Send broadcast to all staff`
+/broadcast MESSAGE — Send broadcast to all staff
+/automate — Run automation engine now
+/automate RULE — Run a specific automation rule
+/automation list — List all rules & their status
+/automation toggle KEY — Enable/disable a rule
+/schedule YYYY-MM-DD HH:MM MESSAGE — Schedule a future broadcast`
 
 const WELCOME = `Welcome to *AFCS Smart Campus*!
 
@@ -414,6 +419,130 @@ export async function handleTelegramCommand(
       } catch { /* skip */ }
     }
     await r(`📢 Broadcast sent to ${sent} staff.`)
+    return
+  }
+
+  // ── /automate — run automation engine ──
+  if (text === '/automate') {
+    if (!staff) { await r('Not linked.'); return }
+    const s = staff as any
+    await r('⏳ Running automation engine...')
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'https://afcs-smart-campus.vercel.app'}/api/automation/engine`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-auth-email': s.email || s.staff_id + '@afcs.edu.ng' },
+        body: JSON.stringify({}),
+      })
+      const data = await res.json()
+      const executed = data.results?.filter((r: any) => r.executed) || []
+      const summary = executed.length
+        ? executed.map((r: any) => `✅ ${r.rule}${r.sent ? ` (${r.sent} sent)` : ''}`).join('\n')
+        : 'No rules were due to run.'
+      await r(`🤖 *Automation Engine Results*\n━━━━━━━━━━━━━━━\n${summary}\n━━━━━━━━━━━━━━━`)
+    } catch (err) {
+      await r('Failed to run automation engine.')
+    }
+    return
+  }
+
+  if (text.startsWith('/automate ')) {
+    const ruleKey = text.slice('/automate '.length).trim()
+    if (!ruleKey) { await r('Usage: /automate rule_key'); return }
+    const s = staff as any
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'https://afcs-smart-campus.vercel.app'}/api/automation/engine`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-auth-email': s.email || s.staff_id + '@afcs.edu.ng' },
+        body: JSON.stringify({ rule: ruleKey }),
+      })
+      const data = await res.json()
+      const result = data.results?.[0]
+      if (result?.executed) {
+        await r(`✅ *${ruleKey}* executed${result.sent ? ` (${result.sent} sent)` : ''}`)
+      } else {
+        await r(`⏭️ *${ruleKey}*: ${result?.error || 'No action needed'}`)
+      }
+    } catch {
+      await r('Failed.')
+    }
+    return
+  }
+
+  if (text === '/automation list') {
+    if (!staff) { await r('Not linked.'); return }
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'https://afcs-smart-campus.vercel.app'}/api/automation/rules`)
+      const rules = await res.json()
+      if (!rules.length) { await r('No rules found.'); return }
+
+      const lines = rules.map((r: any) =>
+        `${r.is_active ? '🟢' : '🔴'} *${r.label}* (\`${r.key}\`)\n${r.description || ''}`
+      )
+      await r(`🤖 *Automation Rules*\n━━━━━━━━━━━━━━━\n${lines.join('\n\n')}\n━━━━━━━━━━━━━━━\nUse \`/automation toggle KEY\` to enable/disable.`)
+    } catch {
+      await r('Failed to fetch rules.')
+    }
+    return
+  }
+
+  if (text.startsWith('/automation toggle ')) {
+    const key = text.slice('/automation toggle '.length).trim()
+    if (!key) { await r('Usage: /automation toggle rule_key'); return }
+
+    try {
+      // First get current state
+      const getRes = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'https://afcs-smart-campus.vercel.app'}/api/automation/rules`)
+      const rules = await getRes.json()
+      const rule = rules.find((r: any) => r.key === key)
+      if (!rule) { await r(`Rule \`${key}\` not found.`); return }
+
+      const newState = !rule.is_active
+      const s = staff as any
+      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'https://afcs-smart-campus.vercel.app'}/api/automation/rules`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-auth-email': s.email || s.staff_id + '@afcs.edu.ng' },
+        body: JSON.stringify({ key, is_active: newState }),
+      })
+      if (!res.ok) { await r('Failed to toggle.'); return }
+      await r(`${newState ? '🟢 Enabled' : '🔴 Disabled'} *${rule.label}*`)
+    } catch {
+      await r('Failed.')
+    }
+    return
+  }
+
+  // ── /schedule — schedule a future broadcast ──
+  if (text.startsWith('/schedule ')) {
+    const args = text.slice('/schedule '.length).trim()
+    // Format: /schedule 2026-07-10 14:00 Your message here
+    const match = args.match(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})\s+(.+)$/)
+    if (!match) {
+      await r('Usage: /schedule YYYY-MM-DD HH:MM Message\nExample: /schedule 2026-07-10 14:00 Staff meeting tomorrow')
+      return
+    }
+
+    const [, datePart, timePart, content] = match
+    const scheduledFor = new Date(`${datePart}T${timePart}:00`).toISOString()
+
+    if (new Date(scheduledFor) <= new Date()) {
+      await r('Scheduled time must be in the future.')
+      return
+    }
+
+    const { error } = await (supabase.from('scheduled_broadcasts').insert({
+      title: 'Scheduled Broadcast',
+      content,
+      scheduled_for: scheduledFor,
+      created_by: staff.id,
+      target_roles: null,
+      status: 'pending',
+    }) as any)
+
+    if (error) { await r('Failed to schedule.'); return }
+
+    await r(`📅 *Broadcast Scheduled*\n━━━━━━━━━━━━━━━\n🕐 ${datePart} ${timePart}\n📝 ${content.substring(0, 100)}${content.length > 100 ? '…' : ''}\n━━━━━━━━━━━━━━━\nIt will be sent automatically at the scheduled time.`)
     return
   }
 
