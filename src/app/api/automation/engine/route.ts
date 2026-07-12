@@ -17,9 +17,9 @@ export async function POST(request: Request) {
     ? await request.json().catch(() => ({}))
     : {}
 
-  const { rule: specificRule } = body as { rule?: string }
+  const { rule: specificRule, force } = body as { rule?: string; force?: boolean }
 
-  const results = await runAutomationEngine(specificRule)
+  const results = await runAutomationEngine(specificRule, isCronCall || force)
 
   return NextResponse.json({
     timestamp: new Date().toISOString(),

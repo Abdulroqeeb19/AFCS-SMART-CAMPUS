@@ -913,7 +913,7 @@ function isDue(key: string, config: RuleConfig): boolean {
   })
 }
 
-export async function runAutomationEngine(specificRule?: string): Promise<EngineResult[]> {
+export async function runAutomationEngine(specificRule?: string, force?: boolean): Promise<EngineResult[]> {
   const supabase = createAdminClient()
   const results: EngineResult[] = []
 
@@ -953,8 +953,8 @@ export async function runAutomationEngine(specificRule?: string): Promise<Engine
 
     const config: RuleConfig = { key: rule.key, config: (rule.config as Record<string, any>) || {}, cron_schedule: null }
 
-    // Check if due (unless specific rule requested)
-    if (!specificRule && !isDue(rule.key, config)) {
+    // Check if due (unless specific rule requested or force mode)
+    if (!specificRule && !force && !isDue(rule.key, config)) {
       results.push({ rule: rule.key, executed: false, error: 'Not yet due' })
       continue
     }
