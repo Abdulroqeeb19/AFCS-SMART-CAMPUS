@@ -584,7 +584,7 @@ export function DashboardContent() {
                                 {r.task?.description || 'Task'}
                               </p>
                               <p className="text-[10px] text-zinc-400 mt-0.5">
-                                {new Date(r.responded_at).toLocaleTimeString()}
+                                {new Date(r.responded_at).toLocaleString()}
                               </p>
                             </div>
                           </div>
