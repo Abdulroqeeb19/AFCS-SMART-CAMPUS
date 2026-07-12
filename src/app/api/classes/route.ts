@@ -18,11 +18,10 @@ const updateClassSchema = z.object({
 })
 
 export async function GET() {
-  const supabase = await createServerSupabaseClient()
-  const { data, error } = await supabase
+  const adminSupabase = createAdminClient()
+  const { data, error } = await adminSupabase
     .from('classes')
     .select('*')
-    .neq('name', 'JS3')
     .order('name')
     .order('arm')
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

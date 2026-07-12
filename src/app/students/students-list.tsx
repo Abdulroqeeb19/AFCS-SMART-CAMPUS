@@ -145,7 +145,7 @@ export function StudentsList() {
   }
 
   const toggleActive = async (student: Student) => {
-    await handleUpdate(student.id, { is_active: student.is_active ? 'false' : 'true' })
+    await handleUpdate(student.id, { is_active: (!student.is_active).toString() })
   }
 
   const handleDelete = async (student: Student) => {
