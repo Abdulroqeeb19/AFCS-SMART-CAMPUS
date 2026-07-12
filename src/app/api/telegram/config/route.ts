@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireAdmin } from '@/lib/auth-utils'
 import { getTelegramBotToken } from '@/lib/telegram/token'
-import { getWebhookInfo, setWebhook, deleteWebhook } from '@/lib/telegram/send'
+import { getWebhookInfo, setWebhook } from '@/lib/telegram/send'
 
 
 const configSchema = z.object({
@@ -10,7 +11,11 @@ const configSchema = z.object({
   webhookUrl: z.string().url().optional(),
 })
 
-export async function GET() {
+export async function GET(request: Request) {
+  const supabase = createAdminClient()
+  const admin = await requireAdmin(supabase, request)
+  if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
+
   const token = await getTelegramBotToken()
 
   if (!token) {
@@ -34,20 +39,21 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const supabase = createAdminClient()
+    const admin = await requireAdmin(supabase, request)
+    if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
+
     const parsed = configSchema.safeParse(await request.json())
     if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
     const body = parsed.data
-    const supabase = createAdminClient()
 
     if (body.token) {
-      process.env.TELEGRAM_BOT_TOKEN = body.token
       const { data: settings } = await supabase.from('settings').select('id').limit(1).maybeSingle()
       if (settings) {
         await supabase.from('settings').update({ telegram_bot_token: body.token }).eq('id', settings.id)
       } else {
         await supabase.from('settings').insert({ telegram_bot_token: body.token, cutoff_hour: 8, cutoff_minute: 0 })
       }
-      await deleteWebhook()
     }
 
     if (body.webhookUrl) {
@@ -58,7 +64,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, webhook: body.webhookUrl, mode: 'webhook' })
     }
 
-    return NextResponse.json({ success: true, mode: 'polling', note: 'Token saved. Use polling for HTTP.' })
+    return NextResponse.json({ success: true, mode: 'polling', note: 'Token saved.' })
   } catch {
     return NextResponse.json({ error: 'Failed to save token' }, { status: 500 })
   }

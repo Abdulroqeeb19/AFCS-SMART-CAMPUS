@@ -15,6 +15,8 @@ const createBriefingSchema = z.object({
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const supabase = createAdminClient()
+  const admin = await requireAdmin(supabase, request)
+  if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
 
   const { data, error } = await supabase
     .from('parade_briefings')

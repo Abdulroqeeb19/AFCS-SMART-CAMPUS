@@ -8,7 +8,8 @@ export async function getAuthStaff(supabase: SupabaseClient, request?: Request):
     const { data: staff } = await supabase
       .from('staff')
       .select('id, role')
-      .eq('email', user.email)
+      .ilike('email', user.email)
+      .eq('is_active', true)
       .single()
     if (staff) return staff
   }
@@ -20,7 +21,8 @@ export async function getAuthStaff(supabase: SupabaseClient, request?: Request):
       const { data: staff } = await supabase
         .from('staff')
         .select('id, role')
-        .eq('email', devEmail)
+        .ilike('email', devEmail)
+        .eq('is_active', true)
         .single()
       if (staff) return staff
     }

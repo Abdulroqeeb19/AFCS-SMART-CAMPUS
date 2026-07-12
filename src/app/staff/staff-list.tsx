@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { Loader2, Plus, UserPlus, Search, Users, Pencil, X, Check, Power, PowerOff, Trash2, AlertCircle, Shield, GraduationCap } from 'lucide-react'
 import { Skeleton } from '@/components/skeleton'
+import { QRButton } from '@/components/qr-code'
+
 
 interface StaffMember {
   id: string
@@ -451,6 +453,7 @@ export function StaffList() {
                           >
                             <Pencil className="h-3 w-3" /> Edit
                           </button>
+                          <QRButton id={member.staff_id} name={member.full_name} title="Staff ID Card" />
                           <button
                             onClick={() => toggleActive(member)}
                             className={`flex items-center gap-1 text-xs transition-colors ${
@@ -526,6 +529,7 @@ export function StaffList() {
           </div>
         </>
       )}
+
     </div>
   )
 }

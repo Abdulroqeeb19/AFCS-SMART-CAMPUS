@@ -6,7 +6,6 @@ import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card'
 import { Badge } from './ui/badge'
-import { Turnstile } from '@marsidev/react-turnstile'
 import Link from 'next/link'
 import {
   Shield, Loader2, AlertCircle, Eye, EyeOff, LogIn,
@@ -19,13 +18,11 @@ export function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [devStaff, setDevStaff] = useState<Staff[]>([])
   const [devLoading, setDevLoading] = useState(true)
 
-  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'
   const devMode = ctxDevMode || process.env.NEXT_PUBLIC_DEV_MODE === 'true'
 
   useEffect(() => {
@@ -47,19 +44,6 @@ export function LoginForm() {
 
     if (!email.trim()) { setError('Email or Staff ID is required'); return }
     if (!password.trim()) { setError('Password is required'); return }
-
-    if (captchaToken) {
-      const verifyRes = await fetch('/api/auth/verify-captcha', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: captchaToken }),
-      })
-      const verifyData = await verifyRes.json()
-      if (!verifyData.success) {
-        setError('Human verification failed. Please try again.')
-        return
-      }
-    }
 
     setLoading(true)
     const result = await signIn(email, password)
@@ -122,15 +106,6 @@ export function LoginForm() {
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
-            </div>
-
-            <div className="flex justify-center">
-              <Turnstile
-                siteKey={siteKey}
-                onSuccess={(token) => setCaptchaToken(token)}
-                onError={() => setError('CAPTCHA load failed. Refresh to retry.')}
-                options={{ theme: 'light', size: 'normal' }}
-              />
             </div>
 
             {error && (

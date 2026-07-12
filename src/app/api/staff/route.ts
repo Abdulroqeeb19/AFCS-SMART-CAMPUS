@@ -24,8 +24,10 @@ const updateStaffSchema = z.object({
   is_active: z.boolean().optional(),
 })
 
-export async function GET() {
+export async function GET(request: Request) {
   const supabase = createAdminClient()
+  const admin = await requireAdmin(supabase, request)
+  if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
 
   const { data, error } = await supabase
     .from('staff')

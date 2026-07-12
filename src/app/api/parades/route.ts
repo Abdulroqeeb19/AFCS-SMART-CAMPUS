@@ -18,6 +18,8 @@ export async function GET(request: Request) {
   const limit = searchParams.get('limit') || '10'
 
   const supabase = createAdminClient()
+  const admin = await requireAdmin(supabase, request)
+  if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
   let query = supabase
     .from('parade_sessions')
     .select('*, conductor:conducted_by(id, staff_id, full_name), briefings:parade_briefings(*), tasks:parade_tasks(*, assignee:assigned_to(id, staff_id, full_name)), acknowledgements:parade_acknowledgements(*, staff:staff_id(id, staff_id, full_name))')

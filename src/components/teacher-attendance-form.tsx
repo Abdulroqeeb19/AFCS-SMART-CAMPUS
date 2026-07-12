@@ -254,7 +254,7 @@ export function TeacherAttendanceForm() {
           }`}
         >
           <QrCode className="h-4 w-4" />
-          <span className="hidden sm:inline">Scan QR</span>
+          <span className="hidden sm:inline">Scan Code</span>
         </button>
         <button
           onClick={() => setMode('manual')}
@@ -272,7 +272,7 @@ export function TeacherAttendanceForm() {
         <Card>
           <CardContent className="p-4">
             <p className="text-sm font-medium text-zinc-700 mb-3 text-center">
-              Scan student ID card to mark attendance
+              Scan student QR code or barcode to mark attendance
             </p>
             <QRScanner onScan={handleQRScan} onError={(msg) => setError(msg)} />
           </CardContent>

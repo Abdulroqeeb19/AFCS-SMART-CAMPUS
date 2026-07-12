@@ -59,32 +59,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data } = await supabase
       .from('staff')
       .select('*')
-      .eq('email', email)
+      .ilike('email', email)
+      .eq('is_active', true)
       .single()
     return data as Staff | null
   }
 
   useEffect(() => {
+    let mounted = true
+
     // Check for dev session first
     if (isDevMode) {
       try {
         const stored = localStorage.getItem(DEV_SESSION_KEY)
         if (stored) {
           const parsed = JSON.parse(stored) as Staff
-          // Validate stored staff against DB
           if (parsed.email) {
+            setUser(parsed)
             const supabase = createClient()
-            supabase.from('staff').select('*').eq('email', parsed.email).single().then(({ data }) => {
+            supabase.from('staff').select('*').ilike('email', parsed.email).eq('is_active', true).single().then(({ data }) => {
+              if (!mounted) return
               if (data) {
                 setUser(data as Staff)
               } else {
                 localStorage.removeItem(DEV_SESSION_KEY)
+                setUser(null)
               }
               setLoading(false)
             })
             return
           }
-          // eslint-disable-next-line react-hooks/set-state-in-effect
           setUser(parsed)
           setLoading(false)
           return
@@ -97,23 +101,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Fall back to Supabase Auth
     const supabase = createClient()
     supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!mounted) return
       if (session?.user?.email) {
         const staff = await fetchStaffByEmail(session.user.email)
-        setUser(staff)
+        if (mounted) setUser(staff)
       }
-      setLoading(false)
+      if (mounted) setLoading(false)
     })
 
     const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return
       if (session?.user?.email && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
         const staff = await fetchStaffByEmail(session.user.email)
-        setUser(staff)
+        if (mounted) setUser(staff)
       } else if (event === 'SIGNED_OUT') {
-        setUser(null)
+        if (mounted) setUser(null)
       }
     })
 
-    return () => listener?.subscription.unsubscribe()
+    return () => { mounted = false; listener?.subscription.unsubscribe() }
   }, [isDevMode])
 
   const role = user?.role

@@ -1,18 +1,19 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth-utils'
 
 const createClassSchema = z.object({
-  name: z.string().min(1).max(50),
-  arm: z.string().min(1).max(10),
+  name: z.string().min(1).max(10),
+  arm: z.string().min(1).max(5),
   class_teacher_id: z.string().uuid().nullable().optional(),
 })
 
 const updateClassSchema = z.object({
   id: z.string().uuid(),
-  name: z.string().min(1).max(50).optional(),
-  arm: z.string().min(1).max(10).optional(),
+  name: z.string().min(1).max(10).optional(),
+  arm: z.string().min(1).max(5).optional(),
   class_teacher_id: z.string().uuid().nullable().optional(),
 })
 
@@ -37,7 +38,8 @@ export async function POST(request: Request) {
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   const { name, arm, class_teacher_id } = parsed.data
 
-  const { data, error } = await supabase
+  const adminSupabase = createAdminClient()
+  const { data, error } = await adminSupabase
     .from('classes')
     .insert({ name, arm, class_teacher_id: class_teacher_id || null })
     .select()
@@ -56,7 +58,8 @@ export async function PATCH(request: Request) {
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   const { id, ...updates } = parsed.data
 
-  const { data, error } = await supabase.from('classes').update(updates).eq('id', id).select().single()
+  const adminSupabase = createAdminClient()
+  const { data, error } = await adminSupabase.from('classes').update(updates).eq('id', id).select().single()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)
 }
@@ -69,7 +72,8 @@ export async function DELETE(request: Request) {
   const { searchParams } = new URL(request.url)
   const id = searchParams.get('id')
   if (!id) return NextResponse.json({ error: 'Class ID required' }, { status: 400 })
-  const { error } = await supabase.from('classes').delete().eq('id', id)
+  const adminSupabase = createAdminClient()
+  const { error } = await adminSupabase.from('classes').delete().eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ success: true })
 }

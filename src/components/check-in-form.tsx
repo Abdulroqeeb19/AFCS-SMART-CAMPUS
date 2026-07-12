@@ -74,10 +74,87 @@ export function CheckInForm() {
     }
   }
 
-  const handleQRScan = (decodedText: string) => {
+  const handleQRScan = async (decodedText: string) => {
     const id = decodedText.trim().toUpperCase()
     setStaffId(id)
-    lookupPerson(id)
+    setError('')
+    setResult(null)
+    setPerson(null)
+    setLookupLoading(true)
+    try {
+      const res = await fetch(`/api/checkin/lookup?identifier=${encodeURIComponent(id)}`)
+      if (!res.ok) {
+        const data = await res.json()
+        setError(data.error || 'Staff not found')
+        return
+      }
+      const data = await res.json()
+      if (data.type !== 'staff') {
+        setError('This ID belongs to a student.')
+        return
+      }
+      if (!data.is_active) {
+        setError('This staff account is not active.')
+        return
+      }
+      if (data.today_attendance?.check_in && !data.today_attendance?.check_out) {
+        setPerson(data)
+        setLoading(true)
+        const coRes = await fetch('/api/attendance/check-out', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ staff_id: id }),
+        })
+        const coData = await coRes.json()
+        if (coRes.ok) {
+          setResult({
+            success: true,
+            message: coData.message,
+            isCheckOut: true,
+            time: coData.check_out,
+          })
+        } else {
+          setError(coData.error || 'Check-out failed')
+        }
+        return
+      }
+      if (data.today_attendance?.check_out) {
+        setError('Already checked out today')
+        return
+      }
+      setLoading(true)
+      const ciRes = await fetch('/api/attendance/check-in', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ staff_id: id }),
+      })
+      const ciData = await ciRes.json()
+      if (!ciRes.ok) {
+        if (ciRes.status === 409) {
+          setResult({
+            success: true,
+            message: ciData.error || 'Already checked in',
+            time: ciData.check_in,
+            isCheckOut: true,
+          })
+        } else {
+          setError(ciData.error || 'Check-in failed')
+        }
+        return
+      }
+      setResult({
+        success: true,
+        message: ciData.message,
+        status: ciData.status,
+        time: ciData.check_in,
+      })
+    } catch {
+      setError('Network error. Please try again.')
+    } finally {
+      setLoading(false)
+      setLookupLoading(false)
+      setScanId((c) => c + 1)
+    }
   }
 
   async function handleCheckIn(e?: React.FormEvent) {
@@ -205,7 +282,7 @@ export function CheckInForm() {
         </div>
         <CardTitle>Staff Check-In</CardTitle>
         <CardDescription>
-          Scan the QR code on their ID card or enter the Staff ID
+          Scan the QR code or barcode on their ID card or enter the Staff ID
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -226,7 +303,7 @@ export function CheckInForm() {
             }`}
           >
             <QrCode className="h-4 w-4" />
-            Scan QR
+            Scan Code
           </button>
         </div>
 

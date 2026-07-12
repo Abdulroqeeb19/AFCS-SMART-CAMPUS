@@ -55,6 +55,7 @@ async function replyKeyboard(botUrl: string, chatId: string, msg: string, button
 
 function bold(s: string) { return `*${s}*` }
 function code(s: string) { return `\`${s}\`` }
+function esc(s: string) { return s.replace(/([_*\[\]()~`>#+\-=|{}.!])/g, '\\$1') }
 
 export async function handleTelegramCommand(
   chatId: string,
@@ -376,7 +377,7 @@ export async function handleTelegramCommand(
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             chat_id: targetStaff.telegram_chat_id,
-            text: `📋 *New Task Assigned*\n━━━━━━━━━━━━━━━\n${bold('From:')} ${staff.full_name} (${staff.role})\n${bold('Task:')} ${description}\n━━━━━━━━━━━━━━━\nUse /tasks to view all your tasks.`,
+            text: `📋 *New Task Assigned*\n━━━━━━━━━━━━━━━\n${bold('From:')} ${esc(staff.full_name)} (${esc(staff.role)})\n${bold('Task:')} ${esc(description)}\n━━━━━━━━━━━━━━━\nUse /tasks to view all your tasks.`,
             parse_mode: 'Markdown',
           }),
         })
@@ -411,7 +412,7 @@ export async function handleTelegramCommand(
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             chat_id: s.telegram_chat_id,
-            text: `📢 *Broadcast from ${staff.full_name}*\n━━━━━━━━━━━━━━━\n${message}\n━━━━━━━━━━━━━━━\n_AFCS Smart Campus_`,
+            text: `📢 *Broadcast from ${esc(staff.full_name)}*\n━━━━━━━━━━━━━━━\n${esc(message)}\n━━━━━━━━━━━━━━━\n_AFCS Smart Campus_`,
             parse_mode: 'Markdown',
           }),
         })

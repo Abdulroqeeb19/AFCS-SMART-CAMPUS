@@ -14,16 +14,16 @@ export async function POST(request: Request) {
   const query = supabase.from('staff').select('*')
 
   if (isEmail) {
-    query.eq('email', identifier)
+    query.ilike('email', identifier)
   } else {
-    query.eq('staff_id', identifier)
+    query.ilike('staff_id', identifier)
   }
 
   const { data, error } = await query.maybeSingle()
 
   if (error) {
     console.error('Staff lookup failed:', error.message)
-    return NextResponse.json({ staff: null }, { status: 200 })
+    return NextResponse.json({ error: 'Lookup failed' }, { status: 500 })
   }
 
   return NextResponse.json({ staff: data || null })

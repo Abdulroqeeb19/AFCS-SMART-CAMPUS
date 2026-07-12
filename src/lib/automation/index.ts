@@ -55,7 +55,11 @@ async function logRun(supabase: ReturnType<typeof createAdminClient>, key: strin
 }
 
 async function updateLastRun(supabase: ReturnType<typeof createAdminClient>, key: string) {
-  await supabase.from('notification_rules').update({ last_run_at: nowISO() }).eq('key', key)
+  try {
+    await supabase.from('notification_rules').update({ last_run_at: nowISO() }).eq('key', key)
+  } catch {
+    // Column may not exist yet if migration 025 hasn't been applied
+  }
 }
 
 // ── Helper: get staff by duty type for today ──
@@ -63,7 +67,7 @@ async function getStaffByDutyType(supabase: ReturnType<typeof createAdminClient>
   const today = todayStr()
   const { data } = await supabase
     .from('duty_rosters')
-    .select('*, staff:staff_id(id, full_name, telegram_chat_id, phone, role)')
+    .select('*, staff:staff_id(id, full_name, telegram_chat_id, phone, role), duty_type:duty_type_id(name)')
     .eq('date', today) as any
 
   if (!data) return []
@@ -609,14 +613,21 @@ async function handleParadeAutoClose(supabase: ReturnType<typeof createAdminClie
 
 // 11. Scheduled Broadcast Processor — send due broadcasts
 async function handleScheduledBroadcastProcessor(supabase: ReturnType<typeof createAdminClient>): Promise<EngineResult> {
-  const { data: due } = await supabase
-    .from('scheduled_broadcasts')
-    .select('*')
-    .eq('status', 'pending')
-    .lte('scheduled_for', nowISO())
-    .limit(20) as any
+  let due: any[]
+  try {
+    const { data } = await supabase
+      .from('scheduled_broadcasts')
+      .select('*')
+      .eq('status', 'pending')
+      .lte('scheduled_for', nowISO())
+      .limit(20) as any
+    due = data || []
+  } catch {
+    // scheduled_broadcasts table may not exist yet (pre-migration-025)
+    return { rule: 'scheduled_broadcast_processor', executed: false }
+  }
 
-  if (!due?.length) {
+  if (!due.length) {
     return { rule: 'scheduled_broadcast_processor', executed: false }
   }
 
@@ -725,6 +736,119 @@ async function handleEndOfDayDigest(supabase: ReturnType<typeof createAdminClien
   return { rule: 'end_of_day_digest', executed: sent > 0, sent }
 }
 
+// 13. Commandant's Daily To-Do — morning briefing pushed to commandant's Telegram
+async function handleCommandantTodo(supabase: ReturnType<typeof createAdminClient>): Promise<EngineResult> {
+  const today = todayStr()
+
+  // Find commandants with Telegram linked
+  const { data: commandants } = await supabase
+    .from('staff')
+    .select('id, full_name, telegram_chat_id')
+    .eq('role', 'commandant')
+    .eq('is_active', true)
+    .not('telegram_chat_id', 'is', null)
+
+  if (!commandants?.length) {
+    await logRun(supabase, 'commandant_todo', false, 'No commandant with Telegram linked')
+    return { rule: 'commandant_todo', executed: false }
+  }
+
+  // Gather all data in parallel
+  const [
+    { data: taskData },
+    { data: dutyData },
+    { count: staffCheckedIn },
+    { count: totalStaff },
+    { count: presentStudents },
+    { count: totalStudents },
+    { count: absentStudents },
+    { data: parades },
+    { count: highPriorityTasks },
+  ] = await Promise.all([
+    // Tasks assigned to commandant (open + created today)
+    supabase.from('parade_tasks').select('id, description, parade_id, status, priority, assigned_to')
+      .or(`assigned_to.in.(${commandants.map(c => c.id).join(',')}),and(assigned_to.is.null,created_at.gte.${today}T00:00:00)`)
+      .neq('status', 'completed').neq('status', 'cancelled').order('priority', { ascending: false }).limit(15) as any,
+
+    // Today's duty rosters
+    supabase.from('duty_rosters')
+      .select('*, staff:staff_id(full_name), duty_type:duty_type_id(name)')
+      .eq('date', today) as any,
+
+    // Staff attendance
+    supabase.from('staff_attendance').select('id', { count: 'exact', head: true }).eq('date', today).not('check_in', 'is', null),
+    supabase.from('staff').select('id', { count: 'exact', head: true }).eq('is_active', true),
+    supabase.from('student_attendance').select('id', { count: 'exact', head: true }).eq('date', today).eq('status', 'present'),
+    supabase.from('students').select('id', { count: 'exact', head: true }).eq('is_active', true),
+    supabase.from('student_attendance').select('id', { count: 'exact', head: true }).eq('date', today).eq('status', 'absent'),
+    supabase.from('parade_sessions').select('id, type, status, start_time').eq('date', today).in('status', ['scheduled', 'active']) as any,
+    supabase.from('parade_tasks').select('id', { count: 'exact', head: true }).eq('priority', 'high').neq('status', 'completed').neq('status', 'cancelled'),
+  ])
+
+  const tasks = (taskData || []).slice(0, 8)
+  const duties = (dutyData || []).slice(0, 10)
+  const paradeList = (parades || [])
+
+  // Format duty summary
+  const dutySummary = duties.map((r: any) => {
+    const staff = Array.isArray(r.staff) ? r.staff[0] : r.staff
+    const dt = Array.isArray(r.duty_type) ? r.duty_type[0] : r.duty_type
+    const statusIcon = r.status === 'completed' ? '✅' : r.status === 'active' ? '🔄' : '⏳'
+    return `${statusIcon} ${dt?.name || 'Duty'} → ${staff?.full_name || 'Unassigned'}`
+  }).join('\n')
+
+  // Format task summary
+  const taskSummary = tasks.map((t: any) => {
+    const icon = t.priority === 'high' ? '🔴' : t.priority === 'medium' ? '🟡' : '🔵'
+    const statusTag = t.status === 'in_progress' ? ' *(in progress)*' : ''
+    return `${icon} ${t.description?.substring(0, 60)}${t.description?.length > 60 ? '…' : ''}${statusTag}`
+  }).join('\n')
+
+  // Format parade summary
+  const paradeSummary = paradeList.map((p: any) => {
+    const icon = p.type === 'morning' ? '🌅' : p.type === 'evening' ? '🌇' : '📋'
+    return `${icon} ${p.type} parade — ${p.status}${p.start_time ? ` (${p.start_time.substring(0, 5)})` : ''}`
+  }).join('\n')
+
+  const staffPct = (totalStaff ?? 0) > 0 ? Math.round(((staffCheckedIn ?? 0) / (totalStaff ?? 1)) * 100) : 0
+  const studentPct = (totalStudents ?? 0) > 0 ? Math.round(((presentStudents ?? 0) / (totalStudents ?? 1)) * 100) : 0
+
+  let sent = 0
+  for (const cmd of commandants) {
+    const msg =
+      `☀️ *Good Morning, ${cmd.full_name.split(' ').pop()}!*\n` +
+      `━━━━━━━━━━━━━━━━━━━━\n` +
+      `📅 *Today's Brief — ${today}*\n\n` +
+      (taskSummary
+        ? `📋 *Pending Tasks (${tasks.length})*\n${taskSummary}\n\n`
+        : `📋 *No pending tasks*\n\n`) +
+      `*👥 Staff Attendance*\n` +
+      `${staffCheckedIn ?? 0}/${totalStaff ?? 0} checked in (${staffPct}%)\n\n` +
+      `*🎓 Student Attendance*\n` +
+      `Present: ${presentStudents ?? 0}\n` +
+      `Absent: ${absentStudents ?? 0}\n` +
+      `Rate: ${studentPct}% present\n\n` +
+      (dutySummary
+        ? `*📋 Today's Duties*\n${dutySummary}\n\n`
+        : ``) +
+      (paradeSummary
+        ? `*🏛 Parades Today*\n${paradeSummary}\n\n`
+        : ``) +
+      (highPriorityTasks && highPriorityTasks > 0
+        ? `⚠️ *${highPriorityTasks} high-priority task${highPriorityTasks > 1 ? 's' : ''}* need attention!\n\n`
+        : ``) +
+      `━━━━━━━━━━━━━━━━━━━━\n` +
+      `_AFCS Smart Campus_\n` +
+      `🔗 Portal: https://afcs-smart-campus.vercel.app`
+
+    const result = await sendTelegramMessage(cmd.telegram_chat_id!, msg)
+    if (result.success) sent++
+  }
+
+  await logRun(supabase, 'commandant_todo', sent > 0, `Sent daily briefing to ${sent} commandant(s)`)
+  return { rule: 'commandant_todo', executed: sent > 0, sent }
+}
+
 // ============================================================
 // ENGINE
 // ============================================================
@@ -749,6 +873,7 @@ const SCHEDULE_MAP: Record<string, { hour: number; minute: number; days?: number
   'parade_auto_close': [{ hour: 14, minute: 30 }],
   'scheduled_broadcast_processor': [],
   'end_of_day_digest': [{ hour: 15, minute: 0 }],
+  'commandant_todo': [{ hour: 6, minute: 30, days: [1, 2, 3, 4, 5] }],
 }
 
 const HANDLERS: Record<string, (supabase: ReturnType<typeof createAdminClient>) => Promise<EngineResult>> = {
@@ -764,6 +889,7 @@ const HANDLERS: Record<string, (supabase: ReturnType<typeof createAdminClient>) 
   parade_auto_close: handleParadeAutoClose,
   scheduled_broadcast_processor: handleScheduledBroadcastProcessor,
   end_of_day_digest: handleEndOfDayDigest,
+  commandant_todo: handleCommandantTodo,
 }
 
 // Rules that should always run (not time-dependent)
@@ -793,7 +919,7 @@ export async function runAutomationEngine(specificRule?: string): Promise<Engine
 
   const query = supabase
     .from('notification_rules')
-    .select('key, is_active, last_run_at, config')
+    .select('key, is_active, config')
     .eq('is_active', true) as any
 
   if (specificRule) (query as any).eq('key', specificRule)
@@ -802,6 +928,20 @@ export async function runAutomationEngine(specificRule?: string): Promise<Engine
 
   if (!activeRules?.length) {
     return [{ rule: 'engine', executed: false, error: 'No active rules' }]
+  }
+
+  // Try to fetch last_run_at separately (column may not exist pre-migration-025)
+  let lastRunMap: Record<string, string> = {}
+  try {
+    const { data: lastRunData } = await supabase
+      .from('notification_rules')
+      .select('key, last_run_at')
+      .in('key', activeRules.map((r: any) => r.key)) as any
+    if (lastRunData) {
+      lastRunMap = Object.fromEntries(lastRunData.map((r: any) => [r.key, r.last_run_at]))
+    }
+  } catch {
+    // last_run_at column doesn't exist yet — skip cooldown checks
   }
 
   for (const rule of activeRules) {
@@ -820,8 +960,8 @@ export async function runAutomationEngine(specificRule?: string): Promise<Engine
     }
 
     // Check last_run_at to prevent duplicate runs within the same window
-    if (!specificRule && rule.last_run_at) {
-      const lastRun = new Date(rule.last_run_at).getTime()
+    if (!specificRule && lastRunMap[rule.key]) {
+      const lastRun = new Date(lastRunMap[rule.key]).getTime()
       const now = Date.now()
       const minutesSinceLastRun = (now - lastRun) / (1000 * 60)
       if (minutesSinceLastRun < 30 && !ALWAYS_RUN.includes(rule.key)) {

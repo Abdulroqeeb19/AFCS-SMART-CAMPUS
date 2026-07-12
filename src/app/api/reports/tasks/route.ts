@@ -1,17 +1,20 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireAdmin } from '@/lib/auth-utils'
 
 
 export async function GET(request: Request) {
+  const supabase = createAdminClient()
+  const admin = await requireAdmin(supabase, request)
+  if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
+
   const { searchParams } = new URL(request.url)
   const fromDate = searchParams.get('from')
   const toDate = searchParams.get('to')
   const format = searchParams.get('format')
 
-  const adminClient = createAdminClient()
-
   // Fetch all tasks with related data
-  let taskQuery = adminClient
+  let taskQuery = supabase
     .from('parade_tasks')
     .select('*, assignee:assigned_to(id, staff_id, full_name, role), parade:parade_id(id, date, type, status)')
     .order('created_at', { ascending: false })
@@ -24,7 +27,7 @@ export async function GET(request: Request) {
 
   // Fetch task responses for each task
   const taskIds = tasks.map((t: any) => t.id)
-  const { data: responses } = await adminClient
+  const { data: responses } = await supabase
     .from('task_responses')
     .select('*, staff:staff_id(id, staff_id, full_name, role)')
     .in('task_id', taskIds)

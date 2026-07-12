@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { Loader2, Plus, Search, GraduationCap, UserPlus, Pencil, X, Check, Power, PowerOff, BookOpen, Trash2, AlertCircle } from 'lucide-react'
 import { Skeleton } from '@/components/skeleton'
+import { QRButton } from '@/components/qr-code'
+
 
 interface Student {
   id: string
@@ -261,15 +263,25 @@ export function StudentsList() {
                 onChange={(e) => setNewClassArm(e.target.value)} label="Arm" />
               <div className="flex items-end">
                 <Button onClick={async () => {
+                  setError('')
                   if (!newClassName.trim() || !newClassArm.trim()) return
-                  await fetch('/api/classes', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: newClassName.trim(), arm: newClassArm.trim() }),
-                  })
-                  setNewClassName('')
-                  setNewClassArm('')
-                  loadData()
+                  try {
+                    const res = await fetch('/api/classes', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ name: newClassName.trim(), arm: newClassArm.trim() }),
+                    })
+                    if (!res.ok) {
+                      const data = await res.json()
+                      setError(data.error || 'Failed to add class')
+                      return
+                    }
+                    setNewClassName('')
+                    setNewClassArm('')
+                    loadData()
+                  } catch {
+                    setError('Network error. Please try again.')
+                  }
                 }} size="sm" className="gap-1.5">
                   <Plus className="h-3.5 w-3.5" /> Add Class
                 </Button>
@@ -374,6 +386,7 @@ export function StudentsList() {
                         >
                           <Pencil className="h-3 w-3" /> Edit
                         </button>
+                        <QRButton id={s.student_id} name={s.full_name} title="Student ID Card" />
                         <button
                           onClick={() => toggleActive(s)}
                           className={`flex items-center gap-1 text-xs transition-colors ${
@@ -398,6 +411,7 @@ export function StudentsList() {
           </div>
         </>
       )}
+
     </div>
   )
 }

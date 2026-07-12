@@ -22,6 +22,12 @@ declare class BarcodeDetector {
   static getSupportedFormats(): Promise<string[]>
 }
 
+const BARCODE_FORMATS = [
+  'qr_code', 'code_128', 'code_39', 'code_93', 'codabar',
+  'ean_13', 'ean_8', 'upc_a', 'upc_e', 'itf',
+  'data_matrix', 'pdf417', 'aztec',
+] as const
+
 const USE_NATIVE = typeof window !== 'undefined' && 'BarcodeDetector' in window
 const W = 640
 const H = 480
@@ -87,7 +93,7 @@ export function QRScanner({ onScan, onError: _onError, disabled, resetKey }: QRS
       videoRef.current = video
 
       if (USE_NATIVE) {
-        detectorRef.current = new BarcodeDetector({ formats: ['qr_code'] })
+        detectorRef.current = new BarcodeDetector({ formats: [...BARCODE_FORMATS] })
       } else {
         const c = document.createElement('canvas')
         c.width = W; c.height = H
@@ -159,7 +165,7 @@ export function QRScanner({ onScan, onError: _onError, disabled, resetKey }: QRS
     return (
       <div className="rounded-lg bg-zinc-50 border border-zinc-200 p-6 text-center">
         <Camera className="h-10 w-10 text-zinc-300 mx-auto mb-3" />
-        <p className="text-sm text-zinc-500 mb-4">Start the camera to scan a QR code.</p>
+        <p className="text-sm text-zinc-500 mb-4">Start the camera to scan a QR or barcode.</p>
         <Button onClick={start} className="gap-2">
           <Scan className="h-4 w-4" /> Start Camera
         </Button>
@@ -192,7 +198,7 @@ export function QRScanner({ onScan, onError: _onError, disabled, resetKey }: QRS
         {phase === 'starting' ? (
           <><Loader2 className="h-3 w-3 animate-spin" /><span>Starting camera...</span></>
         ) : (
-          <><Camera className="h-3 w-3 text-emerald-500" /><span>Active &mdash; point at a QR code</span></>
+          <><Camera className="h-3 w-3 text-emerald-500" /><span>Active &mdash; point at a QR code or barcode</span></>
         )}
       </div>
     </div>

@@ -1,14 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card'
-import { Turnstile } from '@marsidev/react-turnstile'
 import {
-  Shield, Loader2, AlertCircle, Eye, EyeOff, UserPlus, ChevronLeft,
+  Shield, Loader2, AlertCircle, Eye, EyeOff, UserPlus, ChevronLeft, Crown, Calculator,
 } from 'lucide-react'
 
 export function SignupForm() {
@@ -20,13 +19,30 @@ export function SignupForm() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [role, setRole] = useState<'commandant' | 'admin' | 'teacher'>('admin')
   const [showPassword, setShowPassword] = useState(false)
-  const [_captchaToken, setCaptchaToken] = useState<string | null>(null)
-  void _captchaToken
+  const [captchaToken, setCaptchaToken] = useState('')
+  const [captchaQuestion, setCaptchaQuestion] = useState('')
+  const [captchaAnswer, setCaptchaAnswer] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [commandantTaken, setCommandantTaken] = useState(false)
+  const [checkingCommandant, setCheckingCommandant] = useState(true)
 
-  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'
+  function fetchCaptcha() {
+    fetch('/api/auth/captcha').then(r => r.json()).then(data => {
+      setCaptchaQuestion(data.question)
+      setCaptchaToken(data.token)
+      setCaptchaAnswer('')
+    }).catch(() => {})
+  }
+
+  useEffect(() => {
+    fetchCaptcha()
+    fetch('/api/auth/signup').then(r => r.json()).then(data => {
+      setCommandantTaken(data.commandantExists)
+      if (data.commandantExists && role === 'commandant') setRole('admin')
+    }).catch(() => {}).finally(() => setCheckingCommandant(false))
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -45,7 +61,7 @@ export function SignupForm() {
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, fullName, staffId, role }),
+        body: JSON.stringify({ email, password, fullName, staffId, role, captchaToken, captchaAnswer }),
       })
 
       const data = await res.json()
@@ -76,13 +92,13 @@ export function SignupForm() {
           </div>
           <CardTitle className="text-xl text-emerald-700">Account Created</CardTitle>
           <CardDescription>
-            Your {role} account has been registered. Check your email to confirm your account before signing in.
+            Your {role === 'teacher' ? 'Class Teacher' : role === 'commandant' ? 'Commandant' : 'Admin'} account has been registered. Check your email to confirm your account before signing in.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-zinc-600 text-center">
             <strong>{fullName}</strong><br />
-            <span className="text-zinc-400">{staffId} · {role}</span><br />
+            <span className="text-zinc-400">{staffId} · {role === 'teacher' ? 'Class Teacher' : role === 'commandant' ? 'Commandant' : 'Admin'}</span><br />
             <span className="text-zinc-400">{email}</span>
           </p>
           <Button onClick={() => router.push('/login')} className="w-full">
@@ -108,7 +124,7 @@ export function SignupForm() {
             Create Account
           </CardTitle>
           <CardDescription>
-            Register as Commandant or Admin for AFCS Smart Campus
+            Register as Commandant, Admin or Class Teacher for AFCS Smart Campus
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -165,6 +181,24 @@ export function SignupForm() {
               <div className="flex gap-2">
                 <button
                   type="button"
+                  onClick={() => !commandantTaken && setRole('commandant')}
+                  disabled={commandantTaken || checkingCommandant}
+                  className={`flex-1 rounded-lg border-2 px-4 py-2.5 text-sm font-medium transition-all ${
+                    commandantTaken && role !== 'commandant'
+                      ? 'border-zinc-100 bg-zinc-50 text-zinc-300 cursor-not-allowed line-through'
+                      : role === 'commandant'
+                      ? 'border-[#C9A84C] bg-amber-50 text-[#001A4D]'
+                      : 'border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300'
+                  }`}
+                  title={commandantTaken ? 'A commandant already exists' : ''}
+                >
+                  <span className="inline-flex items-center gap-1">
+                    <Crown className="h-3.5 w-3.5" />
+                    Commandant
+                  </span>
+                </button>
+                <button
+                  type="button"
                   onClick={() => setRole('admin')}
                   className={`flex-1 rounded-lg border-2 px-4 py-2.5 text-sm font-medium transition-all ${
                     role === 'admin'
@@ -183,28 +217,41 @@ export function SignupForm() {
                       : 'border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300'
                   }`}
                 >
-                  Teacher
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setRole('commandant')}
-                  className={`flex-1 rounded-lg border-2 px-4 py-2.5 text-sm font-medium transition-all ${
-                    role === 'commandant'
-                      ? 'border-[#001A4D] bg-blue-50 text-[#001A4D]'
-                      : 'border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300'
-                  }`}
-                >
-                  Commandant
+                  Class Teacher
                 </button>
               </div>
+              {commandantTaken && (
+                <p className="text-xs text-amber-600 flex items-center gap-1 mt-1">
+                  <Crown className="h-3 w-3" /> Commandant already registered — role is no longer available
+                </p>
+              )}
             </div>
 
-            <div className="flex justify-center">
-              <Turnstile
-                siteKey={siteKey}
-                onSuccess={(token) => setCaptchaToken(token)}
-                options={{ theme: 'light', size: 'normal' }}
-              />
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-zinc-700 flex items-center gap-1.5">
+                <Calculator className="h-4 w-4 text-zinc-400" />
+                Security Check
+              </label>
+              <div className="flex gap-2">
+                <div className="flex-1 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2.5 text-sm text-zinc-600 font-mono select-none">
+                  {captchaQuestion || 'Loading...'}
+                </div>
+                <Input
+                  id="captchaAnswer" type="text" placeholder="?"
+                  value={captchaAnswer} onChange={(e) => setCaptchaAnswer(e.target.value)}
+                  disabled={loading || !captchaQuestion}
+                  className="w-20 text-center font-mono text-lg"
+                />
+                <button
+                  type="button"
+                  onClick={fetchCaptcha}
+                  disabled={loading}
+                  className="rounded-lg border border-zinc-200 px-2.5 text-zinc-400 hover:text-zinc-600 hover:border-zinc-300 transition-colors disabled:opacity-50"
+                  title="New question"
+                >
+                  ↻
+                </button>
+              </div>
             </div>
 
             {error && (

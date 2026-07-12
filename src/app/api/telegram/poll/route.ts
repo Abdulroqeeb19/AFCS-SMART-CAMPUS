@@ -19,29 +19,36 @@ export async function POST() {
 
     const supabase = createAdminClient()
     const botUrl = `https://api.telegram.org/bot${token}`
+    let maxOffset = 0
     let processed = 0
 
     for (const update of data.result) {
+      maxOffset = Math.max(maxOffset, update.update_id + 1)
+
       if (update.callback_query) {
         await handleTelegramCallback(update.callback_query, supabase, botUrl)
         processed++
-        await fetch(`${botUrl}/getUpdates?offset=${update.update_id + 1}`, { method: 'GET' })
         continue
       }
 
       const msg = update.message
-      if (!msg?.text || !msg?.chat?.id) continue
+      if (!msg?.chat?.id) continue
 
-      const chatId = String(msg.chat.id)
-      const text = (msg.text as string).trim()
+      if (msg.text) {
+        const chatId = String(msg.chat.id)
+        const text = msg.text.trim()
+        await handleTelegramCommand(chatId, text, supabase, botUrl)
+        processed++
+      }
+    }
 
-      await handleTelegramCommand(chatId, text, supabase, botUrl)
-      await fetch(`${botUrl}/getUpdates?offset=${update.update_id + 1}`, { method: 'GET' })
-      processed++
+    // Acknowledge all updates at once to avoid infinite retry
+    if (maxOffset > 0) {
+      await fetch(`${botUrl}/getUpdates?offset=${maxOffset}`, { method: 'GET' })
     }
 
     return NextResponse.json({ ok: true, processed })
   } catch (err) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : 'Poll error' }, { status: 500 })
+    return NextResponse.json({ error: 'Poll error' }, { status: 500 })
   }
 }

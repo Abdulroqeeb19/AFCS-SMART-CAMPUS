@@ -82,10 +82,61 @@ export function CheckOutForm() {
     }
   }
 
-  const handleQRScan = (decodedText: string) => {
+  const handleQRScan = async (decodedText: string) => {
     const id = decodedText.trim().toUpperCase()
     setStaffId(id)
-    lookupPerson(id)
+    setError('')
+    setResult(null)
+    setPerson(null)
+    setLookupLoading(true)
+    try {
+      const res = await fetch(`/api/checkin/lookup?identifier=${encodeURIComponent(id)}`)
+      if (!res.ok) {
+        const data = await res.json()
+        setError(data.error || 'Staff not found')
+        return
+      }
+      const data = await res.json()
+      if (data.type !== 'staff') {
+        setError('This ID belongs to a student.')
+        return
+      }
+      if (!data.today_attendance?.check_in) {
+        setError('No check-in record for today. Please check in first.')
+        return
+      }
+      if (data.today_attendance?.check_out) {
+        setError('Already checked out today')
+        return
+      }
+      setPerson(data)
+      setLoading(true)
+      const coRes = await fetch('/api/attendance/check-out', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ staff_id: id }),
+      })
+      const coData = await coRes.json()
+      if (!coRes.ok) {
+        setError(coData.error || 'Check-out failed')
+        return
+      }
+      setResult({
+        success: true,
+        message: coData.message,
+        checkIn: coData.check_in,
+        checkOut: coData.check_out,
+        staffName: data.full_name,
+      })
+      setPerson(null)
+      setStaffId('')
+    } catch {
+      setError('Network error. Please try again.')
+    } finally {
+      setLoading(false)
+      setLookupLoading(false)
+      setScanId((c) => c + 1)
+    }
   }
 
   async function doCheckOut() {
@@ -192,7 +243,7 @@ export function CheckOutForm() {
         </div>
         <CardTitle>Staff Check-Out</CardTitle>
         <CardDescription>
-          Scan the QR code on their ID card or enter the Staff ID
+          Scan the QR code or barcode on their ID card or enter the Staff ID
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -213,7 +264,7 @@ export function CheckOutForm() {
             }`}
           >
             <QrCode className="h-4 w-4" />
-            Scan QR
+            Scan Code
           </button>
         </div>
 

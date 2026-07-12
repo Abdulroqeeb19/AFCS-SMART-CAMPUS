@@ -75,10 +75,58 @@ export function StudentCheckinForm() {
     }
   }
 
-  const handleQRScan = (decodedText: string) => {
+  const handleQRScan = async (decodedText: string) => {
     const id = decodedText.trim().toUpperCase()
     setStudentId(id)
-    lookupPerson(id)
+    setError('')
+    setResult(null)
+    setPerson(null)
+    setLookupLoading(true)
+    try {
+      const res = await fetch(`/api/checkin/lookup?identifier=${encodeURIComponent(id)}`)
+      if (!res.ok) {
+        const data = await res.json()
+        setError(data.error || 'Student not found')
+        return
+      }
+      const data = await res.json()
+      if (data.type !== 'student') {
+        setError('This ID belongs to a staff member.')
+        return
+      }
+      if (!data.is_active) {
+        setError('This student account is not active.')
+        return
+      }
+      if (data.today_attendance) {
+        setError(`Already checked in for ${data.today_attendance.period} period`)
+        return
+      }
+      setLoading(true)
+      const ciRes = await fetch('/api/attendance/student/check-in', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ student_id: id, period }),
+      })
+      const ciData = await ciRes.json()
+      if (!ciRes.ok) {
+        setError(ciData.error || 'Check-in failed')
+        return
+      }
+      setResult({
+        success: true,
+        message: ciData.message,
+        status: ciData.status,
+        time: ciData.check_in,
+        class: ciData.class,
+      })
+    } catch {
+      setError('Network error. Please try again.')
+    } finally {
+      setLoading(false)
+      setLookupLoading(false)
+      setScanId((c) => c + 1)
+    }
   }
 
   async function handleCheckIn() {
@@ -174,7 +222,7 @@ export function StudentCheckinForm() {
         </div>
         <CardTitle>Student Check-In</CardTitle>
         <CardDescription>
-          Scan the QR code on their ID card or enter the Student ID
+          Scan the QR code or barcode on their ID card or enter the Student ID
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -195,7 +243,7 @@ export function StudentCheckinForm() {
             }`}
           >
             <QrCode className="h-4 w-4" />
-            Scan QR
+            Scan Code
           </button>
         </div>
 

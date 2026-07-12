@@ -126,11 +126,15 @@ export async function answerCallbackQuery(
   const token = getToken(tokenOverride)
   if (!token) return
 
-  await fetch(`https://api.telegram.org/bot${token}/answerCallbackQuery`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ callback_query_id: callbackQueryId, text: text || '' }),
-  }).catch(() => {})
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/answerCallbackQuery`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ callback_query_id: callbackQueryId, text: text || '' }),
+    })
+  } catch {
+    // Network error — no recovery needed for callback ack
+  }
 }
 
 export async function editMessageReplyMarkup(
@@ -144,9 +148,13 @@ export async function editMessageReplyMarkup(
 
   const replyMarkup = buttons ? { inline_keyboard: buttons } : { inline_keyboard: [] }
 
-  await fetch(`https://api.telegram.org/bot${token}/editMessageReplyMarkup`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: chatId, message_id: messageId, reply_markup: replyMarkup }),
-  }).catch(() => {})
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/editMessageReplyMarkup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, message_id: messageId, reply_markup: replyMarkup }),
+    })
+  } catch {
+    // Network error — message may have been deleted, non-critical
+  }
 }
