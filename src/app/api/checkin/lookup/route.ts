@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -9,10 +9,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Identifier is required' }, { status: 400 })
   }
 
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminClient()
   const today = new Date().toISOString().split('T')[0]
 
-  const isStudent = identifier.startsWith('STU-') || identifier.startsWith('stu-')
+  const isStudent = identifier.toUpperCase().startsWith('STU-')
 
   if (isStudent) {
     const { data: student, error } = await supabase

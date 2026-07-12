@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth-utils'
 import { ATTENDANCE_DEFAULTS } from '@/lib/constants'
 
@@ -15,7 +16,9 @@ export async function POST(request: Request) {
     const admin = await requireAdmin(supabase, request)
     if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
 
-    const { data: staff, error: staffError } = await supabase
+    const adminSupabase = createAdminClient()
+
+    const { data: staff, error: staffError } = await adminSupabase
       .from('staff')
       .select('id, full_name')
       .eq('staff_id', staff_id)
@@ -28,7 +31,7 @@ export async function POST(request: Request) {
 
     const today = new Date().toISOString().split('T')[0]
 
-    const { data: existing } = await supabase
+    const { data: existing } = await adminSupabase
       .from('staff_attendance')
       .select('id, check_in, status')
       .eq('staff_id', staff.id)
@@ -47,7 +50,7 @@ export async function POST(request: Request) {
     cutoff.setHours(ATTENDANCE_DEFAULTS.CUTOFF_HOUR, ATTENDANCE_DEFAULTS.CUTOFF_MINUTE, 0, 0)
     const status = now > cutoff ? 'late' : 'present'
 
-    const { data, error } = await supabase
+    const { data, error } = await adminSupabase
       .from('staff_attendance')
       .insert({
         staff_id: staff.id,

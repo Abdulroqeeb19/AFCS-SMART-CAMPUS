@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth-utils'
 
 export async function POST(request: Request) {
@@ -14,7 +15,9 @@ export async function POST(request: Request) {
     const admin = await requireAdmin(supabase, request)
     if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
 
-    const { data: staff, error: staffError } = await supabase
+    const adminSupabase = createAdminClient()
+
+    const { data: staff, error: staffError } = await adminSupabase
       .from('staff')
       .select('id, full_name')
       .eq('staff_id', staff_id)
@@ -27,7 +30,7 @@ export async function POST(request: Request) {
 
     const today = new Date().toISOString().split('T')[0]
 
-    const { data: attendance, error: attError } = await supabase
+    const { data: attendance, error: attError } = await adminSupabase
       .from('staff_attendance')
       .select('id, check_in, check_out')
       .eq('staff_id', staff.id)
@@ -50,7 +53,7 @@ export async function POST(request: Request) {
 
     const now = new Date().toISOString()
 
-    const { data, error } = await supabase
+    const { data, error } = await adminSupabase
       .from('staff_attendance')
       .update({ check_out: now, updated_at: now })
       .eq('id', attendance.id)
