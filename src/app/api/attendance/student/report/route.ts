@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export async function GET(request: Request) {
   try {
@@ -7,7 +7,7 @@ export async function GET(request: Request) {
     const date = searchParams.get('date') || new Date().toISOString().split('T')[0]
     const classId = searchParams.get('class_id')
 
-    const supabase = await createServerSupabaseClient()
+    const supabase = createAdminClient()
 
     let classQuery = supabase.from('classes').select('id, name, arm').order('name').order('arm')
     if (classId) classQuery = classQuery.eq('id', classId)

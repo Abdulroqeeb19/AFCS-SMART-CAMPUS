@@ -1,17 +1,23 @@
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { sendTaskAssignmentNotification } from '@/lib/notifications'
 import type { Json } from '@/lib/database.types'
+
+const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const teacher_id = searchParams.get('teacher_id')
 
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminClient()
 
-  // Get current day of week (1=Monday)
+  // Check if today is a weekend
   const today = new Date().getDay()
-  const dayOfWeek = today === 0 ? 5 : today // Sunday → Friday
+  if (today === 0 || today === 6) {
+    return NextResponse.json({ next_period: null, message: `School is closed today (${DAY_NAMES[today]})`, day: today })
+  }
+
+  const dayOfWeek = today
 
   // Get current time
   const now = new Date()
@@ -87,7 +93,7 @@ export async function GET(request: Request) {
 
 // POST: Send next-period reminders to all teachers with upcoming classes
 export async function POST() {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminClient()
 
   const { data: currentTerm } = await supabase
     .from('academic_terms')
@@ -100,7 +106,10 @@ export async function POST() {
   }
 
   const today = new Date().getDay()
-  const dayOfWeek = today === 0 ? 5 : today
+  if (today === 0 || today === 6) {
+    return NextResponse.json({ sent: 0, message: 'Weekend — no periods' })
+  }
+  const dayOfWeek = today
   const now = new Date()
   const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
 

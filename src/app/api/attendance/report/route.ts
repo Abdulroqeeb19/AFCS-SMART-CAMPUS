@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { toCsv, csvResponse } from '@/lib/csv'
 
 export async function GET(request: Request) {
@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     const date = searchParams.get('date') || new Date().toISOString().split('T')[0]
     const format = searchParams.get('format')
 
-    const supabase = await createServerSupabaseClient()
+    const supabase = createAdminClient()
 
     const { data: departments } = await supabase
       .from('departments')

@@ -65,10 +65,9 @@ export function DashboardContent() {
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [nextPeriod, setNextPeriod] = useState<{ number: number; time: string; is_break?: boolean; is_assembly?: boolean } | null>(null)
+  const [nextPeriodMessage, setNextPeriodMessage] = useState<string | null>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [nextPeriodEntries, setNextPeriodEntries] = useState<any[]>([])
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [todayParade, setTodayParade] = useState<any | null>(null)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [taskResponses, setTaskResponses] = useState<any[]>([])
 
@@ -76,14 +75,14 @@ export function DashboardContent() {
     setIsRefreshing(true)
     setStaffError(null)
     setStudentError(null)
+    setNextPeriodMessage(null)
 
     const todayStr = new Date().toISOString().split('T')[0]
 
-    const [staffRes, studentRes, timetableRes, paradeRes, taskRes] = await Promise.all([
+    const [staffRes, studentRes, timetableRes, taskRes] = await Promise.all([
       fetch('/api/attendance/report').catch(() => null),
       fetch('/api/attendance/student/report').catch(() => null),
       fetch('/api/timetable/next-period').catch(() => null),
-      fetch(`/api/parades?date=${todayStr}&limit=1`).catch(() => null),
       isAdminOrCommandant ? fetch('/api/dashboard/task-responses?limit=20').catch(() => null) : Promise.resolve(null),
     ])
 
@@ -139,14 +138,10 @@ export function DashboardContent() {
         setNextPeriod(null)
         setNextPeriodEntries([])
       }
-    }
-
-    if (paradeRes?.ok) {
-      const p = await safeJson(paradeRes)
-      if (p?.length) {
-        setTodayParade(p[0])
+      if (t?.message && !t?.next_period) {
+        setNextPeriodMessage(t.message)
       } else {
-        setTodayParade(null)
+        setNextPeriodMessage(null)
       }
     }
 
@@ -533,90 +528,7 @@ export function DashboardContent() {
                   </div>
                 ) : (
                   <div className="text-sm text-zinc-400">
-                    {loading ? 'Loading...' : 'No upcoming periods today'}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-sm">
-                  <Shield className="h-4 w-4 text-amber-600" />
-                  Today&apos;s Parade
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {todayParade ? (
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center justify-between">
-                      <span className="text-zinc-500 capitalize">{todayParade.type} Parade</span>
-                      <Badge variant={todayParade.status === 'completed' ? 'info' : todayParade.status === 'cancelled' ? 'danger' : 'warning'}>
-                        {todayParade.status}
-                      </Badge>
-                    </div>
-                    {todayParade.conductor && (
-                      <p className="text-xs text-zinc-500">
-                        Conductor: {todayParade.conductor.full_name}
-                      </p>
-                    )}
-                    {todayParade.notes && (
-                      <p className="text-xs text-zinc-400 italic line-clamp-2">{todayParade.notes}</p>
-                    )}
-                    <div className="flex gap-3 text-xs text-zinc-500">
-                      <span>{todayParade.briefings?.length || 0} briefings</span>
-                      <span>{todayParade.tasks?.length || 0} tasks</span>
-                      <span>{todayParade.acknowledgements?.length || 0} acknowledged</span>
-                    </div>
-                    {isAdminOrCommandant && (
-                      <div className="flex gap-2 pt-1 border-t border-zinc-100 mt-1">
-                        {todayParade.status === 'scheduled' && (
-                          <Button size="sm" variant="outline" className="text-xs h-7"
-                            onClick={async () => {
-                              await fetch(`/api/parades/${todayParade.id}`, {
-                                method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ status: 'ongoing' }),
-                              })
-                              loadData()
-                            }}>
-                            Start Parade
-                          </Button>
-                        )}
-                        {todayParade.status === 'ongoing' && (
-                          <Button size="sm" variant="outline" className="text-xs h-7 text-emerald-600 border-emerald-300"
-                            onClick={async () => {
-                              await fetch(`/api/parades/${todayParade.id}`, {
-                                method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ status: 'completed' }),
-                              })
-                              loadData()
-                            }}>
-                            Complete
-                          </Button>
-                        )}
-                        {(todayParade.status === 'scheduled' || todayParade.status === 'ongoing') && (
-                          <Button size="sm" variant="outline" className="text-xs h-7 text-red-500 border-red-200"
-                            onClick={async () => {
-                              await fetch(`/api/parades/${todayParade.id}`, {
-                                method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ status: 'cancelled' }),
-                              })
-                              loadData()
-                            }}>
-                            Cancel
-                          </Button>
-                        )}
-                        <Link href="/muster-parade" className="ml-auto">
-                          <Button size="sm" variant="ghost" className="text-xs h-7 gap-1">
-                            Details <ChevronRight className="h-3 w-3" />
-                          </Button>
-                        </Link>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="text-sm text-zinc-400">
-                    {loading ? 'Loading...' : 'No parade scheduled today'}
+                    {loading ? 'Loading...' : nextPeriodMessage || 'No upcoming periods today'}
                   </div>
                 )}
               </CardContent>
