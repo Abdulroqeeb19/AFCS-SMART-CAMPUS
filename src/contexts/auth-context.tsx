@@ -68,34 +68,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true
 
-    // Check for dev session first
-    if (isDevMode) {
-      try {
-        const stored = localStorage.getItem(DEV_SESSION_KEY)
-        if (stored) {
-          const parsed = JSON.parse(stored) as Staff
-          if (parsed.email) {
-            setUser(parsed)
-            const supabase = createClient()
-            supabase.from('staff').select('*').ilike('email', parsed.email).eq('is_active', true).single().then(({ data }) => {
-              if (!mounted) return
-              if (data) {
-                setUser(data as Staff)
-              } else {
-                localStorage.removeItem(DEV_SESSION_KEY)
-                setUser(null)
-              }
-              setLoading(false)
-            })
-            return
-          }
+    // Check for tester/dev session first
+    try {
+      const stored = localStorage.getItem(DEV_SESSION_KEY)
+      if (stored) {
+        const parsed = JSON.parse(stored) as Staff
+        if (parsed.email && isDevMode) {
           setUser(parsed)
-          setLoading(false)
+          const supabase = createClient()
+          supabase.from('staff').select('*').ilike('email', parsed.email).eq('is_active', true).single().then(({ data }) => {
+            if (!mounted) return
+            if (data) {
+              setUser(data as Staff)
+            } else {
+              localStorage.removeItem(DEV_SESSION_KEY)
+              setUser(null)
+            }
+            setLoading(false)
+          })
           return
         }
-      } catch {
-        localStorage.removeItem(DEV_SESSION_KEY)
+        setUser(parsed)
+        setLoading(false)
+        return
       }
+    } catch {
+      localStorage.removeItem(DEV_SESSION_KEY)
     }
 
     // Fall back to Supabase Auth

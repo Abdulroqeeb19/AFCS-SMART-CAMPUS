@@ -9,34 +9,31 @@ import { Badge } from './ui/badge'
 import Link from 'next/link'
 import {
   Shield, Loader2, AlertCircle, Eye, EyeOff, LogIn,
-  Bug, ChevronRight,
+  Bug, ChevronRight, ChevronDown, ChevronUp,
 } from 'lucide-react'
 import type { Staff } from '@/lib/database.types'
 
 export function LoginForm() {
-  const { signIn, devSignIn, isDevMode: ctxDevMode } = useAuth()
+  const { signIn, devSignIn } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [devStaff, setDevStaff] = useState<Staff[]>([])
-  const [devLoading, setDevLoading] = useState(true)
+  const [testerStaff, setTesterStaff] = useState<Staff[]>([])
+  const [testerLoading, setTesterLoading] = useState(true)
+  const [testerExpanded, setTesterExpanded] = useState(false)
 
-  const devMode = ctxDevMode || process.env.NEXT_PUBLIC_DEV_MODE === 'true'
 
   useEffect(() => {
-    if (!devMode) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setDevLoading(false)
-      return
-    }
-    fetch('/api/staff')
+    fetch('/api/auth/testers')
       .then((r) => r.ok ? r.json() : [])
-      .then((data) => setDevStaff(Array.isArray(data) ? data : []))
-      .catch(() => setDevStaff([]))
-      .finally(() => setDevLoading(false))
-  }, [devMode])
+      .then((data: Staff[]) => {
+        setTesterStaff(Array.isArray(data) ? data : [])
+        setTesterLoading(false)
+      })
+      .catch(() => { setTesterStaff([]); setTesterLoading(false) })
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -121,11 +118,9 @@ export function LoginForm() {
             </Button>
           </form>
 
-          {!devMode && (
-            <p className="text-xs text-zinc-400 text-center mt-4">
-              Use your school-registered email or Staff ID.
-            </p>
-          )}
+          <p className="text-xs text-zinc-400 text-center mt-4">
+            Use your school-registered email or Staff ID.
+          </p>
         </CardContent>
       </Card>
 
@@ -140,32 +135,38 @@ export function LoginForm() {
         </Link>
       </div>
 
-      {/* Dev Mode Quick Login */}
-      {devMode && (
-        <Card className="border-dashed border-naf-gold bg-[#E8D48B]/20">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-2">
-              <Bug className="h-4 w-4 text-[#A88830]" />
-              <CardTitle className="text-sm text-[#001A4D]">Dev Mode — Quick Login</CardTitle>
-              <Badge variant="warning" className="text-[10px]">DEV</Badge>
-            </div>
-            <CardDescription className="text-xs text-[#A88830]">
-              Click any staff account to log in instantly (bypasses Supabase Auth). Add{' '}
-              <code className="text-[10px] bg-amber-100 px-1 rounded">NEXT_PUBLIC_DEV_MODE=true</code> to your .env.local.
-            </CardDescription>
-          </CardHeader>
+      {/* Tester / Reviewer Access — always visible */}
+      <Card className="border-dashed border-emerald-400 bg-emerald-50/40">
+        <CardHeader className="pb-3">
+          <button
+            type="button"
+            onClick={() => setTesterExpanded(!testerExpanded)}
+            className="flex w-full items-center gap-2"
+          >
+            <Bug className="h-4 w-4 text-emerald-600" />
+            <CardTitle className="text-sm text-[#001A4D] flex-1 text-left">
+              Tester / Reviewer Access
+            </CardTitle>
+            <Badge variant="success" className="text-[10px]">TEST</Badge>
+            {testerExpanded ? <ChevronUp className="h-4 w-4 text-zinc-400" /> : <ChevronDown className="h-4 w-4 text-zinc-400" />}
+          </button>
+          <CardDescription className="text-xs text-emerald-700">
+            Click any account below to log in instantly for testing and review purposes.
+          </CardDescription>
+        </CardHeader>
+        {testerExpanded && (
           <CardContent className="pt-0">
-            {devLoading ? (
+            {testerLoading ? (
               <div className="flex items-center justify-center py-4">
-                <Loader2 className="h-5 w-5 animate-spin text-[#A88830]" />
+                <Loader2 className="h-5 w-5 animate-spin text-emerald-600" />
               </div>
             ) : (
-              <div className="divide-y divide-[#E8D48B] max-h-64 overflow-y-auto rounded-lg border border-[#E8D48B]">
-                {devStaff.map((s) => (
+              <div className="divide-y divide-emerald-200 max-h-64 overflow-y-auto rounded-lg border border-emerald-200">
+                {testerStaff.map((s) => (
                   <button
                     key={s.id}
                     onClick={() => devSignIn(s)}
-                    className="flex w-full items-center justify-between px-3 py-2.5 text-sm hover:bg-[#E8D48B]/40 transition-colors text-left"
+                    className="flex w-full items-center justify-between px-3 py-2.5 text-sm hover:bg-emerald-100/60 transition-colors text-left"
                   >
                     <div>
                       <p className="font-medium text-zinc-800">{s.full_name}</p>
@@ -181,16 +182,16 @@ export function LoginForm() {
                     </Badge>
                   </button>
                 ))}
-                {devStaff.length === 0 && (
+                {testerStaff.length === 0 && (
                   <p className="px-3 py-4 text-sm text-zinc-400 text-center">
-                    No staff found. Run seed data migration first.
+                    No staff accounts available for testing.
                   </p>
                 )}
               </div>
             )}
           </CardContent>
-        </Card>
-      )}
+        )}
+      </Card>
     </div>
   )
 }
