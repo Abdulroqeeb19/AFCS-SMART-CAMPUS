@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getAuthStaff } from '@/lib/auth-utils'
 
 export async function GET(request: Request) {
@@ -8,9 +9,9 @@ export async function GET(request: Request) {
   const classId = searchParams.get('class_id')
   const staffId = searchParams.get('staff_id')
 
-  const supabase = await createServerSupabaseClient()
+  const adminSupabase = createAdminClient()
 
-  let query = supabase
+  let query = adminSupabase
     .from('student_activity_reports')
     .select('*, staff:staff_id(id, staff_id, full_name), class:class_id(id, name, arm)')
     .order('submitted_at', { ascending: false })
@@ -36,7 +37,9 @@ export async function POST(request: Request) {
 
   const today = body.date || new Date().toISOString().split('T')[0]
 
-  const { data: existing } = await supabase
+  const adminSupabase = createAdminClient()
+
+  const { data: existing } = await adminSupabase
     .from('student_activity_reports')
     .select('id')
     .eq('staff_id', staff.id)
@@ -45,7 +48,7 @@ export async function POST(request: Request) {
     .single()
 
   if (existing) {
-    const { data, error } = await supabase
+    const { data, error } = await adminSupabase
       .from('student_activity_reports')
       .update({
         activities_done: body.activities_done,
@@ -60,7 +63,7 @@ export async function POST(request: Request) {
     return NextResponse.json(data)
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await adminSupabase
     .from('student_activity_reports')
     .insert({
       staff_id: staff.id,
