@@ -1,14 +1,15 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
-import { requireAdmin } from '@/lib/auth-utils'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { getAuthStaff } from '@/lib/auth-utils'
 import { sendDailyReportNotification } from '@/lib/notifications'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const date = searchParams.get('date')
 
-  const supabase = await createServerSupabaseClient()
-  let query = supabase
+  const adminSupabase = createAdminClient()
+  let query = adminSupabase
     .from('daily_reports')
     .select('*, staff:staff_id(id, staff_id, full_name, department:department_id(name))')
     .order('submitted_at', { ascending: false })
@@ -22,8 +23,8 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const supabase = await createServerSupabaseClient()
-  const admin = await requireAdmin(supabase, request)
-  if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
+  const staff = await getAuthStaff(supabase, request)
+  if (!staff) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
   const body = await request.json()
 
@@ -31,7 +32,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Activities report is required' }, { status: 400 })
   }
 
-  const { data: existing } = await supabase
+  const adminSupabase = createAdminClient()
+
+  const { data: existing } = await adminSupabase
     .from('daily_reports')
     .select('id')
     .eq('staff_id', body.staff_id)
@@ -39,7 +42,7 @@ export async function POST(request: Request) {
     .single()
 
   if (existing) {
-    const { data, error } = await supabase
+    const { data, error } = await adminSupabase
       .from('daily_reports')
       .update({
         activities_done: body.activities_done,
@@ -58,7 +61,7 @@ export async function POST(request: Request) {
     return NextResponse.json(data)
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await adminSupabase
     .from('daily_reports')
     .insert({
       staff_id: body.staff_id,

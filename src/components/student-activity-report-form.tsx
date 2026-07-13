@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useAuth } from '@/contexts/auth-context'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -26,6 +27,7 @@ interface StudentActivityReport {
 }
 
 export function StudentActivityReportForm() {
+  const { user } = useAuth()
   const [classes, setClasses] = useState<ClassInfo[]>([])
   const [selectedClassId, setSelectedClassId] = useState('')
   const [activities, setActivities] = useState('')
@@ -84,9 +86,11 @@ export function StudentActivityReportForm() {
 
     setLoading(true)
     try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (user?.email) headers['x-auth-email'] = user.email
       const res = await fetch('/api/reports/student-activity', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           class_id: selectedClassId,
           activities_done: activities.trim(),

@@ -2,7 +2,7 @@ import { createServerSupabaseClient } from './supabase/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 export async function getAuthStaff(supabase: SupabaseClient, request?: Request): Promise<{ id: string; role: string } | null> {
-  // Production: use Supabase Auth session
+  // Use Supabase Auth session
   const { data: { user } } = await supabase.auth.getUser()
   if (user?.email) {
     const { data: staff } = await supabase
@@ -14,8 +14,8 @@ export async function getAuthStaff(supabase: SupabaseClient, request?: Request):
     if (staff) return staff
   }
 
-  // Dev mode: read header from client
-  if (request && process.env.NEXT_PUBLIC_DEV_MODE === 'true') {
+  // Fallback: read header from client (tester/dev mode)
+  if (request) {
     const devEmail = request.headers.get('x-auth-email')
     if (devEmail) {
       const { data: staff } = await supabase

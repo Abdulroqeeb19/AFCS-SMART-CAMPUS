@@ -28,6 +28,7 @@ import {
   Clock,
   Loader2,
   MessageSquare,
+  CalendarDays,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -70,21 +71,34 @@ export function DashboardContent() {
   const [nextPeriodEntries, setNextPeriodEntries] = useState<any[]>([])
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [taskResponses, setTaskResponses] = useState<any[]>([])
+  const [weeklyDuty, setWeeklyDuty] = useState<{ date: string; staff: { id: string; staff_id: string; full_name: string } | null; status: string }[]>([])
+  const [todayDuty, setTodayDuty] = useState<{ staff: { id: string; staff_id: string; full_name: string } | null } | null>(null)
 
   const loadData = useCallback(async () => {
     setIsRefreshing(true)
     setStaffError(null)
     setStudentError(null)
     setNextPeriodMessage(null)
+    setWeeklyDuty([])
+    setTodayDuty(null)
 
     const todayStr = new Date().toISOString().split('T')[0]
 
-    const [staffRes, studentRes, timetableRes, taskRes] = await Promise.all([
+    const [staffRes, studentRes, timetableRes, taskRes, dutyRes] = await Promise.all([
       fetch('/api/attendance/report').catch(() => null),
       fetch('/api/attendance/student/report').catch(() => null),
       fetch('/api/timetable/next-period').catch(() => null),
       isAdminOrCommandant ? fetch('/api/dashboard/task-responses?limit=20').catch(() => null) : Promise.resolve(null),
+      fetch('/api/duty/week').catch(() => null),
     ])
+
+    if (dutyRes?.ok) {
+      const dutyData = await safeJson(dutyRes)
+      if (dutyData) {
+        setWeeklyDuty(dutyData.schedule || [])
+        setTodayDuty(dutyData.today || null)
+      }
+    }
 
     if (staffRes?.ok) {
       const data = await safeJson(staffRes)
@@ -648,6 +662,45 @@ export function DashboardContent() {
             <StudentRecentActivity records={studentData?.records || []} />
             <StudentActivityReportsView />
           </div>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <CalendarDays className="h-4 w-4 text-blue-600" />
+                This Week&apos;s Duty Roster
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {weeklyDuty.length > 0 ? (
+                <div className="space-y-2">
+                  {weeklyDuty.map((d) => {
+                    const dateObj = new Date(d.date + 'T00:00:00')
+                    const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' })
+                    const isToday = d.date === new Date().toISOString().split('T')[0]
+                    return (
+                      <div key={d.date} className={`flex items-center justify-between rounded-lg border px-3 py-2 text-sm ${isToday ? 'border-blue-300 bg-blue-50' : 'border-zinc-200'}`}>
+                        <div className="flex items-center gap-3">
+                          <span className={`text-xs font-semibold w-8 ${isToday ? 'text-blue-700' : 'text-zinc-500'}`}>{dayName}</span>
+                          <span className={`font-medium ${isToday ? 'text-blue-800' : 'text-zinc-700'}`}>
+                            {d.staff ? d.staff.full_name : <span className="text-zinc-400 italic">Unassigned</span>}
+                          </span>
+                          {isToday && <Badge variant="info" className="text-[10px]">Today</Badge>}
+                        </div>
+                        {d.staff && (
+                          <span className="text-[10px] text-zinc-400">{d.staff.staff_id}</span>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              ) : (
+                <div className="flex items-center justify-center py-6 text-sm text-zinc-400">
+                  <CalendarDays className="h-5 w-5 mr-2" />
+                  No duty roster for this week
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           <Card className="border border-naf-gold/30 bg-[#E8D48B]/10">
             <CardHeader>
