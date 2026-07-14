@@ -55,6 +55,7 @@ export function RosterContent() {
 
   const [editRosterId, setEditRosterId] = useState<string | null>(null)
   const [editNewStaffId, setEditNewStaffId] = useState('')
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   const weekRange = useMemo(() => getWeekDates(filterDate), [filterDate])
 
@@ -183,6 +184,52 @@ export function RosterContent() {
     }
   }
 
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id); else next.add(id)
+      return next
+    })
+  }
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === rosters.length) {
+      setSelectedIds(new Set())
+    } else {
+      setSelectedIds(new Set(rosters.map((r) => r.id)))
+    }
+  }
+
+  const handleDeleteSelected = async () => {
+    const count = selectedIds.size
+    if (count === 0) return
+    if (!confirm(`Delete ${count} selected assignment${count !== 1 ? 's' : ''}?`)) return
+    const res = await Promise.allSettled(
+      [...selectedIds].map((id) =>
+        fetch(`/api/rosters?id=${id}`, { method: 'DELETE' })
+      )
+    )
+    const failed = res.filter((r) => r.status === 'rejected').length
+    setSelectedIds(new Set())
+    loadData()
+    if (failed > 0) setError(`${failed} deletion${failed !== 1 ? 's' : ''} failed`)
+  }
+
+  const handleDeleteAll = async () => {
+    const count = rosters.length
+    if (count === 0) return
+    if (!confirm(`Delete ALL ${count} assignments in this view?`)) return
+    const res = await Promise.allSettled(
+      rosters.map((r) =>
+        fetch(`/api/rosters?id=${r.id}`, { method: 'DELETE' })
+      )
+    )
+    const failed = res.filter((r) => r.status === 'rejected').length
+    setSelectedIds(new Set())
+    loadData()
+    if (failed > 0) setError(`${failed} deletion${failed !== 1 ? 's' : ''} failed`)
+  }
+
   const handleEditStaff = async (rosterId: string) => {
     if (!editNewStaffId) return
     const res = await fetch('/api/rosters', {
@@ -290,6 +337,11 @@ export function RosterContent() {
             <Button onClick={() => setShowTypeManager(!showTypeManager)} variant="outline" size="sm" className="gap-2">
               <List className="h-4 w-4" /> {showTypeManager ? 'Close Types' : 'Manage Types'}
             </Button>
+            {rosters.length > 0 && (
+              <Button onClick={handleDeleteAll} variant="outline" size="sm" className="gap-2 border-red-300 text-red-600 hover:bg-red-50">
+                <Trash2 className="h-4 w-4" /> Delete All
+              </Button>
+            )}
           </>
         )}
       </div>
@@ -426,8 +478,18 @@ export function RosterContent() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center justify-between">
-              <span>{rosterTitle}</span>
-              <span className="text-xs font-normal text-zinc-400">{rosters.length} assignment{rosters.length !== 1 ? 's' : ''}</span>
+              <div className="flex items-center gap-3">
+                <span>{rosterTitle}</span>
+                <span className="text-xs font-normal text-zinc-400">{rosters.length} assignment{rosters.length !== 1 ? 's' : ''}</span>
+              </div>
+              {isAdminOrCommandant && selectedIds.size > 0 && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-zinc-500">{selectedIds.size} selected</span>
+                  <Button onClick={handleDeleteSelected} size="sm" variant="outline" className="gap-1.5 text-red-600 border-red-300 hover:bg-red-50 text-xs h-7">
+                    <Trash2 className="h-3 w-3" /> Delete Selected
+                  </Button>
+                </div>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -435,6 +497,16 @@ export function RosterContent() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-zinc-200 text-left text-sm text-zinc-500">
+                    {isAdminOrCommandant && (
+                      <th className="px-4 py-3 w-10">
+                        <input
+                          type="checkbox"
+                          checked={rosters.length > 0 && selectedIds.size === rosters.length}
+                          onChange={toggleSelectAll}
+                          className="h-4 w-4 rounded border-zinc-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                        />
+                      </th>
+                    )}
                     <th className="px-6 py-3 font-medium">Staff</th>
                     <th className="px-6 py-3 font-medium">Duty</th>
                     <th className="px-6 py-3 font-medium">Date</th>
@@ -444,7 +516,17 @@ export function RosterContent() {
                 </thead>
                 <tbody className="divide-y divide-zinc-100">
                   {rosters.map((r) => (
-                    <tr key={r.id} className="text-sm hover:bg-zinc-50 transition-colors">
+                    <tr key={r.id} className={`text-sm transition-colors ${selectedIds.has(r.id) ? 'bg-blue-50' : 'hover:bg-zinc-50'}`}>
+                      {isAdminOrCommandant && (
+                        <td className="px-4 py-3">
+                          <input
+                            type="checkbox"
+                            checked={selectedIds.has(r.id)}
+                            onChange={() => toggleSelect(r.id)}
+                            className="h-4 w-4 rounded border-zinc-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                          />
+                        </td>
+                      )}
                       <td className="px-6 py-3">
                         {editRosterId === r.id ? (
                           <div className="flex items-center gap-2">
