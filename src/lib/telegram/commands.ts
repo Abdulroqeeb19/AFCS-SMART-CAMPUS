@@ -13,6 +13,7 @@ const HELP_TEXT = `*AFCS Smart Campus — Telegram Commands*
 /pending — Tasks still pending
 /complete TASK_ID — Mark task done
 /report — Submit your daily activity report (if assigned for today)
+/dutydone — Mark your pending duties as completed
 /duty — Your duties for today
 /dutyweek — Your duties this week
 /summary — Quick stats snapshot
@@ -396,7 +397,7 @@ export async function handleTelegramCommand(
         return
       }
 
-      await r(
+      await rk(
         `✅ *Daily Report Updated!*\n` +
         `━━━━━━━━━━━━━━━\n` +
         `${bold('Staff:')} ${esc(staff.full_name)}\n` +
@@ -405,7 +406,8 @@ export async function handleTelegramCommand(
         `${challenges ? `${bold('Challenges:')} ${esc(challenges)}\n` : ''}` +
         `${notes ? `${bold('Notes:')} ${esc(notes)}` : ''}\n` +
         `━━━━━━━━━━━━━━━\n` +
-        `_Report updated via Telegram_`
+        `_Report updated via Telegram_`,
+        [[{ text: '✅ Mark Complete', callback_data: `duty_done:${roster.id}` }]]
       )
     } else {
       const { error } = await supabase
@@ -423,7 +425,7 @@ export async function handleTelegramCommand(
         return
       }
 
-      await r(
+      await rk(
         `✅ *Daily Report Submitted!*\n` +
         `━━━━━━━━━━━━━━━\n` +
         `${bold('Staff:')} ${esc(staff.full_name)}\n` +
@@ -432,16 +434,10 @@ export async function handleTelegramCommand(
         `${challenges ? `${bold('Challenges:')} ${esc(challenges)}\n` : ''}` +
         `${notes ? `${bold('Notes:')} ${esc(notes)}` : ''}\n` +
         `━━━━━━━━━━━━━━━\n` +
-        `_Submitted via Telegram_`
+        `_Submitted via Telegram_`,
+        [[{ text: '✅ Mark Complete', callback_data: `duty_done:${roster.id}` }]]
       )
     }
-
-    // Update roster status
-    await supabase
-      .from('duty_rosters')
-      .update({ status: 'completed', completed_at: new Date().toISOString() })
-      .eq('id', roster.id)
-
     return
   }
 
@@ -579,6 +575,50 @@ export async function handleTelegramCommand(
       `━━━━━━━━━━━━━━━\n` +
       `${todayStr} • ${lines.length} assignment${lines.length !== 1 ? 's' : ''}`
     )
+    return
+  }
+
+  if (text === '/dutydone') {
+    const todayStr = new Date().toISOString().split('T')[0]
+
+    const { data: rosters } = await supabase
+      .from('duty_rosters')
+      .select('id, status, duty_type:duty_type_id(name)')
+      .eq('staff_id', staff.id)
+      .eq('date', todayStr)
+      .neq('status', 'completed')
+
+    if (!rosters?.length) {
+      await r('✅ All your duties for today are already completed or none assigned.')
+      return
+    }
+
+    if (rosters.length === 1) {
+      const r2 = rosters[0]
+      if (r2.duty_type?.name && /inspection/i.test(r2.duty_type.name)) {
+        const { data: report } = await supabase
+          .from('daily_reports')
+          .select('id')
+          .eq('staff_id', staff.id)
+          .eq('date', todayStr)
+          .maybeSingle()
+        if (!report) {
+          await r('📝 Submit your report first via /report before marking complete.')
+          return
+        }
+      }
+      await supabase.from('duty_rosters').update({ status: 'completed', completed_at: new Date().toISOString() }).eq('id', r2.id)
+      await r(`✅ *Duty Completed!*\n━━━━━━━━━━━━━━━\nDUTY: ${r2.duty_type?.name || 'Unknown'}\n━━━━━━━━━━━━━━━\nMarked complete.`)
+    } else {
+      const names = rosters.map((r) => `${r.status === 'completed' ? '✅' : '🔄'} DUTY: ${r.duty_type?.name || 'Unknown'}`).join('\n')
+      await r(
+        `${bold('📋 Pending Duties')}\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        names + '\n' +
+        `━━━━━━━━━━━━━━━\n` +
+        `Use the buttons after /report to complete each one.`
+      )
+    }
     return
   }
 
@@ -938,6 +978,57 @@ export async function handleTelegramCallback(
       }),
     })
     await ack('🗑️ Deleted')
+    return
+  }
+
+  // ── Duty complete callback ──
+  if (cq.data?.startsWith('duty_done:')) {
+    const rosterId = cq.data.split(':')[1]
+    if (!rosterId) { await ack('Invalid'); return }
+    if (!staff) { await ack('Not linked.'); return }
+
+    const todayStr = new Date().toISOString().split('T')[0]
+
+    const { data: roster } = await supabase
+      .from('duty_rosters')
+      .select('id, status, duty_type:duty_type_id(name)')
+      .eq('id', rosterId)
+      .maybeSingle()
+
+    if (!roster) { await ack('Not found'); return }
+    if (roster.status === 'completed') { await ack('Already completed'); return }
+
+    // If it's Inspection/Report duty, require a submitted report
+    if (roster.duty_type?.name && /inspection/i.test(roster.duty_type.name)) {
+      const { data: report } = await supabase
+        .from('daily_reports')
+        .select('id')
+        .eq('staff_id', staff.id)
+        .eq('date', todayStr)
+        .maybeSingle()
+
+      if (!report) {
+        await ack('Submit your report first via /report')
+        return
+      }
+    }
+
+    await supabase
+      .from('duty_rosters')
+      .update({ status: 'completed', completed_at: new Date().toISOString() })
+      .eq('id', rosterId)
+
+    await editButtons()
+    await fetch(`${botUrl}/editMessageText`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId, message_id: msgId,
+        text: `✅ Duty completed!`,
+        parse_mode: 'Markdown',
+      }),
+    })
+    await ack('✅ Marked complete!')
     return
   }
 
