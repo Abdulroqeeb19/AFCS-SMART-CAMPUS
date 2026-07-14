@@ -165,7 +165,7 @@ export async function handleTelegramCommand(
     const onlyPending = text === '/pending'
     let query = supabase
       .from('parade_tasks')
-      .select('id, description, status, priority, deadline, parade:parade_id(date, type)')
+      .select('id, description, status, priority, deadline')
       .eq('assigned_to', staff.id)
       .order('created_at', { ascending: false })
       .limit(15)
@@ -206,7 +206,7 @@ export async function handleTelegramCommand(
     const today = new Date().toISOString().split('T')[0]
     const { data: todos } = await supabase
       .from('parade_tasks')
-      .select('id, description, status, parade:parade_id(date)')
+      .select('id, description, status')
       .eq('assigned_to', staff.id)
       .gte('created_at', today)
       .order('created_at', { ascending: false })
@@ -449,13 +449,11 @@ export async function handleTelegramCommand(
       { count: pendingTasks },
       { count: myTasks },
       { count: myPending },
-      { data: todayParade },
     ] = await Promise.all([
       supabase.from('parade_tasks').select('id', { count: 'exact', head: true }),
       supabase.from('parade_tasks').select('id', { count: 'exact', head: true }).not('status', 'eq', 'completed').not('status', 'eq', 'cancelled'),
       supabase.from('parade_tasks').select('id', { count: 'exact', head: true }).eq('assigned_to', staff.id),
       supabase.from('parade_tasks').select('id', { count: 'exact', head: true }).eq('assigned_to', staff.id).not('status', 'eq', 'completed').not('status', 'eq', 'cancelled'),
-      supabase.from('parade_sessions').select('status').eq('date', today).limit(1).maybeSingle(),
     ])
 
     await r(
@@ -467,8 +465,6 @@ export async function handleTelegramCommand(
       `${bold('Your stats:')}\n` +
       `📋 Assigned: ${myTasks ?? 0}\n` +
       `🔄 Active: ${myPending ?? 0}\n` +
-      `━━━━━━━━━━━━━━━\n` +
-      `${todayParade ? `🚩 Today's parade: ${todayParade.status}` : '🚩 No parade today'}\n` +
       `━━━━━━━━━━━━━━━\n` +
       `_Air Force Comprehensive School, Igbara-Oke_`
     )
