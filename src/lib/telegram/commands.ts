@@ -496,7 +496,7 @@ export async function handleTelegramCommand(
 
     const lines = rosters.map((r) =>
       `${r.status === 'completed' ? '✅' : r.status === 'missed' ? '❌' : '🔄'} ` +
-      `${bold(r.duty_type?.name || 'Unknown')} — *${r.status}*`
+      `DUTY: ${r.duty_type?.name || 'Unknown'} — *${r.status}*`
     )
     await r(
       `${bold('📋 Your Duties Today')}\n` +
@@ -537,7 +537,7 @@ export async function handleTelegramCommand(
       const idx = dates.indexOf(r.date)
       return `${dayNames[idx] ?? r.date} — ` +
         `${r.status === 'completed' ? '✅' : r.status === 'missed' ? '❌' : '🔄'} ` +
-        `${bold(r.duty_type?.name || 'Unknown')} (*${r.status}*)`
+        `DUTY: ${r.duty_type?.name || 'Unknown'} (*${r.status}*)`
     })
     await r(
       `${bold('📅 Your Week\'s Duties')}\n` +
@@ -570,7 +570,7 @@ export async function handleTelegramCommand(
     const lines = rosters.map((r) =>
       `${r.status === 'completed' ? '✅' : r.status === 'missed' ? '❌' : '🔄'} ` +
       `${bold(r.staff?.full_name || 'Unknown')} (${r.staff?.staff_id || '—'}) — ` +
-      `${r.duty_type?.name || 'Unknown'} — *${r.status}*`
+      `DUTY: ${r.duty_type?.name || 'Unknown'} — *${r.status}*`
     )
     await r(
       `${bold('📋 Today\'s Duty Roster')}\n` +

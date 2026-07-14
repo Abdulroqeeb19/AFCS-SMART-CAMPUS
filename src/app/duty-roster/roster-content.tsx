@@ -553,7 +553,7 @@ export function RosterContent() {
                       <td className="px-6 py-3">
                         <div className="flex items-center gap-2">
                           <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: r.duty_type?.color || '#3b82f6' }} />
-                          <span>{r.duty_type?.name || 'Unknown'}</span>
+                          <span>DUTY: {r.duty_type?.name || 'Unknown'}</span>
                         </div>
                       </td>
                       <td className="px-6 py-3 text-zinc-600">{r.date}</td>
