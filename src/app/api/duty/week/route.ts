@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth-utils'
 
@@ -55,14 +54,13 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
 
-  const adminSupabase = createAdminClient()
   const { dates } = getWeekDates()
 
-  const { data: dutyType } = await adminSupabase
+  const { data: dutyType } = await supabase
     .from('duty_types')
     .select('id, name')
     .ilike('name', '%Inspection%')
@@ -72,7 +70,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Inspection/Report Duty type not found. Run seed data first.' }, { status: 400 })
   }
 
-  const { data: allStaff } = await adminSupabase
+  const { data: allStaff } = await supabase
     .from('staff')
     .select('id, staff_id, full_name, email, phone, telegram_chat_id')
     .eq('is_active', true)
@@ -85,7 +83,7 @@ export async function POST(request: Request) {
   }
 
   // Find last assigned staff index from the most recent roster entry
-  const { data: lastRoster } = await adminSupabase
+  const { data: lastRoster } = await supabase
     .from('duty_rosters')
     .select('staff_id')
     .eq('duty_type_id', dutyType.id)
@@ -99,7 +97,7 @@ export async function POST(request: Request) {
   }
 
   // Remove existing assignments for this week
-  await adminSupabase
+  await supabase
     .from('duty_rosters')
     .delete()
     .eq('duty_type_id', dutyType.id)
@@ -128,7 +126,7 @@ export async function POST(request: Request) {
     }
   }
 
-  const { error } = await adminSupabase.from('duty_rosters').insert(assignments)
+  const { error } = await supabase.from('duty_rosters').insert(assignments)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   // Send notifications
@@ -157,7 +155,7 @@ export async function POST(request: Request) {
       }
     })
     if (logs.length > 0) {
-      await adminSupabase.from('notification_logs').insert(logs)
+      await supabase.from('notification_logs').insert(logs)
     }
   }
 

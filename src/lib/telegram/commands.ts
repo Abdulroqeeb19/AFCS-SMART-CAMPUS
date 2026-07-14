@@ -3,7 +3,7 @@ import { answerCallbackQuery, editMessageReplyMarkup } from './send'
 
 const HELP_TEXT = `*AFCS Smart Campus — Telegram Commands*
 
-*For everyone:*
+ *For everyone:*
 /start — Welcome & link instructions
 /link STAFF_ID EMAIL — Link your account
 /status — Check your preferences
@@ -12,6 +12,7 @@ const HELP_TEXT = `*AFCS Smart Campus — Telegram Commands*
 /todo — Your daily to-do list
 /pending — Tasks still pending
 /complete TASK_ID — Mark task done
+/report — Submit your daily activity report (if assigned for today)
 /summary — Quick stats snapshot
 /help — This message
 
@@ -283,6 +284,161 @@ export async function handleTelegramCommand(
     await supabase.from('telegram_task_messages').delete().eq('task_id', taskId)
     await supabase.from('parade_tasks').delete().eq('id', taskId)
     await r(`🗑️ Deleted: ${task.description}`)
+    return
+  }
+
+  if (text === '/report') {
+    const todayStr = new Date().toISOString().split('T')[0]
+
+    // Find the Inspection/Report duty type
+    const { data: dutyType } = await supabase
+      .from('duty_types')
+      .select('id')
+      .ilike('name', '%Inspection%')
+      .single()
+
+    if (!dutyType) {
+      await r('No duty type configured. Contact administration.')
+      return
+    }
+
+    // Check if this staff is assigned for today
+    const { data: roster } = await supabase
+      .from('duty_rosters')
+      .select('id, status')
+      .eq('staff_id', staff.id)
+      .eq('duty_type_id', dutyType.id)
+      .eq('date', todayStr)
+      .maybeSingle()
+
+    if (!roster) {
+      await r(`You are not assigned for Daily Report Duty today. Check /status for your assignments.`)
+      return
+    }
+
+    await r(
+      `${bold('📝 Daily Report Submission')}\n` +
+      `━━━━━━━━━━━━━━━\n` +
+      `Send your report in this format:\n\n` +
+      `${code('/report Activities done | Challenges | Notes')}\n\n` +
+      `${bold('Example:')}\n` +
+      `${code('/report Taught Math and English | Some students arrived late | Need more textbooks')}\n\n` +
+      `You can leave Challenges or Notes empty:\n` +
+      `${code('/report Activities done | | Notes only')}`
+    )
+    return
+  }
+
+  if (text.startsWith('/report ')) {
+    const todayStr = new Date().toISOString().split('T')[0]
+    const args = text.slice('/report '.length).trim()
+
+    const parts = args.split('|').map((s) => s.trim())
+    const activities = parts[0]
+    const challenges = parts[1] || null
+    const notes = parts[2] || null
+
+    if (!activities) {
+      await r('Please provide at least the activities done.\nUsage: /report Activities | Challenges | Notes')
+      return
+    }
+
+    // Find the Inspection duty type
+    const { data: dutyType } = await supabase
+      .from('duty_types')
+      .select('id')
+      .ilike('name', '%Inspection%')
+      .single()
+
+    if (!dutyType) {
+      await r('No duty type configured.')
+      return
+    }
+
+    // Verify this staff is assigned today
+    const { data: roster } = await supabase
+      .from('duty_rosters')
+      .select('id')
+      .eq('staff_id', staff.id)
+      .eq('duty_type_id', dutyType.id)
+      .eq('date', todayStr)
+      .maybeSingle()
+
+    if (!roster) {
+      await r('You are not assigned for Daily Report Duty today.')
+      return
+    }
+
+    // Check for existing report (upsert)
+    const { data: existing } = await supabase
+      .from('daily_reports')
+      .select('id')
+      .eq('staff_id', staff.id)
+      .eq('date', todayStr)
+      .maybeSingle()
+
+    if (existing) {
+      const { error } = await supabase
+        .from('daily_reports')
+        .update({
+          activities_done: activities,
+          challenges,
+          notes,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', existing.id)
+
+      if (error) {
+        await r('❌ Failed to update report. Please try again.')
+        return
+      }
+
+      await r(
+        `✅ *Daily Report Updated!*\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        `${bold('Staff:')} ${esc(staff.full_name)}\n` +
+        `${bold('Date:')} ${todayStr}\n` +
+        `${bold('Activities:')} ${esc(activities)}\n` +
+        `${challenges ? `${bold('Challenges:')} ${esc(challenges)}\n` : ''}` +
+        `${notes ? `${bold('Notes:')} ${esc(notes)}` : ''}\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        `_Report updated via Telegram_`
+      )
+    } else {
+      const { error } = await supabase
+        .from('daily_reports')
+        .insert({
+          staff_id: staff.id,
+          date: todayStr,
+          activities_done: activities,
+          challenges,
+          notes,
+        })
+
+      if (error) {
+        await r('❌ Failed to submit report. Please try again.')
+        return
+      }
+
+      await r(
+        `✅ *Daily Report Submitted!*\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        `${bold('Staff:')} ${esc(staff.full_name)}\n` +
+        `${bold('Date:')} ${todayStr}\n` +
+        `${bold('Activities:')} ${esc(activities)}\n` +
+        `${challenges ? `${bold('Challenges:')} ${esc(challenges)}\n` : ''}` +
+        `${notes ? `${bold('Notes:')} ${esc(notes)}` : ''}\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        `_Submitted via Telegram_`
+      )
+    }
+
+    // Update roster status
+    await supabase
+      .from('duty_rosters')
+      .update({ status: 'completed', completed_at: new Date().toISOString() })
+      .eq('id', roster.id)
+
     return
   }
 

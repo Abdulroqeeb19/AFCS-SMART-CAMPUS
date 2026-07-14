@@ -665,10 +665,15 @@ export function DashboardContent() {
 
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-sm">
-                <CalendarDays className="h-4 w-4 text-blue-600" />
-                This Week&apos;s Duty Roster
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <CalendarDays className="h-4 w-4 text-blue-600" />
+                  This Week&apos;s Duty Roster
+                </CardTitle>
+                <Link href="/duty-roster" className="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                  Manage &rarr;
+                </Link>
+              </div>
             </CardHeader>
             <CardContent>
               {weeklyDuty.length > 0 ? (

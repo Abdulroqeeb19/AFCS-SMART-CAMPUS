@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
-import { requireAdmin } from '@/lib/auth-utils'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { getAuthStaff, requireAdmin } from '@/lib/auth-utils'
 
 const createRosterSchema = z.object({
   staff_id: z.string().uuid(),
@@ -21,14 +21,16 @@ const updateRosterSchema = z.object({
 })
 
 export async function GET(request: Request) {
+  const supabase = createAdminClient()
+  const staff = await getAuthStaff(supabase, request)
+
   const { searchParams } = new URL(request.url)
   const date = searchParams.get('date')
+  const startDate = searchParams.get('start_date')
+  const endDate = searchParams.get('end_date')
   const staffId = searchParams.get('staff_id')
+  const dutyTypeId = searchParams.get('duty_type_id')
   const mine = searchParams.get('mine')
-
-  const supabase = await createServerSupabaseClient()
-
-  const { data: { user } } = await supabase.auth.getUser()
 
   let query = supabase
     .from('duty_rosters')
@@ -36,12 +38,18 @@ export async function GET(request: Request) {
     .order('date', { ascending: false })
     .order('created_at', { ascending: false })
 
-  if (date) query = query.eq('date', date)
+  if (date) {
+    query = query.eq('date', date)
+  } else if (startDate && endDate) {
+    query = query.gte('date', startDate).lte('date', endDate)
+  }
+
+  if (dutyTypeId) query = query.eq('duty_type_id', dutyTypeId)
 
   if (staffId) {
     query = query.eq('staff_id', staffId)
-  } else if (mine === 'true' && user) {
-    query = query.eq('staff_id', user.id)
+  } else if (mine === 'true' && staff) {
+    query = query.eq('staff_id', staff.id)
   }
 
   const { data, error } = await query
@@ -50,7 +58,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
 
@@ -74,7 +82,7 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
 
@@ -98,7 +106,7 @@ export async function PATCH(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
 

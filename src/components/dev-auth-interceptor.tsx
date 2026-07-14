@@ -6,7 +6,6 @@ import { DEV_SESSION_KEY } from '@/contexts/auth-context'
 export function DevAuthInterceptor() {
   useEffect(() => {
     if (typeof window === 'undefined') return
-    if (process.env.NEXT_PUBLIC_DEV_MODE !== 'true') return
 
     const originalFetch = window.fetch.bind(window)
     window.fetch = (input, init = {}) => {
