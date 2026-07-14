@@ -13,10 +13,13 @@ const HELP_TEXT = `*AFCS Smart Campus — Telegram Commands*
 /pending — Tasks still pending
 /complete TASK_ID — Mark task done
 /report — Submit your daily activity report (if assigned for today)
+/duty — Your duties for today
+/dutyweek — Your duties this week
 /summary — Quick stats snapshot
 /help — This message
 
  *Admin / Commandant only:*
+/dutytoday — Today's full duty roster (all staff)
 /assign STAFF_ID DESCRIPTION — Assign a task
 /delete TASK_ID — Remove a task
 /broadcast MESSAGE — Send broadcast to all staff
@@ -472,6 +475,109 @@ export async function handleTelegramCommand(
       `${todayParade ? `🚩 Today's parade: ${todayParade.status}` : '🚩 No parade today'}\n` +
       `━━━━━━━━━━━━━━━\n` +
       `_Air Force Comprehensive School, Igbara-Oke_`
+    )
+    return
+  }
+
+  // ── Duty commands ──
+  if (text === '/duty') {
+    const todayStr = new Date().toISOString().split('T')[0]
+    const { data: rosters } = await supabase
+      .from('duty_rosters')
+      .select('id, date, status, duty_type:duty_type_id(name, color)')
+      .eq('staff_id', staff.id)
+      .eq('date', todayStr)
+      .order('created_at')
+
+    if (!rosters?.length) {
+      await r(`📭 No duty assigned to you today.`)
+      return
+    }
+
+    const lines = rosters.map((r) =>
+      `${r.status === 'completed' ? '✅' : r.status === 'missed' ? '❌' : '🔄'} ` +
+      `${bold(r.duty_type?.name || 'Unknown')} — *${r.status}*`
+    )
+    await r(
+      `${bold('📋 Your Duties Today')}\n` +
+      `━━━━━━━━━━━━━━━\n` +
+      lines.join('\n') + '\n' +
+      `━━━━━━━━━━━━━━━\n` +
+      `${esc(staff.full_name)} • ${todayStr}`
+    )
+    return
+  }
+
+  if (text === '/dutyweek') {
+    const now = new Date()
+    const day = now.getDay()
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1)
+    const monday = new Date(now.setDate(diff))
+    const dates: string[] = []
+    for (let i = 0; i < 5; i++) {
+      const d = new Date(monday)
+      d.setDate(monday.getDate() + i)
+      dates.push(d.toISOString().split('T')[0])
+    }
+
+    const { data: rosters } = await supabase
+      .from('duty_rosters')
+      .select('id, date, status, duty_type:duty_type_id(name, color)')
+      .eq('staff_id', staff.id)
+      .in('date', dates)
+      .order('date')
+
+    if (!rosters?.length) {
+      await r(`📭 No duties assigned this week (${dates[0]} to ${dates[4]}).`)
+      return
+    }
+
+    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
+    const lines = rosters.map((r) => {
+      const idx = dates.indexOf(r.date)
+      return `${dayNames[idx] ?? r.date} — ` +
+        `${r.status === 'completed' ? '✅' : r.status === 'missed' ? '❌' : '🔄'} ` +
+        `${bold(r.duty_type?.name || 'Unknown')} (*${r.status}*)`
+    })
+    await r(
+      `${bold('📅 Your Week\'s Duties')}\n` +
+      `━━━━━━━━━━━━━━━\n` +
+      lines.join('\n') + '\n' +
+      `━━━━━━━━━━━━━━━\n` +
+      `${esc(staff.full_name)} • ${dates[0]} — ${dates[4]}`
+    )
+    return
+  }
+
+  if (text === '/dutytoday') {
+    if (!isAdmin) {
+      await r('Only commandants and admins can view the full daily roster.')
+      return
+    }
+
+    const todayStr = new Date().toISOString().split('T')[0]
+    const { data: rosters } = await supabase
+      .from('duty_rosters')
+      .select('id, status, staff:staff!duty_rosters_staff_id_fkey(full_name, staff_id), duty_type:duty_type_id(name, color)')
+      .eq('date', todayStr)
+      .order('created_at')
+
+    if (!rosters?.length) {
+      await r(`📭 No duty assignments for today (${todayStr}).`)
+      return
+    }
+
+    const lines = rosters.map((r) =>
+      `${r.status === 'completed' ? '✅' : r.status === 'missed' ? '❌' : '🔄'} ` +
+      `${bold(r.staff?.full_name || 'Unknown')} (${r.staff?.staff_id || '—'}) — ` +
+      `${r.duty_type?.name || 'Unknown'} — *${r.status}*`
+    )
+    await r(
+      `${bold('📋 Today\'s Duty Roster')}\n` +
+      `━━━━━━━━━━━━━━━\n` +
+      lines.join('\n') + '\n' +
+      `━━━━━━━━━━━━━━━\n` +
+      `${todayStr} • ${lines.length} assignment${lines.length !== 1 ? 's' : ''}`
     )
     return
   }
