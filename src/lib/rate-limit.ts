@@ -1,30 +1,36 @@
-const store = new Map<string, { count: number; resetAt: number }>()
+import { createAdminClient } from '@/lib/supabase/admin'
 
-export function rateLimit(
+export async function rateLimit(
   key: string,
   maxRequests: number,
   windowSeconds: number
-): { allowed: boolean; resetInSeconds: number } {
-  const now = Date.now()
-  const entry = store.get(key)
+): Promise<{ allowed: boolean; resetInSeconds: number }> {
+  try {
+    const supabase = createAdminClient()
+    const now = Date.now()
+    const windowStart = new Date(now - windowSeconds * 1000).toISOString()
 
-  if (!entry || now > entry.resetAt) {
-    store.set(key, { count: 1, resetAt: now + windowSeconds * 1000 })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rl: any = supabase.from('rate_limit_logs')
+    const { count } = await rl
+      .select('*', { count: 'exact', head: true })
+      .eq('key', key)
+      .gte('created_at', windowStart)
+
+    const currentCount = count || 0
+
+    if (currentCount >= maxRequests) {
+      const resetInSeconds = windowSeconds - Math.floor((now - new Date(windowStart).getTime()) / 1000)
+      return { allowed: false, resetInSeconds: Math.max(1, resetInSeconds) }
+    }
+
+    await rl.insert({
+      key,
+      created_at: new Date().toISOString(),
+    })
+
     return { allowed: true, resetInSeconds: windowSeconds }
+  } catch {
+    return { allowed: true, resetInSeconds: 1 }
   }
-
-  entry.count++
-  if (entry.count > maxRequests) {
-    const resetInSeconds = Math.ceil((entry.resetAt - now) / 1000)
-    return { allowed: false, resetInSeconds }
-  }
-
-  return { allowed: true, resetInSeconds: Math.ceil((entry.resetAt - now) / 1000) }
 }
-
-setInterval(() => {
-  const now = Date.now()
-  store.forEach((entry, key) => {
-    if (now > entry.resetAt) store.delete(key)
-  })
-}, 60_000)

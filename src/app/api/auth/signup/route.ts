@@ -1,29 +1,39 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import crypto from 'node:crypto'
+import { rateLimit } from '@/lib/rate-limit'
+import { verifyCaptcha } from '../captcha/route'
 
-const CAPTCHA_SECRET = process.env.CAPTCHA_SECRET || process.env.NEXTAUTH_SECRET || 'afcs-math-captcha-fallback'
-
-function verifyMathCaptcha(token: string, answer: string): boolean {
-  try {
-    const expected = crypto.createHmac('sha256', CAPTCHA_SECRET).update(answer.trim()).digest('hex')
-    return expected === token
-  } catch {
-    return false
-  }
+function validatePassword(password: string): string | null {
+  if (password.length < 8) return 'Password must be at least 8 characters'
+  if (!/[A-Z]/.test(password)) return 'Password must contain at least one uppercase letter'
+  if (!/[a-z]/.test(password)) return 'Password must contain at least one lowercase letter'
+  if (!/[0-9]/.test(password)) return 'Password must contain at least one number'
+  return null
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const ip = request.headers.get('x-forwarded-for') || 'unknown'
+  const limit = await rateLimit(`signup-get:${ip}`, 10, 60)
+  if (!limit.allowed) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   const adminSupabase = createAdminClient()
   const { count } = await adminSupabase.from('staff').select('id', { count: 'exact', head: true }).eq('role', 'commandant')
   return NextResponse.json({ commandantExists: (count ?? 0) > 0 })
 }
 
 export async function POST(request: Request) {
+  const ip = request.headers.get('x-forwarded-for') || 'unknown'
+  const limit = await rateLimit(`signup:${ip}`, 5, 300)
+  if (!limit.allowed) {
+    return NextResponse.json({ error: 'Too many signup attempts. Try again later.' }, { status: 429 })
+  }
+
   try {
     const body = await request.json()
-    const { email, password, fullName, staffId, role, captchaToken, captchaAnswer } = body
+    const { email, password, fullName, staffId, role, captchaToken, captchaNonce, captchaAnswer } = body
 
     if (!email || !password || !fullName || !staffId || !role) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 })
@@ -33,19 +43,19 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid role.' }, { status: 400 })
     }
 
-    if (password.length < 8) {
-      return NextResponse.json({ error: 'Password must be at least 8 characters' }, { status: 400 })
+    const pwError = validatePassword(password)
+    if (pwError) {
+      return NextResponse.json({ error: pwError }, { status: 400 })
     }
 
-    // Verify math captcha
-    if (!captchaToken || !captchaAnswer || !verifyMathCaptcha(captchaToken, captchaAnswer)) {
-      return NextResponse.json({ error: 'Captcha verification failed — please refresh and try again' }, { status: 400 })
+    if (!captchaToken || !captchaNonce || !captchaAnswer || !verifyCaptcha(captchaToken, captchaNonce, captchaAnswer)) {
+      return NextResponse.json({ error: 'Captcha verification failed. Please refresh and try again.' }, { status: 400 })
     }
 
     const supabase = await createServerSupabaseClient()
     const adminSupabase = createAdminClient()
 
-    // Commandant is restricted to the first signup only
+    // Commandant is restricted to the first signup only (with constraint-level protection)
     if (role === 'commandant') {
       const { count } = await adminSupabase.from('staff').select('id', { count: 'exact', head: true }).eq('role', 'commandant')
       if (count && count > 0) {
@@ -53,26 +63,32 @@ export async function POST(request: Request) {
       }
     }
 
-    const { data: existingEmail } = await supabase.from('staff').select('id').ilike('email', email).maybeSingle()
-    if (existingEmail) {
-      return NextResponse.json({ error: 'A staff account with this email already exists' }, { status: 409 })
+    // Use generic error messages to prevent enumeration
+    const { data: existing, error: lookupError } = await adminSupabase
+      .from('staff')
+      .select('id')
+      .or(`email.ilike.${email},staff_id.ilike.${staffId}`)
+      .maybeSingle()
+
+    if (lookupError) {
+      console.error('Signup lookup error:', lookupError.message)
+      return NextResponse.json({ error: 'Registration service unavailable' }, { status: 500 })
     }
 
-    const { data: existingId } = await supabase.from('staff').select('id').ilike('staff_id', staffId).maybeSingle()
-    if (existingId) {
-      return NextResponse.json({ error: 'Staff ID already taken' }, { status: 409 })
+    if (existing) {
+      return NextResponse.json({ error: 'An account with this email or staff ID already exists' }, { status: 409 })
     }
 
     const { data: authData, error: authError } = await supabase.auth.signUp({ email, password })
     if (authError) {
-      return NextResponse.json({ error: 'Failed to create account' }, { status: 400 })
+      return NextResponse.json({ error: 'Account creation failed. Please try again.' }, { status: 400 })
     }
 
     if (!authData.user) {
-      return NextResponse.json({ error: 'Failed to create user account' }, { status: 500 })
+      return NextResponse.json({ error: 'Account creation failed' }, { status: 500 })
     }
 
-    const { data: staffData, error: staffError } = await adminSupabase.from('staff').insert({
+    const { error: staffError } = await adminSupabase.from('staff').insert({
       staff_id: staffId,
       full_name: fullName,
       email,
@@ -81,7 +97,6 @@ export async function POST(request: Request) {
     }).select().single()
 
     if (staffError) {
-      // Clean up orphan auth user
       await supabase.auth.admin.deleteUser(authData.user.id).catch(() => {})
       return NextResponse.json({ error: 'Failed to create staff record' }, { status: 500 })
     }
@@ -92,6 +107,6 @@ export async function POST(request: Request) {
     }, { status: 201 })
 
   } catch {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Registration failed. Please try again.' }, { status: 500 })
   }
 }

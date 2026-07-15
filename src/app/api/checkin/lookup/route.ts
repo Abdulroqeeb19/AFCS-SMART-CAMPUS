@@ -1,7 +1,15 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { getAuthStaff } from '@/lib/auth-utils'
 
 export async function GET(request: Request) {
+  const supabase = await createServerSupabaseClient()
+  const auth = await getAuthStaff(supabase, request)
+  if (!auth) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+  }
+
   const { searchParams } = new URL(request.url)
   const identifier = searchParams.get('identifier')
 
@@ -9,13 +17,13 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Identifier is required' }, { status: 400 })
   }
 
-  const supabase = createAdminClient()
+  const adminSupabase = createAdminClient()
   const today = new Date().toISOString().split('T')[0]
 
   const isStudent = identifier.toUpperCase().startsWith('STU-')
 
   if (isStudent) {
-    const { data: student, error } = await supabase
+    const { data: student, error } = await adminSupabase
       .from('students')
       .select('id, student_id, full_name, class:class_id(name, arm), is_active')
       .eq('student_id', identifier.toUpperCase())
@@ -28,7 +36,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Student account is inactive' }, { status: 403 })
     }
 
-    const { data: existing } = await supabase
+    const { data: existing } = await adminSupabase
       .from('student_attendance')
       .select('id, check_in, check_out, status, period')
       .eq('student_id', student.id)
@@ -41,14 +49,13 @@ export async function GET(request: Request) {
       student_id: student.student_id,
       full_name: student.full_name,
       class: student.class,
-      is_active: student.is_active,
       today_attendance: existing
         ? { ...existing, check_out: existing.check_out }
         : null,
     })
   }
 
-  const { data: staff, error } = await supabase
+  const { data: staff, error } = await adminSupabase
     .from('staff')
     .select('id, staff_id, full_name, avatar_url, role, department:department_id(name), is_active')
     .eq('staff_id', identifier.toUpperCase())
@@ -61,7 +68,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Staff account is inactive' }, { status: 403 })
   }
 
-  const { data: existing } = await supabase
+  const { data: existing } = await adminSupabase
     .from('staff_attendance')
     .select('id, check_in, check_out, status')
     .eq('staff_id', staff.id)
@@ -76,7 +83,6 @@ export async function GET(request: Request) {
     avatar_url: staff.avatar_url,
     role: staff.role,
     department: staff.department,
-    is_active: staff.is_active,
     today_attendance: existing,
   })
 }

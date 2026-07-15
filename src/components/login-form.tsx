@@ -1,39 +1,22 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useAuth } from '@/contexts/auth-context'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card'
-import { Badge } from './ui/badge'
 import Link from 'next/link'
 import {
-  Shield, Loader2, AlertCircle, Eye, EyeOff, LogIn,
-  Bug, ChevronRight, ChevronDown, ChevronUp,
+  Shield, Loader2, AlertCircle, Eye, EyeOff, LogIn, ChevronRight,
 } from 'lucide-react'
-import type { Staff } from '@/lib/database.types'
 
 export function LoginForm() {
-  const { signIn, devSignIn } = useAuth()
+  const { signIn } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [testerStaff, setTesterStaff] = useState<Staff[]>([])
-  const [testerLoading, setTesterLoading] = useState(true)
-  const [testerExpanded, setTesterExpanded] = useState(false)
-
-
-  useEffect(() => {
-    fetch('/api/auth/testers')
-      .then((r) => r.ok ? r.json() : [])
-      .then((data: Staff[]) => {
-        setTesterStaff(Array.isArray(data) ? data : [])
-        setTesterLoading(false)
-      })
-      .catch(() => { setTesterStaff([]); setTesterLoading(false) })
-  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -100,6 +83,7 @@ export function LoginForm() {
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-[38px] text-zinc-400 hover:text-zinc-600"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -134,64 +118,6 @@ export function LoginForm() {
           <ChevronRight className="h-4 w-4 text-naf-gold" />
         </Link>
       </div>
-
-      {/* Tester / Reviewer Access — always visible */}
-      <Card className="border-dashed border-emerald-400 bg-emerald-50/40">
-        <CardHeader className="pb-3">
-          <button
-            type="button"
-            onClick={() => setTesterExpanded(!testerExpanded)}
-            className="flex w-full items-center gap-2"
-          >
-            <Bug className="h-4 w-4 text-emerald-600" />
-            <CardTitle className="text-sm text-[#001A4D] flex-1 text-left">
-              Tester / Reviewer Access
-            </CardTitle>
-            <Badge variant="success" className="text-[10px]">TEST</Badge>
-            {testerExpanded ? <ChevronUp className="h-4 w-4 text-zinc-400" /> : <ChevronDown className="h-4 w-4 text-zinc-400" />}
-          </button>
-          <CardDescription className="text-xs text-emerald-700">
-            Click any account below to log in instantly for testing and review purposes.
-          </CardDescription>
-        </CardHeader>
-        {testerExpanded && (
-          <CardContent className="pt-0">
-            {testerLoading ? (
-              <div className="flex items-center justify-center py-4">
-                <Loader2 className="h-5 w-5 animate-spin text-emerald-600" />
-              </div>
-            ) : (
-              <div className="divide-y divide-emerald-200 max-h-64 overflow-y-auto rounded-lg border border-emerald-200">
-                {testerStaff.map((s) => (
-                  <button
-                    key={s.id}
-                    onClick={() => devSignIn(s)}
-                    className="flex w-full items-center justify-between px-3 py-2.5 text-sm hover:bg-emerald-100/60 transition-colors text-left"
-                  >
-                    <div>
-                      <p className="font-medium text-zinc-800">{s.full_name}</p>
-                      <p className="text-xs text-zinc-500">
-                        {s.staff_id} · <span className="capitalize">{s.role}</span> · {s.email}
-                      </p>
-                    </div>
-                    <Badge
-                      variant={s.role === 'commandant' ? 'danger' : s.role === 'admin' ? 'warning' : 'default'}
-                      className="text-[10px] shrink-0 capitalize"
-                    >
-                      {s.role}
-                    </Badge>
-                  </button>
-                ))}
-                {testerStaff.length === 0 && (
-                  <p className="px-3 py-4 text-sm text-zinc-400 text-center">
-                    No staff accounts available for testing.
-                  </p>
-                )}
-              </div>
-            )}
-          </CardContent>
-        )}
-      </Card>
     </div>
   )
 }

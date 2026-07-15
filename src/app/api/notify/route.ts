@@ -72,8 +72,8 @@ export async function POST(request: Request) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type, recipient, message, sender: 'AFCS Smart Campus', timestamp: new Date().toISOString() }),
       })
-    } catch {
-      console.error('Webhook call failed')
+    } catch (err) {
+      console.error('Webhook call failed:', err instanceof Error ? err.message : err)
     }
   }
 

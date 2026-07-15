@@ -1,9 +1,15 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { requireAdmin } from '@/lib/auth-utils'
+import { requireAdmin, getAuthStaff } from '@/lib/auth-utils'
 
 export async function GET(request: Request) {
+  const supabase = await createServerSupabaseClient()
+  const auth = await getAuthStaff(supabase, request)
+  if (!auth) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+  }
+
   const { searchParams } = new URL(request.url)
   const classId = searchParams.get('class_id')
 
@@ -17,7 +23,7 @@ export async function GET(request: Request) {
   if (classId) query = query.eq('class_id', classId)
 
   const { data, error } = await query
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) return NextResponse.json({ error: 'Failed to load students' }, { status: 500 })
   return NextResponse.json(data)
 }
 
@@ -58,7 +64,7 @@ export async function POST(request: Request) {
     .select('*, class:class_id(id, name, arm)')
     .single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) return NextResponse.json({ error: 'Failed to create student' }, { status: 500 })
   return NextResponse.json(data, { status: 201 })
 }
 
@@ -97,7 +103,7 @@ export async function PATCH(request: Request) {
     .select('*, class:class_id(id, name, arm)')
     .single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) return NextResponse.json({ error: 'Failed to update student' }, { status: 500 })
   return NextResponse.json(data)
 }
 
@@ -112,6 +118,6 @@ export async function DELETE(request: Request) {
 
   const adminSupabase = createAdminClient()
   const { error } = await adminSupabase.from('students').delete().eq('id', id)
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) return NextResponse.json({ error: 'Failed to delete student' }, { status: 500 })
   return NextResponse.json({ success: true })
 }

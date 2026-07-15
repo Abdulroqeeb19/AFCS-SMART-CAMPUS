@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/client'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { Database } from '@/lib/database.types'
 
 interface QueueItem {
@@ -14,7 +14,7 @@ interface QueueItem {
  * Enqueue a notification for retry. Inserts into notification_queue table.
  */
 export async function enqueueNotification(item: QueueItem): Promise<void> {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   await supabase.from('notification_queue').insert({
     recipient_id: item.recipient_id || null,
     recipient_phone: item.recipient_phone,
@@ -32,7 +32,7 @@ export async function enqueueNotification(item: QueueItem): Promise<void> {
  * Returns counts of processed items.
  */
 export async function processQueue(): Promise<{ processed: number; succeeded: number; failed: number }> {
-  const supabase = createClient()
+  const supabase = createAdminClient()
 
   const { data: pending } = await supabase
     .from('notification_queue')
@@ -97,7 +97,7 @@ export async function processQueue(): Promise<{ processed: number; succeeded: nu
  * Get pending queue count for UI badge
  */
 export async function getQueueCount(): Promise<number> {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const { count } = await supabase
     .from('notification_queue')
     .select('*', { count: 'exact', head: true })

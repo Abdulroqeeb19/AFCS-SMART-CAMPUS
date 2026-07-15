@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AFCS Smart Campus — Technical Blueprint</title>
+<style>
+  @page { margin: 2cm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: #1a1a1a; line-height: 1.7; font-size: 11pt; padding: 2cm; max-width: 210mm; margin: 0 auto; }
+  h1 { font-size: 22pt; color: #001A4D; border-bottom: 3px solid #C9A84C; padding-bottom: 8pt; margin-bottom: 24pt; }
+  h2 { font-size: 16pt; color: #001A4D; margin-top: 28pt; margin-bottom: 12pt; border-bottom: 1px solid #ddd; padding-bottom: 4pt; }
+  h3 { font-size: 13pt; color: #003366; margin-top: 20pt; margin-bottom: 8pt; }
+  p { margin-bottom: 8pt; }
+  ul, ol { margin-left: 20pt; margin-bottom: 12pt; }
+  li { margin-bottom: 4pt; }
+  table { width: 100%; border-collapse: collapse; margin: 12pt 0; font-size: 9.5pt; }
+  th, td { border: 1px solid #ccc; padding: 6pt 8pt; text-align: left; }
+  th { background: #001A4D; color: #fff; font-weight: 600; }
+  tr:nth-child(even) { background: #f5f7fa; }
+  code { background: #f0f0f0; padding: 1pt 4pt; border-radius: 3pt; font-size: 9.5pt; font-family: 'Consolas', monospace; }
+  pre { background: #f5f5f5; border: 1px solid #ddd; padding: 10pt; border-radius: 4pt; font-size: 9pt; font-family: 'Consolas', monospace; overflow-x: auto; margin: 12pt 0; }
+  .cover { text-align: center; padding: 60pt 0 40pt; }
+  .cover h1 { font-size: 28pt; border: none; margin-bottom: 8pt; }
+  .cover .subtitle { font-size: 14pt; color: #666; margin-bottom: 20pt; }
+  .cover .meta { font-size: 10pt; color: #999; }
+  .toc { margin: 20pt 0; padding: 16pt; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4pt; }
+  .toc h2 { border: none; margin: 0 0 8pt; }
+  .toc a { color: #003366; text-decoration: none; display: block; padding: 2pt 0; font-size: 10pt; }
+  .page-break { page-break-before: always; }
+  @media print { body { padding: 0; } }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>AFCS Smart Campus</h1>
+  <div class="subtitle">Technical Blueprint — Build Guide</div>
+  <div class="meta">
+    <p>Air Force Comprehensive School, Igbara-Oke</p>
+    <p>Version 1.0 &mdash; July 2026</p>
+  </div>
+</div>
+
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <a href="#s1">1. Project Overview</a>
+  <a href="#s2">2. Technology Stack</a>
+  <a href="#s3">3. Architecture &amp; Directory Structure</a>
+  <a href="#s4">4. Database Schema &amp; Migrations</a>
+  <a href="#s5">5. Authentication System</a>
+  <a href="#s6">6. API Routes Reference</a>
+  <a href="#s7">7. Telegram Bot System</a>
+  <a href="#s8">8. Automation Engine</a>
+  <a href="#s9">9. Frontend Components</a>
+  <a href="#s10">10. Environment Variables</a>
+  <a href="#s11">11. Deployment Guide</a>
+  <a href="#s12">12. Step-by-Step Build Process</a>
+</div>
+
+<div class="page-break"></div>
+
+<h2 id="s1">1. Project Overview</h2>
+
+<p><strong>AFCS Smart Campus</strong> is a comprehensive school management operating system built for Nigerian secondary schools. It digitizes and automates:</p>
+<ul>
+  <li><strong>Staff &amp; Student Attendance</strong> — QR-based check-in, late detection, batch operations, department/class breakdowns</li>
+  <li><strong>Duty Roster Management</strong> — 8 duty types, auto-rotation, status tracking, Telegram notifications</li>
+  <li><strong>Muster Parade System</strong> — Sessions, briefings, tasks with acknowledgement workflow</li>
+  <li><strong>AI Timetable Generator</strong> — Constraint-satisfaction algorithm that distributes subjects evenly Mon-Fri with Friday 30-min periods</li>
+  <li><strong>Daily Reporting</strong> — Inspection reports, student activity reports, AI-generated summaries</li>
+  <li><strong>Telegram Bot</strong> — 25+ commands, interactive task management, real-time push notifications</li>
+  <li><strong>Multi-Channel Notifications</strong> — Telegram (primary), WhatsApp Cloud API, SMS (Termii/Africa's Talking)</li>
+  <li><strong>Automation Engine</strong> — 13 scheduled rules for duty notification, check-in reminders, daily digests</li>
+  <li><strong>AI Assistant</strong> — OpenAI/Gemini-powered chat with database function calling</li>
+  <li><strong>Role-Based Access</strong> — Commandant, Admin, Teacher, Support with distinct dashboards</li>
+</ul>
+
+<h2 id="s2">2. Technology Stack</h2>
+
+<h3>Frontend</h3>
+<table>
+  <tr><th>Library</th><th>Version</th><th>Purpose</th></tr>
+  <tr><td>Next.js</td><td>16.2.9</td><td>React framework with App Router</td></tr>
+  <tr><td>React</td><td>19.2.4</td><td>UI library</td></tr>
+  <tr><td>TypeScript</td><td>^5</td><td>Type safety</td></tr>
+  <tr><td>Tailwind CSS</td><td>^4</td><td>Utility-first CSS</td></tr>
+  <tr><td>Lucide React</td><td>^1.21</td><td>Icon library</td></tr>
+  <tr><td>date-fns</td><td>^4.4</td><td>Date manipulation</td></tr>
+  <tr><td>Zod</td><td>^4.4</td><td>Schema validation</td></tr>
+  <tr><td>jsQR</td><td>^1.4</td><td>QR code scanning</td></tr>
+</table>
+
+<h3>Backend</h3>
+<table>
+  <tr><th>Library</th><th>Purpose</th></tr>
+  <tr><td>Next.js API Routes</td><td>Serverless API endpoints</td></tr>
+  <tr><td>Supabase JS</td><td>Database client + Auth</td></tr>
+  <tr><td>PostgreSQL</td><td>Primary database with RLS</td></tr>
+  <tr><td>Telegram Bot API</td><td>Bot commands &amp; notifications</td></tr>
+  <tr><td>WhatsApp Cloud API</td><td>Meta WhatsApp notifications</td></tr>
+  <tr><td>Termii SMS / Africa's Talking</td><td>SMS gateway (Nigeria)</td></tr>
+  <tr><td>OpenAI API / Gemini API</td><td>AI assistant</td></tr>
+  <tr><td>Cloudflare Turnstile</td><td>Human verification</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2 id="s3">3. Architecture &amp; Directory Structure</h2>
+
+<pre>
+src/
+├── app/                        # Next.js App Router
+│   ├── api/                    # API routes by domain
+│   │   ├── attendance/         # Check-in/out, reports
+│   │   ├── auth/               # Login, signup, captcha
+│   │   ├── automation/         # Engine + rules
+│   │   ├── classes/            # Class CRUD
+│   │   ├── dashboard/          # Dashboard data
+│   │   ├── duty/               # Duty roster week view
+│   │   ├── parades/            # Parade sessions + tasks
+│   │   ├── reports/            # Daily + student reports
+│   │   ├── rosters/            # Duty roster CRUD + generate
+│   │   ├── telegram/           # Webhook, poll, config
+│   │   ├── timetable/          # Entries, generate, next-period
+│   │   └── ...                 # subjects, staff, students, etc.
+│   ├── dashboard/              # Commandant dashboard
+│   ├── duty-roster/            # Duty roster management page
+│   ├── timetable/              # Timetable viewer + setup
+│   └── ...                     # Other pages by role
+├── components/                 # Reusable React components
+│   ├── ui/                     # Base UI (card, button, badge, etc.)
+│   ├── parade/                 # Parade-specific components
+│   └── ...                     # Feature components
+├── contexts/                   # React contexts (auth)
+├── db/migrations/              # 27 SQL migration files
+├── lib/                        # Shared utilities
+│   ├── automation/             # Automation engine
+│   ├── notifications/          # Queue + SMS
+│   ├── supabase/               # Client, server, admin clients
+│   └── telegram/               # Commands, send, token
+└── scripts/                    # Utility scripts
+</pre>
+
+<h2 id="s4">4. Database Schema &amp; Migrations</h2>
+
+<p>27 migration files in <code>src/db/migrations/</code>. Run sequentially in Supabase SQL Editor.</p>
+
+<table>
+  <tr><th>#</th><th>File</th><th>Key Tables Created</th></tr>
+  <tr><td>001</td><td>staff_schema</td><td>departments, staff, staff_attendance, settings</td></tr>
+  <tr><td>002</td><td>seed_data</td><td>Sample staff + attendance</td></tr>
+  <tr><td>003</td><td>student_schema</td><td>classes, students, student_attendance</td></tr>
+  <tr><td>004</td><td>student_activity_reports</td><td>student_activity_reports</td></tr>
+  <tr><td>005</td><td>duty_schema</td><td>duty_types, duty_rosters, daily_reports</td></tr>
+  <tr><td>007</td><td>parade_schema</td><td>parade_sessions, parade_tasks, parade_briefings</td></tr>
+  <tr><td>009</td><td>notifications</td><td>notification_logs</td></tr>
+  <tr><td>011</td><td>timetable_schema</td><td>academic_sessions, terms, subjects, time_slots, rooms, timetable_entries, class_subjects</td></tr>
+  <tr><td>012</td><td>system_prompts</td><td>system_prompts, broadcast_messages, task_templates</td></tr>
+  <tr><td>013</td><td>offline_notifications</td><td>notification_rules, notification_queue</td></tr>
+  <tr><td>017</td><td>telegram_chat_id</td><td>Adds telegram_chat_id to staff</td></tr>
+  <tr><td>021</td><td>task_responses</td><td>task_responses, telegram_task_messages</td></tr>
+  <tr><td>023</td><td>friday_time_slots</td><td>Friday 30-min periods</td></tr>
+</table>
+
+<h3>Core Table Relationships</h3>
+<pre>
+staff ──┬── staff_attendance
+        ├── duty_rosters ── duty_types
+        ├── parade_tasks ── parade_sessions
+        ├── teacher_subjects ── subjects
+        └── timetable_entries ── classes, subjects, rooms
+
+classes ──┬── students ── student_attendance
+          ├── class_subjects ── subjects
+          └── timetable_entries
+
+academic_terms ── timetable_entries
+</pre>
+
+<div class="page-break"></div>
+
+<h2 id="s5">5. Authentication System</h2>
+
+<h3>Production Flow</h3>
+<ol>
+  <li>User visits <code>/login</code>, enters Staff ID or email</li>
+  <li><code>POST /api/auth/lookup-staff</code> finds staff record</li>
+  <li>User enters password; <code>supabase.auth.signInWithPassword()</code> called</li>
+  <li>Supabase sets HTTP-only cookies (session)</li>
+  <li><code>AuthContext</code> listens to <code>onAuthStateChange</code></li>
+  <li>Redirect by role: commandant→/dashboard, teacher→/teacher-dashboard</li>
+  <li><code>AuthGate</code> protects all routes</li>
+</ol>
+
+<h3>Dev Mode Bypass</h3>
+<p>Set <code>NEXT_PUBLIC_DEV_MODE=true</code>. A staff selector UI saves to <code>localStorage</code>. The <code>DevAuthInterceptor</code> component injects <code>x-auth-email</code> header to all fetch calls, and API routes check this fallback for authorization.</p>
+
+<h3>Role Hierarchy</h3>
+<table>
+  <tr><th>Role</th><th>Level</th><th>Access</th></tr>
+  <tr><td>commandant</td><td>100</td><td>Full system access</td></tr>
+  <tr><td>admin</td><td>80</td><td>All except commandant-specific</td></tr>
+  <tr><td>teacher</td><td>40</td><td>Class-specific dashboards, reports</td></tr>
+  <tr><td>support</td><td>20</td><td>Check-in/out, basic reports</td></tr>
+</table>
+
+<h2 id="s6">6. API Routes Reference</h2>
+
+<h3>Key Endpoints by Domain</h3>
+
+<table>
+  <tr><th>Domain</th><th>Endpoints</th><th>Purpose</th></tr>
+  <tr><td>Attendance</td><td><code>POST /api/attendance/check-in<br>POST /api/attendance/check-out<br>GET /api/attendance/report</code></td><td>Staff check-in/out with QR, reports with department breakdown</td></tr>
+  <tr><td>Student Attendance</td><td><code>POST /api/attendance/student/check-in<br>POST /api/attendance/student/check-out<br>GET /api/attendance/student/report</code></td><td>Batch check-in by class, individual check-out, class breakdown</td></tr>
+  <tr><td>Timetable</td><td><code>GET /api/timetable<br>POST /api/timetable/generate<br>GET /api/timetable/next-period</code></td><td>View entries, run AI generation, get next class period</td></tr>
+  <tr><td>Duty Rosters</td><td><code>GET|POST /api/rosters<br>POST /api/rosters/generate<br>GET|POST /api/duty/week</code></td><td>CRUD rosters, auto-generate weekly assignments</td></tr>
+  <tr><td>Telegram</td><td><code>POST /api/telegram/webhook<br>POST /api/telegram/poll</code></td><td>Receive bot updates, polling fallback</td></tr>
+  <tr><td>Automation</td><td><code>POST /api/automation/engine<br>GET|PATCH /api/automation/rules</code></td><td>Run all/due rules, manage rule config</td></tr>
+  <tr><td>Reports</td><td><code>GET|POST /api/reports<br>GET /api/reports/student-activity</code></td><td>Daily inspection reports, class teacher activity reports</td></tr>
+</table>
+
+<p>All admin CRUD endpoints use <code>createAdminClient()</code> (service role) with <code>requireAdmin()</code> for authorization. Non-admin endpoints use <code>createServerSupabaseClient()</code> with RLS.</p>
+
+<div class="page-break"></div>
+
+<h2 id="s7">7. Telegram Bot System</h2>
+
+<h3>Architecture</h3>
+<ul>
+  <li>Serverless: No persistent bot process. Receives updates via webhook at <code>POST /api/telegram/webhook</code></li>
+  <li>Fallback: <code>POST /api/telegram/poll</code> for environments without public webhook URL</li>
+  <li>Token resolved from <code>TELEGRAM_BOT_TOKEN</code> env var or <code>settings</code> table</li>
+</ul>
+
+<h3>Commands (Staff)</h3>
+<table>
+  <tr><th>Command</th><th>Description</th></tr>
+  <tr><td><code>/link STAFF_ID EMAIL</code></td><td>Link Telegram to staff account</td></tr>
+  <tr><td><code>/tasks</code></td><td>View assigned tasks</td></tr>
+  <tr><td><code>/todo</code></td><td>View daily to-do list with inline buttons</td></tr>
+  <tr><td><code>/report Activities | Challenges | Notes</code></td><td>Submit daily activity report (pipe-delimited)</td></tr>
+  <tr><td><code>/duty</code></td><td>Today's duties with status</td></tr>
+  <tr><td><code>/dutydone</code></td><td>Mark pending duties complete</td></tr>
+  <tr><td><code>/mytimetable [day]</code></td><td>View your teaching schedule</td></tr>
+  <tr><td><code>/next</code></td><td>Your next class period</td></tr>
+  <tr><td><code>/summary</code></td><td>Quick stats snapshot</td></tr>
+</table>
+
+<h3>Commands (Admin)</h3>
+<table>
+  <tr><th>Command</th><th>Description</th></tr>
+  <tr><td><code>/assign STAFF_ID DESCRIPTION</code></td><td>Assign task to staff</td></tr>
+  <tr><td><code>/broadcast MESSAGE</code></td><td>Send broadcast to all linked staff</td></tr>
+  <tr><td><code>/class_tt CLASS [ARM]</code></td><td>View class timetable</td></tr>
+  <tr><td><code>/tt_status</code></td><td>Timetable generation status</td></tr>
+  <tr><td><code>/gen_tt</code></td><td>Generate timetable for current term</td></tr>
+  <tr><td><code>/automate [RULE]</code></td><td>Run automation engine</td></tr>
+  <tr><td><code>/schedule YYYY-MM-DD HH:MM MSG</code></td><td>Schedule future broadcast</td></tr>
+</table>
+
+<h3>Callback Buttons</h3>
+<p>Interactive inline keyboards handle: task acknowledge/complete/issue, task list navigation, to-do add/complete, duty completion, task deletion.</p>
+
+<h2 id="s8">8. Automation Engine</h2>
+
+<h3>Architecture</h3>
+<p>Entry point: <code>POST /api/automation/engine</code>. Triggered by Vercel Cron (6:00 AM UTC), Telegram <code>/automate</code> command, or manual button. Each rule checks its time window before executing. Duplicate prevention via <code>last_run_at</code> with 30-min cooldown.</p>
+
+<h3>13 Automation Rules</h3>
+<table>
+  <tr><th>Rule Key</th><th>Schedule</th><th>Action</th></tr>
+  <tr><td><code>duty_roster_notify</code></td><td>06:30 daily</td><td>Notify staff of today's duty via Telegram</td></tr>
+  <tr><td><code>checkin_reminder</code></td><td>08:30 weekdays</td><td>Ping staff who haven't checked in</td></tr>
+  <tr><td><code>absentee_alert</code></td><td>10:00 weekdays</td><td>Alert commandant if absentee rate > 30%</td></tr>
+  <tr><td><code>next_period_notify</code></td><td>Every ~40 min</td><td>Remind teachers of upcoming class</td></tr>
+  <tr><td><code>daily_summary_broadcast</code></td><td>14:00 weekdays</td><td>End-of-day stats to admins</td></tr>
+  <tr><td><code>duty_auto_assign</code></td><td>06:00 weekdays</td><td>Rotate duty assignments fairly</td></tr>
+  <tr><td><code>daily_report_reminder</code></td><td>12:00 weekdays</td><td>Remind Inspection duty staff to submit report</td></tr>
+  <tr><td><code>commandant_todo</code></td><td>06:30 weekdays</td><td>Morning briefing to commandant's Telegram</td></tr>
+  <tr><td><code>end_of_day_digest</code></td><td>15:00 weekdays</td><td>Comprehensive daily stats to commandant</td></tr>
+  <tr><td><code>scheduled_broadcast_processor</code></td><td>Every 15 min</td><td>Send due scheduled broadcasts</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2 id="s9">9. Frontend Components</h2>
+
+<h3>Pages by Role</h3>
+<table>
+  <tr><th>Route</th><th>Component</th><th>Roles</th></tr>
+  <tr><td><code>/dashboard</code></td><td>DashboardContent, AiAssistant</td><td>commandant, admin</td></tr>
+  <tr><td><code>/teacher-dashboard</code></td><td>ClassTeacherDashboard</td><td>teacher</td></tr>
+  <tr><td><code>/check-in</code></td><td>CheckInForm (QR + manual)</td><td>commandant, admin, support</td></tr>
+  <tr><td><code>/student-checkin</code></td><td>StudentCheckinForm (batch)</td><td>commandant, admin, teacher</td></tr>
+  <tr><td><code>/timetable</code></td><td>Timetable grid with generation</td><td>commandant, admin</td></tr>
+  <tr><td><code>/timetable/setup</code></td><td>Multi-tab setup (subjects, teachers, classes, slots, rooms)</td><td>commandant, admin</td></tr>
+  <tr><td><code>/duty-roster</code></td><td>RosterContent (CRUD table)</td><td>commandant, admin</td></tr>
+  <tr><td><code>/muster-parade</code></td><td>MusterContent</td><td>commandant, admin</td></tr>
+</table>
+
+<h3>Reusable Components</h3>
+<ul>
+  <li><strong>Nav</strong> — Responsive sidebar with role-based sections</li>
+  <li><strong>AuthGate</strong> — Route protection with redirect</li>
+  <li><strong>CollapsibleCard</strong> — Expandable card with chevron toggle</li>
+  <li><strong>CollapsibleSection</strong> — Show more/less for long lists</li>
+  <li><strong>DashboardChart</strong> — Attendance bar charts</li>
+  <li><strong>QRScanner</strong> — Camera-based QR code scanning</li>
+  <li><strong>DevAuthInterceptor</strong> — Dev mode auth bypass toolbar</li>
+</ul>
+
+<h2 id="s10">10. Environment Variables</h2>
+
+<h3>Required</h3>
+<pre>
+NEXT_PUBLIC_SUPABASE_URL         # Supabase project URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY    # Supabase anonymous key
+SUPABASE_SERVICE_ROLE_KEY        # Supabase service role key
+</pre>
+
+<h3>Telegram &amp; Notifications</h3>
+<pre>
+TELEGRAM_BOT_TOKEN               # From @BotFather
+WHATSAPP_API_TOKEN               # Meta WhatsApp permanent token
+WHATSAPP_PHONE_NUMBER_ID         # WhatsApp Business phone ID
+TERMII_API_KEY                   # Termii SMS
+AFRICAS_TALKING_API_KEY          # Africa's Talking SMS
+</pre>
+
+<h3>AI Assistant</h3>
+<pre>
+AI_API_KEY                       # OpenAI API key
+GEMINI_API_KEY                   # Google Gemini API key
+AI_PROVIDER                      # "openai" | "gemini"
+</pre>
+
+<h3>Security</h3>
+<pre>
+NEXT_PUBLIC_TURNSTILE_SITE_KEY   # Cloudflare Turnstile
+TURNSTILE_SECRET_KEY
+</pre>
+
+<h3>Deployment</h3>
+<pre>
+NEXT_PUBLIC_APP_URL              # Public URL for webhook callbacks
+NEXT_PUBLIC_DEV_MODE             # "true" to bypass auth in dev
+</pre>
+
+<div class="page-break"></div>
+
+<h2 id="s11">11. Deployment Guide</h2>
+
+<h3>Platform: Vercel</h3>
+<ol>
+  <li>Push code to GitHub repository</li>
+  <li>Create new Vercel project from GitHub repo</li>
+  <li>Set all environment variables in Vercel Project Settings</li>
+  <li>Build command: <code>next build</code> (default)</li>
+  <li>Deploy triggers automatically on push to master</li>
+</ol>
+
+<h3>Supabase Setup</h3>
+<ol>
+  <li>Create Supabase project</li>
+  <li>Enable <code>uuid-ossp</code> extension in SQL Editor: <code>CREATE EXTENSION IF NOT EXISTS "uuid-ossp";</code></li>
+  <li>Run migration files sequentially (001 through latest)</li>
+  <li>Configure Authentication providers (email/password)</li>
+  <li>Copy project URL, anon key, service role key to Vercel env vars</li>
+</ol>
+
+<h3>Telegram Bot Setup</h3>
+<ol>
+  <li>Create bot via <code>@BotFather</code> on Telegram</li>
+  <li>Copy token and set <code>TELEGRAM_BOT_TOKEN</code> env var</li>
+  <li>After deployment, navigate to Settings → Telegram in the app</li>
+  <li>Click "Set Webhook" to register the webhook URL</li>
+  <li>Or manually: <code>https://api.telegram.org/bot{TOKEN}/setWebhook?url={APP_URL}/api/telegram/webhook</code></li>
+</ol>
+
+<h3>WhatsApp Cloud API Setup</h3>
+<ol>
+  <li>Create Meta Business Account + WhatsApp Business Account</li>
+  <li>Set up webhook at <code>{APP_URL}/api/whatsapp/webhook</code> with verify token</li>
+  <li>Create message templates (duty, task, period, broadcast)</li>
+  <li>Set env vars with template names</li>
+</ol>
+
+<h3>Cron Jobs</h3>
+<p><code>vercel.json</code> defines a single cron: <code>0 6 * * *</code> (daily 06:00 UTC). The automation engine internally checks each rule's time window.</p>
+
+<h2 id="s12">12. Step-by-Step Build Process</h2>
+
+<h3>Phase 1: Foundation (Week 1-2)</h3>
+<ol>
+  <li>Initialize Next.js project with TypeScript and App Router</li>
+  <li>Set up Tailwind CSS v4</li>
+  <li>Create Supabase project, enable uuid-ossp</li>
+  <li>Create core migrations: departments, staff, settings</li>
+  <li>Build staff CRUD page and API</li>
+  <li>Set up authentication with Supabase Auth</li>
+  <li>Create AuthContext, AuthGate, role-based routing</li>
+  <li>Build responsive sidebar navigation</li>
+</ol>
+
+<h3>Phase 2: Attendance (Week 3-4)</h3>
+<ol>
+  <li>Create staff_attendance table migration</li>
+  <li>Build check-in/out API routes</li>
+  <li>Build CheckInForm with QR code scanning</li>
+  <li>Build attendance dashboard with stats/charts</li>
+  <li>Create student schema (classes, students, student_attendance)</li>
+  <li>Build batch student check-in by class</li>
+  <li>Build student attendance dashboard with class breakdowns</li>
+  <li>Add late detection and attendance cutoff logic</li>
+</ol>
+
+<h3>Phase 3: Duties &amp; Reports (Week 5-6)</h3>
+<ol>
+  <li>Create duty schema (duty_types, duty_rosters, daily_reports)</li>
+  <li>Build duty type CRUD</li>
+  <li>Build duty roster management with auto-rotation</li>
+  <li>Build daily report submission form</li>
+  <li>Build reports dashboard with filters and export</li>
+  <li>Add student activity reports for class teachers</li>
+</ol>
+
+<div class="page-break"></div>
+
+<h3>Phase 4: Parade &amp; Tasks (Week 7)</h3>
+<ol>
+  <li>Create parade schema (sessions, briefings, tasks)</li>
+  <li>Build parade session CRUD with status tracking</li>
+  <li>Build task assignment with priority and deadlines</li>
+  <li>Add acknowledgement workflow</li>
+  <li>Build task list page with filters</li>
+</ol>
+
+<h3>Phase 5: Timetable Generator (Week 8-10)</h3>
+<ol>
+  <li>Create timetable schema (terms, subjects, time_slots, rooms, entries, class_subjects)</li>
+  <li>Build subject CRUD with difficulty tiers</li>
+  <li>Build teacher-subject assignment</li>
+  <li>Build class-subject assignment</li>
+  <li>Build time slots configuration</li>
+  <li>Implement AI timetable generation algorithm:
+    <ul>
+      <li>Load classes, subjects, teachers, slots, rooms</li>
+      <li>Build class requirements with period counts</li>
+      <li>Greedy assignment with shuffling</li>
+      <li>Morning priority for hard subjects</li>
+      <li>Double-period support for sciences</li>
+      <li>Teacher load balancing</li>
+      <li>Conflict detection and reporting</li>
+      <li>Quality scoring (distribution, morning ratio, load balance, conflict-free rate)</li>
+    </ul>
+  </li>
+  <li>Build timetable viewer with color-coded cells</li>
+  <li>Add Friday 30-min period support</li>
+  <li>Add generation history with publish workflow</li>
+</ol>
+
+<h3>Phase 6: Telegram Bot (Week 11-12)</h3>
+<ol>
+  <li>Create Telegram bot with @BotFather</li>
+  <li>Implement webhook receiver</li>
+  <li>Build account linking flow (/link, /unlink, /status)</li>
+  <li>Implement task commands (/tasks, /todo, /complete, /delete)</li>
+  <li>Implement duty commands (/duty, /dutyweek, /dutytoday, /dutydone)</li>
+  <li>Implement report submission (/report)</li>
+  <li>Implement timetable commands (/mytimetable, /next, /class_tt, /tt_status, /gen_tt)</li>
+  <li>Add inline keyboards for interactive actions</li>
+  <li>Implement callback handlers for all button types</li>
+  <li>Add broadcast capability</li>
+</ol>
+
+<h3>Phase 7: Automation &amp; Notifications (Week 13-14)</h3>
+<ol>
+  <li>Create notification_rules table with 13 rules</li>
+  <li>Build automation engine with time-window checking</li>
+  <li>Implement each rule handler:
+    <ul>
+      <li>duty_roster_notify — duty assignment alerts</li>
+      <li>checkin_reminder — late check-in pings</li>
+      <li>absentee_alert — high absentee alerts</li>
+      <li>next_period_notify — class reminders</li>
+      <li>daily_summary_broadcast — end-of-day stats</li>
+      <li>duty_auto_assign — fair rotation</li>
+      <li>commandant_todo — morning briefing</li>
+      <li>end_of_day_digest — comprehensive digest</li>
+    </ul>
+  </li>
+  <li>Create Vercel cron configuration</li>
+  <li>Set up WhatsApp Cloud API integration</li>
+  <li>Set up SMS gateways (Termii + Africa's Talking)</li>
+  <li>Build notification queue with retry logic</li>
+  <li>Build automation hub page with rule management</li>
+</ol>
+
+<h3>Phase 8: AI Assistant &amp; Polish (Week 15-16)</h3>
+<ol>
+  <li>Build AI chat component with OpenAI/Gemini</li>
+  <li>Implement function calling for database queries</li>
+  <li>Build AI insights dashboard card</li>
+  <li>Error boundary and loading states</li>
+  <li>Performance optimization</li>
+  <li>Comprehensive testing</li>
+  <li>Deployment documentation</li>
+</ol>
+
+<h3>Phase 9: Investment Pitch Prep</h3>
+<ol>
+  <li>Create pitch deck (slides + documents)</li>
+  <li>Document ROI metrics</li>
+  <li>Prepare demo environment</li>
+  <li>Create onboarding documentation</li>
+  <li>Price tiers: School license, module add-ons, support plans</li>
+</ol>
+
+<p style="text-align:center; margin-top: 40pt; color: #999; font-size: 10pt;">AFCS Smart Campus — Technical Blueprint v1.0 &copy; 2026</p>
+
+</body>
+</html>

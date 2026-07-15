@@ -20,6 +20,7 @@ export function SignupForm() {
   const [role, setRole] = useState<'commandant' | 'admin' | 'teacher'>('admin')
   const [showPassword, setShowPassword] = useState(false)
   const [captchaToken, setCaptchaToken] = useState('')
+  const [captchaNonce, setCaptchaNonce] = useState('')
   const [captchaQuestion, setCaptchaQuestion] = useState('')
   const [captchaAnswer, setCaptchaAnswer] = useState('')
   const [loading, setLoading] = useState(false)
@@ -32,6 +33,7 @@ export function SignupForm() {
     fetch('/api/auth/captcha').then(r => r.json()).then(data => {
       setCaptchaQuestion(data.question)
       setCaptchaToken(data.token)
+      setCaptchaNonce(data.nonce)
       setCaptchaAnswer('')
     }).catch(() => {})
   }
@@ -61,7 +63,7 @@ export function SignupForm() {
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, fullName, staffId, role, captchaToken, captchaAnswer }),
+        body: JSON.stringify({ email, password, fullName, staffId, role, captchaToken, captchaNonce, captchaAnswer }),
       })
 
       const data = await res.json()

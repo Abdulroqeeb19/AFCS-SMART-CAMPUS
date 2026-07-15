@@ -12,7 +12,9 @@ export async function getTelegramBotToken(): Promise<string> {
       process.env.TELEGRAM_BOT_TOKEN = data.telegram_bot_token
       return data.telegram_bot_token
     }
-  } catch {}
+  } catch (err) {
+    console.error('Failed to read telegram bot token from settings:', err instanceof Error ? err.message : err)
+  }
 
   return ''
 }

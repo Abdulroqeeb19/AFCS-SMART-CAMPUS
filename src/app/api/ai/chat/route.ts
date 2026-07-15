@@ -384,7 +384,7 @@ export async function POST(request: Request) {
     if (!auth) return NextResponse.json({ error: 'Authentication required' }, { status: 403 })
 
     const ip = request.headers.get('x-forwarded-for') || 'unknown'
-    const limit = rateLimit(`${auth.id}:${ip}`, 20, 60)
+    const limit = await rateLimit(`${auth.id}:${ip}`, 20, 60)
     if (!limit.allowed) {
       return NextResponse.json({ error: `Rate limit exceeded. Try again in ${limit.resetInSeconds}s` }, { status: 429 })
     }

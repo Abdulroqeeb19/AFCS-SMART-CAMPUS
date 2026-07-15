@@ -23,7 +23,7 @@ export default function RootLayout({
       <body suppressHydrationWarning className="min-h-screen antialiased font-sans">
         <AuthProvider>
           <SuppressExtensionErrors />
-          <DevAuthInterceptor />
+          {process.env.NEXT_PUBLIC_DEV_MODE === 'true' && <DevAuthInterceptor />}
           <div className="flex min-h-screen">
             <Nav />
 

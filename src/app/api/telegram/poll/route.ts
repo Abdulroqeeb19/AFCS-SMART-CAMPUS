@@ -49,6 +49,7 @@ export async function POST() {
 
     return NextResponse.json({ ok: true, processed })
   } catch (err) {
+    console.error('Telegram poll error:', err instanceof Error ? err.message : err)
     return NextResponse.json({ error: 'Poll error' }, { status: 500 })
   }
 }

@@ -12,6 +12,7 @@ import type {
   AcademicTerm, TimetableEntry, TimeSlot, AcademicSession,
 } from '@/lib/database.types'
 import { Hint } from '@/components/hint'
+import { TimetableSkeleton } from '@/components/skeleton'
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 const DAY_COLORS = ['bg-blue-50', 'bg-green-50', 'bg-amber-50', 'bg-purple-50', 'bg-rose-50']
@@ -221,11 +222,7 @@ export default function TimetablePage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
-      </div>
-    )
+    return <TimetableSkeleton />
   }
 
   return (
@@ -273,6 +270,7 @@ export default function TimetablePage() {
             value={selectedTermId}
             onChange={(e) => setSelectedTermId(e.target.value)}
             className="rounded-lg border border-zinc-300 px-3 py-2 text-sm bg-white min-w-[180px]"
+            aria-label="Select academic term"
           >
             <option value="">Select Term</option>
             {terms.map((t) => (
@@ -286,6 +284,7 @@ export default function TimetablePage() {
             value={selectedClassId}
             onChange={(e) => setSelectedClassId(e.target.value)}
             className="rounded-lg border border-zinc-300 px-3 py-2 text-sm bg-white min-w-[140px]"
+            aria-label="Filter by class"
           >
             <option value="">All Classes</option>
             {classes.map((c) => (
@@ -297,6 +296,7 @@ export default function TimetablePage() {
             value={selectedTeacherFilter}
             onChange={(e) => setSelectedTeacherFilter(e.target.value)}
             className="rounded-lg border border-zinc-300 px-3 py-2 text-sm bg-white min-w-[160px]"
+            aria-label="Filter by teacher"
           >
             <option value="">All Teachers</option>
             {teacherNames.map((n) => (
@@ -310,6 +310,7 @@ export default function TimetablePage() {
             value={subjectFilter}
             onChange={(e) => setSubjectFilter(e.target.value)}
             className="rounded-lg border border-zinc-300 px-3 py-2 text-sm bg-white w-36"
+            aria-label="Filter by subject name"
           />
 
           <div className="flex-1" />
@@ -318,6 +319,7 @@ export default function TimetablePage() {
             onClick={handleGenerate}
             disabled={generating || !selectedTermId}
             className="inline-flex items-center gap-2 rounded-lg bg-[#001A4D] text-white px-5 py-2 text-sm font-medium hover:bg-blue-900 disabled:opacity-50 transition-colors"
+            aria-label={generating ? 'Generating timetable...' : 'Generate timetable'}
           >
             {generating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
             {generating ? 'Generating...' : 'Generate Timetable'}

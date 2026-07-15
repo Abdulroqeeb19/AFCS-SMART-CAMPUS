@@ -29,7 +29,8 @@ export async function POST(request: Request) {
 
     await handleTelegramCommand(chatId, text, supabase, botUrl)
     return NextResponse.json({ ok: true })
-  } catch {
+  } catch (err) {
+    console.error('Telegram webhook error:', err instanceof Error ? err.message : err)
     return NextResponse.json({ ok: true })
   }
 }

@@ -831,19 +831,15 @@ export async function handleTelegramCommand(
 
     // Notify the assignee
     if (targetStaff.telegram_chat_id) {
-      const token = process.env.TELEGRAM_BOT_TOKEN
-      if (token) {
-        const assignBotUrl = `https://api.telegram.org/bot${token}`
-        await fetch(`${assignBotUrl}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: targetStaff.telegram_chat_id,
-            text: `📋 *New Task Assigned*\n━━━━━━━━━━━━━━━\n${bold('From:')} ${esc(staff.full_name)} (${esc(staff.role)})\n${bold('Task:')} ${esc(description)}\n━━━━━━━━━━━━━━━\nUse /tasks to view all your tasks.`,
-            parse_mode: 'Markdown',
-          }),
-        })
-      }
+      await fetch(`${botUrl}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: targetStaff.telegram_chat_id,
+          text: `📋 *New Task Assigned*\n━━━━━━━━━━━━━━━\n${bold('From:')} ${esc(staff.full_name)} (${esc(staff.role)})\n${bold('Task:')} ${esc(description)}\n━━━━━━━━━━━━━━━\nUse /tasks to view all your tasks.`,
+          parse_mode: 'Markdown',
+        }),
+      })
     }
     return
   }
@@ -862,14 +858,10 @@ export async function handleTelegramCommand(
 
     if (!allStaff?.length) { await r('No staff with Telegram linked.'); return }
 
-    const token = process.env.TELEGRAM_BOT_TOKEN
-    if (!token) { await r('Bot not configured.'); return }
-    const bUrl = `https://api.telegram.org/bot${token}`
-
     let sent = 0
     for (const s of allStaff) {
       try {
-        await fetch(`${bUrl}/sendMessage`, {
+        await fetch(`${botUrl}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
