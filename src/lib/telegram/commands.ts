@@ -1036,14 +1036,14 @@ export async function handleTelegramCommand(
       `━━━━━━━━━━━━━━━\n`
 
     if (lastGen) {
-      const q = lastGen.quality as { overall_score?: number } | null
+      const assignPct = lastGen.total_periods > 0 ? Math.round((lastGen.assigned_periods / lastGen.total_periods) * 100) : 0
       msg +=
         `${bold('Last Generation:')}\n` +
         `🆔 ${lastGen.id.slice(0, 8)}…\n` +
         `📅 ${new Date(lastGen.generated_at).toLocaleDateString()}\n` +
-        `📊 ${lastGen.assigned_periods}/${lastGen.total_periods} periods\n` +
+        `📊 ${lastGen.assigned_periods}/${lastGen.total_periods} periods assigned\n` +
         `⚡ ${lastGen.conflict_count} conflict${lastGen.conflict_count !== 1 ? 's' : ''}\n` +
-        `🏆 Quality: ${q?.overall_score ?? 'N/A'}%\n` +
+        `🏆 Assignment rate: ${assignPct}%\n` +
         `📌 Status: *${lastGen.status}*\n`
     } else {
       msg += `${bold('Last Generation:')} None yet\n`
