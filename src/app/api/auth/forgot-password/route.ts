@@ -16,10 +16,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Email is required' }, { status: 400 })
   }
 
-  const origin = request.headers.get('origin') || request.headers.get('host') || ''
-  const protocol = origin.includes('localhost') ? 'http' : 'https'
-  const host = origin.replace(/^https?:\/\//, '')
-  const redirectTo = `${protocol}://${host}/reset-password`
+  const proto = request.headers.get('x-forwarded-proto') || 'https'
+  const host = request.headers.get('x-forwarded-host')
+    || request.headers.get('host')
+    || process.env.NEXT_PUBLIC_SITE_URL?.replace(/^https?:\/\//, '')
+    || 'localhost:3000'
+
+  const redirectTo = `${proto}://${host}/reset-password`
 
   const supabase = await createServerSupabaseClient()
   const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {

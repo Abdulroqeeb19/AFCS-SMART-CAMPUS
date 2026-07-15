@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card'
@@ -12,6 +13,7 @@ import {
 
 export function ResetPasswordForm() {
   const router = useRouter()
+  const supabaseRef = useRef<SupabaseClient | null>(null)
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -19,31 +21,29 @@ export function ResetPasswordForm() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const [initializing, setInitializing] = useState(true)
+  const [hasSession, setHasSession] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
+    supabaseRef.current = supabase
 
-    supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_IN' || event === 'PASSWORD_RECOVERY') {
+        setHasSession(true)
         setInitializing(false)
       }
     })
 
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) {
-        setInitializing(false)
-      } else {
-        // No session — check if recovery token is in URL hash
-        const hash = window.location.hash
-        if (!hash || !hash.includes('type=recovery')) {
-          setError('Invalid or expired reset link. Please request a new one.')
-          setInitializing(false)
-        } else {
-          // Supabase will auto-process the recovery token
-          setInitializing(false)
-        }
+        setHasSession(true)
       }
+      setInitializing(false)
     })
+
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [])
 
   function validatePassword(pw: string): string | null {
@@ -64,10 +64,12 @@ export function ResetPasswordForm() {
     const pwError = validatePassword(password)
     if (pwError) { setError(pwError); return }
 
+    const supabase = supabaseRef.current
+    if (!supabase) { setError('Session expired. Please request a new reset link.'); return }
+
     setLoading(true)
 
     try {
-      const supabase = createClient()
       const { error: updateError } = await supabase.auth.updateUser({ password })
 
       if (updateError) {
@@ -109,6 +111,27 @@ export function ResetPasswordForm() {
       <div className="flex items-center justify-center min-h-[40vh]">
         <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
       </div>
+    )
+  }
+
+  if (!hasSession) {
+    return (
+      <Card className="w-full max-w-md border-red-200 shadow-lg">
+        <CardHeader className="text-center pb-4">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+            <AlertCircle className="h-8 w-8 text-red-500" />
+          </div>
+          <CardTitle className="text-xl text-red-700">Invalid or Expired Link</CardTitle>
+          <CardDescription>
+            This password reset link is invalid or has expired. Please request a new one.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={() => router.push('/forgot-password')} className="w-full">
+            Request New Reset Link
+          </Button>
+        </CardContent>
+      </Card>
     )
   }
 
