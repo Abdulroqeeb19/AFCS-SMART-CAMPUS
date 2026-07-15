@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
   Calendar, CheckCircle2, XCircle, AlertTriangle, Settings,
@@ -170,10 +170,15 @@ export default function TimetablePage() {
     [slots]
   )
 
-  const nonTeachingPeriods = useMemo(() =>
-    slots.filter((s) => s.is_break || s.is_assembly).filter((s, i, arr) => arr.findIndex((x) => x.period_number === s.period_number && x.day_of_week === 1) === i),
+  const teachingPeriodExists = useCallback((day: number, period: number) =>
+    slots.some((s) => s.day_of_week === day && s.period_number === period && !s.is_break && !s.is_assembly),
     [slots]
-  ).sort((a, b) => a.period_number - b.period_number)
+  )
+
+  const nonTeachingPeriods = useMemo(() =>
+    [...new Set(slots.filter((s) => s.is_break || s.is_assembly).map((s) => s.period_number))].sort((a, b) => a - b),
+    [slots]
+  )
 
   const latestGen = genHistory[0]
 
@@ -241,7 +246,7 @@ export default function TimetablePage() {
             )}
           </div>
           <p className="text-sm text-zinc-500 mt-0.5">
-            Nigerian standard schedule &mdash; 8 periods/day &middot; Assembly &middot; Double-period support &middot; Quality optimisation
+            Nigerian standard schedule &mdash; 8 periods/day &middot; Assembly &middot; Mon&ndash;Thu 40min &middot; Fri 30min (closes 13:00) &middot; Quality optimisation
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -459,10 +464,19 @@ export default function TimetablePage() {
                         <span className="text-[10px] text-zinc-400 block">
                           {getSlotTime(slots, 1, pn)}
                         </span>
+                        {getSlotTime(slots, 5, pn) && getSlotTime(slots, 5, pn) !== getSlotTime(slots, 1, pn) && (
+                          <span className="text-[8px] text-rose-400 block">
+                            Fri: {getSlotTime(slots, 5, pn)}
+                          </span>
+                        )}
                       </td>
-                      {teachingSlots.map(({ day, cellEntries }) => (
+                      {teachingSlots.map(({ day, cellEntries }) => {
+                        const slotExists = teachingPeriodExists(day, pn)
+                        return (
                         <td key={`${day}-${pn}`} className={`${DAY_COLORS[day - 1]} px-1.5 py-1 border-r border-zinc-100 align-top`}>
-                          {cellEntries.length === 0 ? (
+                          {!slotExists ? (
+                            <span className="text-[8px] text-zinc-100 block text-center py-2 italic">N/A</span>
+                          ) : cellEntries.length === 0 ? (
                             <span className="text-[9px] text-zinc-200 block text-center py-2">&mdash;</span>
                           ) : (
                             <div className="space-y-1">
@@ -489,7 +503,8 @@ export default function TimetablePage() {
                             </div>
                           )}
                         </td>
-                      ))}
+                      )
+                    })}
                     </tr>
                   )
                 })}
@@ -499,20 +514,28 @@ export default function TimetablePage() {
                     <td className="bg-zinc-100 px-3 py-2 font-medium text-zinc-500 sticky left-0 z-10 border-r border-zinc-200 text-xs italic">
                       Non-teaching periods
                     </td>
-                    {DAYS.map((_, di) => (
-                      <td key={`non-${di}`} className="bg-zinc-50 px-2 py-2 border-r border-zinc-100">
-                        <div className="flex flex-wrap gap-1">
-                          {nonTeachingPeriods.map((nt) => (
-                            <span key={nt.period_number} className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-medium ${
-                              nt.is_assembly ? 'bg-amber-100 text-amber-700' : 'bg-zinc-100 text-zinc-500'
-                            }`}>
-                              {nt.period_label || `P${nt.period_number}`}
-                              <span className="opacity-60">{getSlotTime(slots, 1, nt.period_number)}</span>
-                            </span>
-                          ))}
-                        </div>
-                      </td>
-                    ))}
+                    {DAYS.map((_, di) => {
+                      const dayOfWeek = di + 1
+                      const dayNonTeaching = slots.filter((s) => s.day_of_week === dayOfWeek && (s.is_break || s.is_assembly)).sort((a, b) => a.period_number - b.period_number)
+                      return (
+                        <td key={`non-${di}`} className="bg-zinc-50 px-2 py-2 border-r border-zinc-100">
+                          {dayNonTeaching.length > 0 ? (
+                            <div className="flex flex-wrap gap-1">
+                              {dayNonTeaching.map((nt) => (
+                                <span key={nt.period_number} className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-medium ${
+                                  nt.is_assembly ? 'bg-amber-100 text-amber-700' : 'bg-zinc-100 text-zinc-500'
+                                }`}>
+                                  {nt.period_label || `P${nt.period_number}`}
+                                  <span className="opacity-60">{getSlotTime(slots, dayOfWeek, nt.period_number)}</span>
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-[9px] text-zinc-200">&mdash;</span>
+                          )}
+                        </td>
+                      )
+                    })}
                   </tr>
                 )}
               </tbody>

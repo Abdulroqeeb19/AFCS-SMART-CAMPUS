@@ -17,6 +17,8 @@ const HELP_TEXT = `*AFCS Smart Campus — Telegram Commands*
 /duty — Your duties for today
 /dutyweek — Your duties this week
 /summary — Quick stats snapshot
+/mytimetable [day] — Your teaching schedule for today or a specific day
+/next — What's your next class today
 /help — This message
 
  *Admin / Commandant only:*
@@ -24,6 +26,9 @@ const HELP_TEXT = `*AFCS Smart Campus — Telegram Commands*
 /assign STAFF_ID DESCRIPTION — Assign a task
 /delete TASK_ID — Remove a task
 /broadcast MESSAGE — Send broadcast to all staff
+/class_tt CLASS [ARM] — View a class's timetable for today
+/tt_status — Timetable generation status & quality
+/gen_tt — Generate timetable for current term
 /automate — Run automation engine now
 /automate RULE — Run a specific automation rule
 /automation list — List all rules & their status
@@ -449,11 +454,13 @@ export async function handleTelegramCommand(
       { count: pendingTasks },
       { count: myTasks },
       { count: myPending },
+      { data: todayParade },
     ] = await Promise.all([
       supabase.from('parade_tasks').select('id', { count: 'exact', head: true }),
       supabase.from('parade_tasks').select('id', { count: 'exact', head: true }).not('status', 'eq', 'completed').not('status', 'eq', 'cancelled'),
       supabase.from('parade_tasks').select('id', { count: 'exact', head: true }).eq('assigned_to', staff.id),
       supabase.from('parade_tasks').select('id', { count: 'exact', head: true }).eq('assigned_to', staff.id).not('status', 'eq', 'completed').not('status', 'eq', 'cancelled'),
+      supabase.from('parade_sessions').select('status').eq('date', today).limit(1).maybeSingle(),
     ])
 
     await r(
@@ -465,6 +472,8 @@ export async function handleTelegramCommand(
       `${bold('Your stats:')}\n` +
       `📋 Assigned: ${myTasks ?? 0}\n` +
       `🔄 Active: ${myPending ?? 0}\n` +
+      `━━━━━━━━━━━━━━━\n` +
+      `${todayParade ? `🚩 Today's parade: ${todayParade.status}` : '🚩 No parade today'}\n` +
       `━━━━━━━━━━━━━━━\n` +
       `_Air Force Comprehensive School, Igbara-Oke_`
     )
@@ -615,6 +624,161 @@ export async function handleTelegramCommand(
         `Use the buttons after /report to complete each one.`
       )
     }
+    return
+  }
+
+  // ── Timetable commands ──
+  const DAY_MAP: Record<string, number> = {
+    mon: 1, tue: 2, wed: 3, thu: 4, fri: 5,
+    monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5,
+  }
+
+  if (text === '/mytimetable' || text.startsWith('/mytimetable ')) {
+    const today = new Date().getDay()
+    if (today === 0 || today === 6) {
+      await r('No classes today (weekend).')
+      return
+    }
+
+    let targetDay = today
+    if (text.startsWith('/mytimetable ')) {
+      const dayArg = text.slice('/mytimetable '.length).trim().toLowerCase()
+      if (dayArg === 'today') targetDay = today
+      else if (dayArg === 'tomorrow') targetDay = today + 1 > 5 ? 1 : today + 1
+      else targetDay = DAY_MAP[dayArg] || today
+    }
+
+    const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][targetDay] || 'Unknown'
+
+    const { data: term } = await supabase
+      .from('academic_terms')
+      .select('id')
+      .eq('is_current', true)
+      .maybeSingle()
+
+    if (!term) {
+      await r('No active academic term set.')
+      return
+    }
+
+    const { data: entries } = await supabase
+      .from('timetable_entries')
+      .select('period_number, subject:subject_id(name, code), class:class_id(name, arm)')
+      .eq('term_id', term.id)
+      .eq('teacher_id', staff.id)
+      .eq('day_of_week', targetDay)
+      .order('period_number')
+
+    const { data: daySlots } = await supabase
+      .from('time_slots')
+      .select('period_number, start_time, end_time, period_label')
+      .eq('day_of_week', targetDay)
+      .not('is_break', 'eq', true)
+      .not('is_assembly', 'eq', true)
+      .order('period_number')
+
+    if (!entries?.length) {
+      await r(`📭 *${dayName}* — You have no classes scheduled.`)
+      return
+    }
+
+    const lines = entries.map((e) => {
+      const slot = daySlots?.find((s) => s.period_number === e.period_number)
+      const time = slot ? `${slot.start_time.slice(0, 5)}-${slot.end_time.slice(0, 5)}` : `P${e.period_number}`
+      return `🕐 ${time} — *${e.subject?.name || '?'}* (${e.subject?.code || '?'})\n🏫 ${e.class?.name || ''} ${e.class?.arm || ''}`
+    })
+
+    await r(
+      `${bold(`📅 Your Timetable — ${dayName}`)}\n` +
+      `━━━━━━━━━━━━━━━\n` +
+      lines.join('\n\n') + '\n' +
+      `━━━━━━━━━━━━━━━\n` +
+      `${esc(staff.full_name)} • ${lines.length} class${lines.length !== 1 ? 'es' : ''}`
+    )
+    return
+  }
+
+  if (text === '/next') {
+    const today = new Date().getDay()
+    if (today === 0 || today === 6) {
+      await r('No classes today (weekend).')
+      return
+    }
+
+    const now = new Date()
+    const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+
+    const { data: term } = await supabase
+      .from('academic_terms')
+      .select('id')
+      .eq('is_current', true)
+      .maybeSingle()
+
+    if (!term) {
+      await r('No active academic term set.')
+      return
+    }
+
+    const { data: daySlots } = await supabase
+      .from('time_slots')
+      .select('*')
+      .eq('day_of_week', today)
+      .order('period_number')
+
+    if (!daySlots?.length) {
+      await r('No time slots configured for today.')
+      return
+    }
+
+    // Find the next teaching slot
+    let nextSlot = null
+    for (const slot of daySlots) {
+      if (slot.is_break || slot.is_assembly) continue
+      if (currentTime < slot.start_time.slice(0, 5)) {
+        nextSlot = slot
+        break
+      }
+    }
+
+    if (!nextSlot) {
+      await r('No more classes remaining today. Have a good evening!')
+      return
+    }
+
+    const { data: entries } = await supabase
+      .from('timetable_entries')
+      .select('subject:subject_id(name, code), class:class_id(name, arm)')
+      .eq('term_id', term.id)
+      .eq('teacher_id', staff.id)
+      .eq('day_of_week', today)
+      .eq('period_number', nextSlot.period_number)
+
+    if (!entries?.length) {
+      await r(
+        `${bold('⏭️ Next Period')}\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        `🕐 ${nextSlot.start_time.slice(0, 5)}-${nextSlot.end_time.slice(0, 5)}\n` +
+        `📋 Period ${nextSlot.period_number}\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        `_No class scheduled for this period._`
+      )
+      return
+    }
+
+    const classes = entries.map((e) =>
+      `📚 *${e.subject?.name || '?'}* (${e.subject?.code || '?'})\n🏫 ${e.class?.name || ''} ${e.class?.arm || ''}`
+    ).join('\n\n')
+
+    await r(
+      `${bold('⏭️ Next Period')}\n` +
+      `━━━━━━━━━━━━━━━\n` +
+      `🕐 ${nextSlot.start_time.slice(0, 5)}-${nextSlot.end_time.slice(0, 5)}\n` +
+      `📋 Period ${nextSlot.period_number}\n` +
+      `━━━━━━━━━━━━━━━\n` +
+      classes + '\n' +
+      `━━━━━━━━━━━━━━━\n` +
+      `${esc(staff.full_name)}`
+    )
     return
   }
 
@@ -842,6 +1006,194 @@ export async function handleTelegramCommand(
     if (error) { await r('Failed to schedule.'); return }
 
     await r(`📅 *Broadcast Scheduled*\n━━━━━━━━━━━━━━━\n🕐 ${datePart} ${timePart}\n📝 ${content.substring(0, 100)}${content.length > 100 ? '…' : ''}\n━━━━━━━━━━━━━━━\nIt will be sent automatically at the scheduled time.`)
+    return
+  }
+
+  // ── Admin Timetable commands ──
+  if (text === '/tt_status') {
+    const { data: term } = await supabase
+      .from('academic_terms')
+      .select('id, name, is_current')
+      .eq('is_current', true)
+      .maybeSingle()
+
+    if (!term) {
+      await r('No active academic term set.')
+      return
+    }
+
+    const [{ count: entryCount }, { data: lastGen }] = await Promise.all([
+      supabase.from('timetable_entries').select('id', { count: 'exact', head: true }).eq('term_id', term.id),
+      supabase.from('timetable_generations').select('*').eq('term_id', term.id).order('generated_at', { ascending: false }).limit(1).maybeSingle(),
+    ])
+
+    let msg =
+      `${bold('📅 Timetable Status')}\n` +
+      `━━━━━━━━━━━━━━━\n` +
+      `${bold('Term:')} ${term.name}\n` +
+      `${bold('Active:')} ${term.is_current ? '✅ Yes' : '❌ No'}\n` +
+      `${bold('Entries:')} ${entryCount ?? 0}\n` +
+      `━━━━━━━━━━━━━━━\n`
+
+    if (lastGen) {
+      const q = lastGen.quality as { overall_score?: number } | null
+      msg +=
+        `${bold('Last Generation:')}\n` +
+        `🆔 ${lastGen.id.slice(0, 8)}…\n` +
+        `📅 ${new Date(lastGen.generated_at).toLocaleDateString()}\n` +
+        `📊 ${lastGen.assigned_periods}/${lastGen.total_periods} periods\n` +
+        `⚡ ${lastGen.conflict_count} conflict${lastGen.conflict_count !== 1 ? 's' : ''}\n` +
+        `🏆 Quality: ${q?.overall_score ?? 'N/A'}%\n` +
+        `📌 Status: *${lastGen.status}*\n`
+    } else {
+      msg += `${bold('Last Generation:')} None yet\n`
+    }
+
+    msg += `━━━━━━━━━━━━━━━\n_Use /gen_tt to generate_`
+    await r(msg)
+    return
+  }
+
+  if (text === '/gen_tt') {
+    const { data: term } = await supabase
+      .from('academic_terms')
+      .select('id, name')
+      .eq('is_current', true)
+      .maybeSingle()
+
+    if (!term) {
+      await r('No active academic term set.')
+      return
+    }
+
+    await r(`⏳ Generating timetable for *${term.name}*...`)
+
+    try {
+      const s = staff as any
+      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'https://afcs-smart-campus.vercel.app'}/api/timetable/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-auth-email': s.email || s.staff_id + '@afcs.edu.ng' },
+        body: JSON.stringify({ term_id: term.id }),
+      })
+
+      const data = await res.json()
+
+      if (!data.success) {
+        await r(`❌ *Generation Failed*\n━━━━━━━━━━━━━━━\n${data.error || 'Unknown error'}`)
+        return
+      }
+
+      const diagCount = data.diagnostics?.length || 0
+      await r(
+        `${bold('✅ Timetable Generated!')}\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        `${bold('Term:')} ${term.name}\n` +
+        `${bold('Assigned:')} ${data.assigned_periods}/${data.total_periods} periods\n` +
+        `${bold('Classes:')} ${data.classes_generated}\n` +
+        `${bold('Conflicts:')} ${data.conflict_count}\n` +
+        `${bold('Quality:')} ${data.quality?.overall_score ?? 'N/A'}%\n` +
+        `${diagCount > 0 ? `${bold('Skipped:')} ${diagCount} class/subject(s)\n` : ''}` +
+        `━━━━━━━━━━━━━━━\n` +
+        `_Use /tt_status for details_`
+      )
+    } catch (err) {
+      await r('❌ Failed to generate timetable. Check server logs.')
+    }
+    return
+  }
+
+  if (text.startsWith('/class_tt ')) {
+    const args = text.slice('/class_tt '.length).trim().split(/\s+/)
+    const className = args[0]?.toUpperCase()
+    const classArm = args[1]?.toUpperCase() || null
+
+    if (!className) {
+      await r('Usage: /class_tt CLASS [ARM]\nExample: /class_tt JSS1 A')
+      return
+    }
+
+    const today = new Date().getDay()
+    if (today === 0 || today === 6) {
+      await r('No classes today (weekend).')
+      return
+    }
+
+    const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][today]
+
+    const { data: term } = await supabase
+      .from('academic_terms')
+      .select('id')
+      .eq('is_current', true)
+      .maybeSingle()
+
+    if (!term) {
+      await r('No active academic term set.')
+      return
+    }
+
+    let classQuery = supabase.from('classes').select('id, name, arm').ilike('name', className)
+    if (classArm) classQuery = classQuery.ilike('arm', classArm)
+    else classQuery = classQuery.order('arm').limit(5)
+
+    const { data: classes } = await classQuery
+
+    if (!classes?.length) {
+      await r(`Class "${className}${classArm ? ` ${classArm}` : ''}" not found.`)
+      return
+    }
+
+    if (classes.length > 1) {
+      const list = classes.map((c) => `${c.name} ${c.arm}`).join('\n')
+      await r(
+        `${bold('📚 Multiple classes found')}\n` +
+        `━━━━━━━━━━━━━━━\n` +
+        list + '\n' +
+        `━━━━━━━━━━━━━━━\n` +
+        `Use ${code(`/class_tt ${className} ARM`)} to specify the arm.`
+      )
+      return
+    }
+
+    const cls = classes[0]
+
+    const { data: entries } = await supabase
+      .from('timetable_entries')
+      .select('period_number, subject:subject_id(name, code), teacher:teacher_id(full_name)')
+      .eq('term_id', term.id)
+      .eq('class_id', cls.id)
+      .eq('day_of_week', today)
+      .order('period_number')
+
+    const { data: daySlots } = await supabase
+      .from('time_slots')
+      .select('period_number, start_time, end_time, period_label, is_break, is_assembly')
+      .eq('day_of_week', today)
+      .order('period_number')
+
+    let msg =
+      `${bold(`📚 ${cls.name} ${cls.arm} — ${dayName}`)}\n` +
+      `━━━━━━━━━━━━━━━\n`
+
+    if (!entries?.length) {
+      msg += 'No classes scheduled for today.'
+    } else {
+      const lines = entries.map((e) => {
+        const slot = daySlots?.find((s) => s.period_number === e.period_number)
+        const time = slot ? `${slot.start_time.slice(0, 5)}-${slot.end_time.slice(0, 5)}` : `P${e.period_number}`
+        return `🕐 ${time} — *${e.subject?.name || '?'}*\n👨‍🏫 ${e.teacher?.full_name || '?'}`
+      })
+      msg += lines.join('\n\n')
+    }
+
+    msg += `\n━━━━━━━━━━━━━━━\n${cls.name} ${cls.arm}`
+
+    // Add non-teaching periods info
+    const breaks = daySlots?.filter((s) => s.is_break || s.is_assembly) || []
+    if (breaks.length > 0) {
+      msg += `\n_Breaks: ${breaks.map((b) => `${b.period_label || `P${b.period_number}`} ${b.start_time.slice(0, 5)}-${b.end_time.slice(0, 5)}`).join(', ')}_`
+    }
+
+    await r(msg)
     return
   }
 

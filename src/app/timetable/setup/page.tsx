@@ -403,7 +403,7 @@ export default function TimetableSetupPage() {
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {[1,2,3,4,5,6,7,8,10,11,12].map((pn) => (
+                {[...new Set(slots.map((s) => s.period_number))].sort((a, b) => a - b).map((pn) => (
                   <tr key={pn} className="hover:bg-zinc-50">
                     <td className="px-3 py-2 font-medium text-zinc-600">{pn}</td>
                     {[1,2,3,4,5].map((d) => {
@@ -428,7 +428,7 @@ export default function TimetableSetupPage() {
             </table>
           </div>
           <p className="text-xs text-zinc-400">
-            Time slots: Short Break (P4), Long Break (P10). School closes at 14:20.
+              Mon&ndash;Thu: 40-min periods, Short Break (P4), Long Break (P10), closes 14:20. Fri: 30-min periods, Short Break (P4), Long Break (P9), closes 13:00.
           </p>
         </div>
       )}

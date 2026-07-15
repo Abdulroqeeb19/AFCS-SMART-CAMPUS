@@ -13,6 +13,7 @@ import { StudentAttendanceTable } from '@/components/student-attendance-table'
 import { StudentChart } from '@/components/student-chart'
 import { StatsSkeleton, TableSkeleton } from '@/components/skeleton'
 import { CollapsibleSection } from '@/components/collapsible-section'
+import { CollapsibleCard } from '@/components/collapsible-card'
 import { useAuth } from '@/contexts/auth-context'
 import {
   AlertCircle,
@@ -335,81 +336,75 @@ export function DashboardContent() {
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
-            <Card>
-              <CardHeader className="flex-row items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-sm">
-                  <Users className="h-4 w-4 text-blue-500" />
-                  Staff Summary
-                </CardTitle>
+            <CollapsibleCard
+              title="Staff Summary"
+              icon={<Users className="h-4 w-4 text-blue-500" />}
+              actions={
                 <Button variant="ghost" size="sm" className="gap-1 text-xs" onClick={() => setTab('staff')}>
                   Details <ChevronRight className="h-3 w-3" />
                 </Button>
-              </CardHeader>
-              <CardContent>
-                {staffReport ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-zinc-500">Present</span>
-                      <span className="font-medium text-emerald-600">{staffReport.present}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-zinc-500">Late</span>
-                      <span className="font-medium text-amber-600">{staffReport.late}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-zinc-500">Absent</span>
-                      <span className="font-medium text-red-600">{staffReport.absent}</span>
-                    </div>
-                    <div className="pt-2 border-t border-zinc-100">
-                      <div className="flex h-3 w-full rounded-full bg-zinc-100 overflow-hidden">
-                        <div className="bg-emerald-500 transition-all" style={{ width: `${(staffReport.present / Math.max(staffReport.total_staff, 1)) * 100}%` }} />
-                        <div className="bg-amber-400 transition-all" style={{ width: `${(staffReport.late / Math.max(staffReport.total_staff, 1)) * 100}%` }} />
-                      </div>
+              }
+            >
+              {staffReport ? (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-zinc-500">Present</span>
+                    <span className="font-medium text-emerald-600">{staffReport.present}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-zinc-500">Late</span>
+                    <span className="font-medium text-amber-600">{staffReport.late}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-zinc-500">Absent</span>
+                    <span className="font-medium text-red-600">{staffReport.absent}</span>
+                  </div>
+                  <div className="pt-2 border-t border-zinc-100">
+                    <div className="flex h-3 w-full rounded-full bg-zinc-100 overflow-hidden">
+                      <div className="bg-emerald-500 transition-all" style={{ width: `${(staffReport.present / Math.max(staffReport.total_staff, 1)) * 100}%` }} />
+                      <div className="bg-amber-400 transition-all" style={{ width: `${(staffReport.late / Math.max(staffReport.total_staff, 1)) * 100}%` }} />
                     </div>
                   </div>
-                ) : (
-                  <p className="text-sm text-zinc-400 text-center py-4">Staff data unavailable</p>
-                )}
-              </CardContent>
-            </Card>
+                </div>
+              ) : (
+                <p className="text-sm text-zinc-400 text-center py-4">Staff data unavailable</p>
+              )}
+            </CollapsibleCard>
 
-            <Card>
-              <CardHeader className="flex-row items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-sm">
-                  <GraduationCap className="h-4 w-4 text-violet-500" />
-                  Student Summary
-                </CardTitle>
+            <CollapsibleCard
+              title="Student Summary"
+              icon={<GraduationCap className="h-4 w-4 text-violet-500" />}
+              actions={
                 <Button variant="ghost" size="sm" className="gap-1 text-xs" onClick={() => setTab('students')}>
                   Details <ChevronRight className="h-3 w-3" />
                 </Button>
-              </CardHeader>
-              <CardContent>
-                {studentData ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-zinc-500">Present</span>
-                      <span className="font-medium text-emerald-600">{studentData.present}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-zinc-500">Late</span>
-                      <span className="font-medium text-amber-600">{studentData.late}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-zinc-500">Absent</span>
-                      <span className="font-medium text-red-600">{studentData.absent}</span>
-                    </div>
-                    <div className="pt-2 border-t border-zinc-100">
-                      <div className="flex h-3 w-full rounded-full bg-zinc-100 overflow-hidden">
-                        <div className="bg-emerald-500 transition-all" style={{ width: `${(studentData.present / Math.max(studentData.total_students, 1)) * 100}%` }} />
-                        <div className="bg-amber-400 transition-all" style={{ width: `${(studentData.late / Math.max(studentData.total_students, 1)) * 100}%` }} />
-                      </div>
+              }
+            >
+              {studentData ? (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-zinc-500">Present</span>
+                    <span className="font-medium text-emerald-600">{studentData.present}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-zinc-500">Late</span>
+                    <span className="font-medium text-amber-600">{studentData.late}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-zinc-500">Absent</span>
+                    <span className="font-medium text-red-600">{studentData.absent}</span>
+                  </div>
+                  <div className="pt-2 border-t border-zinc-100">
+                    <div className="flex h-3 w-full rounded-full bg-zinc-100 overflow-hidden">
+                      <div className="bg-emerald-500 transition-all" style={{ width: `${(studentData.present / Math.max(studentData.total_students, 1)) * 100}%` }} />
+                      <div className="bg-amber-400 transition-all" style={{ width: `${(studentData.late / Math.max(studentData.total_students, 1)) * 100}%` }} />
                     </div>
                   </div>
-                ) : (
-                  <p className="text-sm text-zinc-400 text-center py-4">Student data unavailable. Run student schema migration.</p>
-                )}
-              </CardContent>
-            </Card>
+                </div>
+              ) : (
+                <p className="text-sm text-zinc-400 text-center py-4">Student data unavailable. Run student schema migration.</p>
+              )}
+            </CollapsibleCard>
           </div>
 
           <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
@@ -504,267 +499,247 @@ export function DashboardContent() {
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-sm">
-                  <Clock className="h-4 w-4 text-blue-500" />
-                  Next Period
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {nextPeriod ? (
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center justify-between">
-                      <span className="text-zinc-500">Period {nextPeriod.number}</span>
-                      <span className="font-medium text-zinc-800">{nextPeriod.time}</span>
-                    </div>
-                    {nextPeriod.is_break && (
-                      <p className="text-amber-600 font-medium">Break Period</p>
-                    )}
-                    {nextPeriod.is_assembly && (
-                      <p className="text-violet-600 font-medium">Assembly</p>
-                    )}
-                    {nextPeriodEntries.length > 0 ? (
-                      <div className="mt-2 space-y-1.5 border-t border-zinc-100 pt-2">
-                        {nextPeriodEntries.slice(0, 4).map((e, i) => (
-                          <div key={i} className="flex items-center justify-between text-xs">
-                            <span className="text-zinc-600">{e.class?.name} {e.class?.arm}</span>
-                            <span className="text-zinc-500">{e.subject?.name} — {e.teacher?.full_name?.split(' ')[0]}</span>
-                          </div>
-                        ))}
-                        {nextPeriodEntries.length > 4 && (
-                          <p className="text-xs text-zinc-400">+{nextPeriodEntries.length - 4} more</p>
-                        )}
-                      </div>
-                    ) : (
-                      <p className="text-xs text-zinc-400 mt-1">No classes scheduled</p>
-                    )}
+            <CollapsibleCard
+              title="Next Period"
+              icon={<Clock className="h-4 w-4 text-blue-500" />}
+            >
+              {nextPeriod ? (
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-zinc-500">Period {nextPeriod.number}</span>
+                    <span className="font-medium text-zinc-800">{nextPeriod.time}</span>
                   </div>
-                ) : (
-                  <div className="text-sm text-zinc-400">
-                    {loading ? 'Loading...' : nextPeriodMessage || 'No upcoming periods today'}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {isAdminOrCommandant && (
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-sm">
-                    <MessageSquare className="h-4 w-4 text-emerald-600" />
-                    Live Task Responses
-                    {taskResponses.length > 0 && (
-                      <span className="ml-auto text-xs font-normal text-zinc-400">
-                        {taskResponses.filter((r: any) => r.response_type === 'acknowledged').length} ack · {taskResponses.filter((r: any) => r.response_type === 'completed').length} done
-                      </span>
-                    )}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {taskResponses.length > 0 ? (
-                    <div className="space-y-2">
-                      <CollapsibleSection
-                        items={taskResponses}
-                        keyExtractor={(r: any) => r.id}
-                        renderItem={(r: any) => (
-                          <div className="flex items-start gap-3 p-2 rounded-lg bg-zinc-50 border border-zinc-100 text-sm">
-                            <div className="shrink-0 mt-0.5">
-                              {r.response_type === 'acknowledged' && (
-                                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-blue-600 text-xs font-bold">✓</span>
-                              )}
-                              {r.response_type === 'completed' && (
-                                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-xs font-bold">✓</span>
-                              )}
-                              {r.response_type === 'issue_reported' && (
-                                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-red-100 text-red-600 text-xs font-bold">!</span>
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium text-zinc-800 truncate">
-                                  {r.staff?.full_name || 'Unknown'}
-                                </span>
-                                <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full shrink-0 ${
-                                  r.response_type === 'acknowledged' ? 'bg-blue-100 text-blue-700' :
-                                  r.response_type === 'completed' ? 'bg-emerald-100 text-emerald-700' :
-                                  'bg-red-100 text-red-700'
-                                }`}>
-                                  {r.response_type === 'acknowledged' ? 'Acknowledged' :
-                                   r.response_type === 'completed' ? 'Completed' : 'Issue'}
-                                </span>
-                              </div>
-                              <p className="text-xs text-zinc-500 truncate mt-0.5">
-                                {r.task?.description || 'Task'}
-                              </p>
-                              <p className="text-[10px] text-zinc-400 mt-0.5">
-                                {new Date(r.responded_at).toLocaleString()}
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                        defaultVisible={5}
-                      />
+                  {nextPeriod.is_break && (
+                    <p className="text-amber-600 font-medium">Break Period</p>
+                  )}
+                  {nextPeriod.is_assembly && (
+                    <p className="text-violet-600 font-medium">Assembly</p>
+                  )}
+                  {nextPeriodEntries.length > 0 ? (
+                    <div className="mt-2 space-y-1.5 border-t border-zinc-100 pt-2">
+                      {nextPeriodEntries.slice(0, 4).map((e, i) => (
+                        <div key={i} className="flex items-center justify-between text-xs">
+                          <span className="text-zinc-600">{e.class?.name} {e.class?.arm}</span>
+                          <span className="text-zinc-500">{e.subject?.name} — {e.teacher?.full_name?.split(' ')[0]}</span>
+                        </div>
+                      ))}
+                      {nextPeriodEntries.length > 4 && (
+                        <p className="text-xs text-zinc-400">+{nextPeriodEntries.length - 4} more</p>
+                      )}
                     </div>
                   ) : (
-                    <p className="text-sm text-zinc-400 text-center py-4">
-                      No task responses yet. Assign tasks via Telegram to receive live updates.
-                    </p>
+                    <p className="text-xs text-zinc-400 mt-1">No classes scheduled</p>
                   )}
-                </CardContent>
-              </Card>
-            )}
+                </div>
+              ) : (
+                <div className="text-sm text-zinc-400">
+                  {loading ? 'Loading...' : nextPeriodMessage || 'No upcoming periods today'}
+                </div>
+              )}
+            </CollapsibleCard>
 
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-sm">
-                  <GraduationCap className="h-4 w-4 text-violet-500" />
-                  Class Attendance Activity
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {studentChartData.length > 0 ? (
+            {isAdminOrCommandant && (
+              <CollapsibleCard
+                title="Live Task Responses"
+                icon={<MessageSquare className="h-4 w-4 text-emerald-600" />}
+                actions={
+                  taskResponses.length > 0 ? (
+                    <span className="text-xs font-normal text-zinc-400">
+                      {taskResponses.filter((r: any) => r.response_type === 'acknowledged').length} ack · {taskResponses.filter((r: any) => r.response_type === 'completed').length} done
+                    </span>
+                  ) : undefined
+                }
+              >
+                {taskResponses.length > 0 ? (
                   <div className="space-y-2">
                     <CollapsibleSection
-                      items={studentChartData.filter((c) => c.present + c.late > 0).sort((a, b) => (b.present + b.late) - (a.present + a.late))}
-                      keyExtractor={(c: any) => c.class}
-                      renderItem={(c: any) => {
-                        const t = c.total || c.present + c.late + c.absent
-                        const checkedOut = c.checked_out || 0
-                        return (
-                          <div className="space-y-1">
-                            <div className="flex items-center justify-between text-sm">
-                              <span className="font-medium text-zinc-700">{c.class}</span>
-                              <span className="text-xs text-zinc-400">
-                                {checkedOut > 0
-                                  ? `${checkedOut} checked out`
-                                  : `${c.present + c.late}/${t} present`}
+                      items={taskResponses}
+                      keyExtractor={(r: any) => r.id}
+                      renderItem={(r: any) => (
+                        <div className="flex items-start gap-3 p-2 rounded-lg bg-zinc-50 border border-zinc-100 text-sm">
+                          <div className="shrink-0 mt-0.5">
+                            {r.response_type === 'acknowledged' && (
+                              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-blue-600 text-xs font-bold">✓</span>
+                            )}
+                            {r.response_type === 'completed' && (
+                              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 text-xs font-bold">✓</span>
+                            )}
+                            {r.response_type === 'issue_reported' && (
+                              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-red-100 text-red-600 text-xs font-bold">!</span>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-zinc-800 truncate">
+                                {r.staff?.full_name || 'Unknown'}
+                              </span>
+                              <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full shrink-0 ${
+                                r.response_type === 'acknowledged' ? 'bg-blue-100 text-blue-700' :
+                                r.response_type === 'completed' ? 'bg-emerald-100 text-emerald-700' :
+                                'bg-red-100 text-red-700'
+                              }`}>
+                                {r.response_type === 'acknowledged' ? 'Acknowledged' :
+                                 r.response_type === 'completed' ? 'Completed' : 'Issue'}
                               </span>
                             </div>
-                            <div className="flex h-2 w-full rounded-full bg-zinc-100 overflow-hidden">
-                              <div className="bg-emerald-500" style={{ width: `${(c.present / Math.max(t, 1)) * 100}%` }} />
-                              <div className="bg-amber-400" style={{ width: `${(c.late / Math.max(t, 1)) * 100}%` }} />
-                            </div>
+                            <p className="text-xs text-zinc-500 truncate mt-0.5">
+                              {r.task?.description || 'Task'}
+                            </p>
+                            <p className="text-[10px] text-zinc-400 mt-0.5">
+                              {new Date(r.responded_at).toLocaleString()}
+                            </p>
                           </div>
-                        )
-                      }}
+                        </div>
+                      )}
                       defaultVisible={5}
                     />
                   </div>
                 ) : (
-                  <p className="text-sm text-zinc-400">
-                    {loading ? 'Loading...' : 'No class attendance recorded yet by class teachers'}
+                  <p className="text-sm text-zinc-400 text-center py-4">
+                    No task responses yet. Assign tasks via Telegram to receive live updates.
                   </p>
                 )}
-              </CardContent>
-            </Card>
+              </CollapsibleCard>
+            )}
+
+            <CollapsibleCard
+              title="Class Attendance Activity"
+              icon={<GraduationCap className="h-4 w-4 text-violet-500" />}
+            >
+              {studentChartData.length > 0 ? (
+                <div className="space-y-2">
+                  <CollapsibleSection
+                    items={studentChartData.filter((c) => c.present + c.late > 0).sort((a, b) => (b.present + b.late) - (a.present + a.late))}
+                    keyExtractor={(c: any) => c.class}
+                    renderItem={(c: any) => {
+                      const t = c.total || c.present + c.late + c.absent
+                      const checkedOut = c.checked_out || 0
+                      return (
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="font-medium text-zinc-700">{c.class}</span>
+                            <span className="text-xs text-zinc-400">
+                              {checkedOut > 0
+                                ? `${checkedOut} checked out`
+                                : `${c.present + c.late}/${t} present`}
+                            </span>
+                          </div>
+                          <div className="flex h-2 w-full rounded-full bg-zinc-100 overflow-hidden">
+                            <div className="bg-emerald-500" style={{ width: `${(c.present / Math.max(t, 1)) * 100}%` }} />
+                            <div className="bg-amber-400" style={{ width: `${(c.late / Math.max(t, 1)) * 100}%` }} />
+                          </div>
+                        </div>
+                      )
+                    }}
+                    defaultVisible={5}
+                  />
+                </div>
+              ) : (
+                <p className="text-sm text-zinc-400">
+                  {loading ? 'Loading...' : 'No class attendance recorded yet by class teachers'}
+                </p>
+              )}
+            </CollapsibleCard>
 
             <StudentRecentActivity records={studentData?.records || []} />
             <StudentActivityReportsView />
           </div>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2 text-sm">
-                  <CalendarDays className="h-4 w-4 text-blue-600" />
-                  This Week&apos;s Duty Roster
-                </CardTitle>
-                <Link href="/duty-roster" className="text-xs text-blue-600 hover:text-blue-800 font-medium">
-                  Manage &rarr;
-                </Link>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {weeklyDuty.length > 0 ? (
-                <div className="space-y-2">
-                  {weeklyDuty.map((d) => {
-                    const dateObj = new Date(d.date + 'T00:00:00')
-                    const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' })
-                    const isToday = d.date === new Date().toISOString().split('T')[0]
-                    return (
-                      <div key={d.date} className={`flex items-center justify-between rounded-lg border px-3 py-2 text-sm ${isToday ? 'border-blue-300 bg-blue-50' : 'border-zinc-200'}`}>
-                        <div className="flex items-center gap-3">
-                          <span className={`text-xs font-semibold w-8 ${isToday ? 'text-blue-700' : 'text-zinc-500'}`}>{dayName}</span>
-                          <span className={`font-medium ${isToday ? 'text-blue-800' : 'text-zinc-700'}`}>
-                            {d.staff ? d.staff.full_name : <span className="text-zinc-400 italic">Unassigned</span>}
-                          </span>
-                          {isToday && <Badge variant="info" className="text-[10px]">Today</Badge>}
-                        </div>
-                        {d.staff && (
-                          <span className="text-[10px] text-zinc-400">{d.staff.staff_id}</span>
-                        )}
+          <CollapsibleCard
+            title="This Week's Duty Roster"
+            icon={<CalendarDays className="h-4 w-4 text-blue-600" />}
+            actions={
+              <Link href="/duty-roster" className="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                Manage &rarr;
+              </Link>
+            }
+          >
+            {weeklyDuty.length > 0 ? (
+              <div className="space-y-2">
+                {weeklyDuty.map((d) => {
+                  const dateObj = new Date(d.date + 'T00:00:00')
+                  const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' })
+                  const isToday = d.date === new Date().toISOString().split('T')[0]
+                  return (
+                    <div key={d.date} className={`flex items-center justify-between rounded-lg border px-3 py-2 text-sm ${isToday ? 'border-blue-300 bg-blue-50' : 'border-zinc-200'}`}>
+                      <div className="flex items-center gap-3">
+                        <span className={`text-xs font-semibold w-8 ${isToday ? 'text-blue-700' : 'text-zinc-500'}`}>{dayName}</span>
+                        <span className={`font-medium ${isToday ? 'text-blue-800' : 'text-zinc-700'}`}>
+                          {d.staff ? d.staff.full_name : <span className="text-zinc-400 italic">Unassigned</span>}
+                        </span>
+                        {isToday && <Badge variant="info" className="text-[10px]">Today</Badge>}
                       </div>
-                    )
-                  })}
-                </div>
-              ) : (
-                <div className="flex items-center justify-center py-6 text-sm text-zinc-400">
-                  <CalendarDays className="h-5 w-5 mr-2" />
-                  No duty roster for this week
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className="border border-naf-gold/30 bg-[#E8D48B]/10">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-sm">
-                  <BrainCircuit className="h-4 w-4 text-naf-gold" />
-                  Commandant AI Insights
-                  <Hint text="Automated insights generated from today's attendance data. Highlights late arrivals, absentee rates above 20%, and perfect attendance." />
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2 text-sm text-zinc-600">
-                {!staffReport && !studentData && (
-                  <p className="text-zinc-400">Connect Supabase and run migrations to see insights.</p>
-                )}
-                {staffReport && staffReport.present === 0 && (
-                  <p className="flex items-start gap-2">
-                    <span className="text-zinc-400 mt-0.5">•</span>
-                    <span>No staff attendance recorded yet today.</span>
-                  </p>
-                )}
-                {staffReport && staffReport.late > 3 && (
-                  <p className="flex items-start gap-2">
-                    <span className="text-naf-gold mt-0.5">•</span>
-                    <span>{staffReport.late} staff arrived late today.</span>
-                  </p>
-                )}
-                {staffReport && staffReport.absent > staffReport.total_staff * 0.2 && (
-                  <p className="flex items-start gap-2">
-                    <span className="text-red-500 mt-0.5">•</span>
-                    <span>Staff absentee: {(staffReport.absent / staffReport.total_staff * 100).toFixed(0)}%.</span>
-                  </p>
-                )}
-                {studentData && studentData.absent > studentData.total_students * 0.15 && (
-                  <p className="flex items-start gap-2">
-                    <span className="text-red-500 mt-0.5">•</span>
-                    <span>Student absentee: {(studentData.absent / studentData.total_students * 100).toFixed(0)}%.</span>
-                  </p>
-                )}
-                {studentData && totalCheckedOut > 0 && (
-                  <p className="flex items-start gap-2">
-                    <span className="text-blue-500 mt-0.5">•</span>
-                    <span>{totalCheckedOut} student{totalCheckedOut !== 1 ? 's' : ''} checked out. Session{totalCheckedOut !== 1 ? 's' : ''} completed.</span>
-                  </p>
-                )}
-                {studentData && classesWithAttendance > 0 && (
-                  <p className="flex items-start gap-2">
-                    <span className="text-violet-500 mt-0.5">•</span>
-                    <span>{classesWithAttendance} class{classesWithAttendance !== 1 ? 'es' : ''} with attendance recorded by class teachers.</span>
-                  </p>
-                )}
-                {staffReport && staffReport.present === staffReport.total_staff && (
-                  <p className="flex items-start gap-2">
-                    <span className="text-emerald-500 mt-0.5">•</span>
-                    <span>100% staff attendance today!</span>
-                  </p>
-                )}
+                      {d.staff && (
+                        <span className="text-[10px] text-zinc-400">{d.staff.staff_id}</span>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
-            </CardContent>
-          </Card>
+            ) : (
+              <div className="flex items-center justify-center py-6 text-sm text-zinc-400">
+                <CalendarDays className="h-5 w-5 mr-2" />
+                No duty roster for this week
+              </div>
+            )}
+          </CollapsibleCard>
+
+          <CollapsibleCard
+            title="Commandant AI Insights"
+            icon={<BrainCircuit className="h-4 w-4 text-naf-gold" />}
+            actions={
+              <Hint text="Automated insights generated from today's attendance data. Highlights late arrivals, absentee rates above 20%, and perfect attendance." />
+            }
+            className="border border-naf-gold/30 bg-[#E8D48B]/10"
+          >
+            <div className="space-y-2 text-sm text-zinc-600">
+              {!staffReport && !studentData && (
+                <p className="text-zinc-400">Connect Supabase and run migrations to see insights.</p>
+              )}
+              {staffReport && staffReport.present === 0 && (
+                <p className="flex items-start gap-2">
+                  <span className="text-zinc-400 mt-0.5">•</span>
+                  <span>No staff attendance recorded yet today.</span>
+                </p>
+              )}
+              {staffReport && staffReport.late > 3 && (
+                <p className="flex items-start gap-2">
+                  <span className="text-naf-gold mt-0.5">•</span>
+                  <span>{staffReport.late} staff arrived late today.</span>
+                </p>
+              )}
+              {staffReport && staffReport.absent > staffReport.total_staff * 0.2 && (
+                <p className="flex items-start gap-2">
+                  <span className="text-red-500 mt-0.5">•</span>
+                  <span>Staff absentee: {(staffReport.absent / staffReport.total_staff * 100).toFixed(0)}%.</span>
+                </p>
+              )}
+              {studentData && studentData.absent > studentData.total_students * 0.15 && (
+                <p className="flex items-start gap-2">
+                  <span className="text-red-500 mt-0.5">•</span>
+                  <span>Student absentee: {(studentData.absent / studentData.total_students * 100).toFixed(0)}%.</span>
+                </p>
+              )}
+              {studentData && totalCheckedOut > 0 && (
+                <p className="flex items-start gap-2">
+                  <span className="text-blue-500 mt-0.5">•</span>
+                  <span>{totalCheckedOut} student{totalCheckedOut !== 1 ? 's' : ''} checked out. Session{totalCheckedOut !== 1 ? 's' : ''} completed.</span>
+                </p>
+              )}
+              {studentData && classesWithAttendance > 0 && (
+                <p className="flex items-start gap-2">
+                  <span className="text-violet-500 mt-0.5">•</span>
+                  <span>{classesWithAttendance} class{classesWithAttendance !== 1 ? 'es' : ''} with attendance recorded by class teachers.</span>
+                </p>
+              )}
+              {staffReport && staffReport.present === staffReport.total_staff && (
+                <p className="flex items-start gap-2">
+                  <span className="text-emerald-500 mt-0.5">•</span>
+                  <span>100% staff attendance today!</span>
+                </p>
+              )}
+            </div>
+          </CollapsibleCard>
 
           <div className="flex items-center justify-end gap-2">
             {isRefreshing && <Loader2 className="h-3 w-3 animate-spin text-zinc-400" />}
