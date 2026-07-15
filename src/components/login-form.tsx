@@ -96,6 +96,15 @@ export function LoginForm() {
               </div>
             )}
 
+            <div className="flex justify-end -mt-2">
+              <Link
+                href="/forgot-password"
+                className="text-xs text-zinc-400 hover:text-[#001A4D] hover:underline transition-colors"
+              >
+                Forgot Password?
+              </Link>
+            </div>
+
             <Button type="submit" className="w-full h-12 text-base" disabled={loading}>
               {loading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <LogIn className="h-5 w-5 mr-2" />}
               {loading ? 'Signing in...' : 'Sign In'}

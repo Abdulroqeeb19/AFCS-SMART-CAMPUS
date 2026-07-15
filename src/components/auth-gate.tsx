@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/auth-context'
 import { Loader2 } from 'lucide-react'
 
-const PUBLIC_ROUTES = ['/', '/login', '/signup']
+const PUBLIC_ROUTES = ['/', '/login', '/signup', '/forgot-password', '/reset-password']
 
 export function AuthGate({ children }: { children: React.ReactNode }) {
   const { authenticated, loading, user } = useAuth()
