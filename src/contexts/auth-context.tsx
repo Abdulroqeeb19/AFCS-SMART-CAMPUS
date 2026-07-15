@@ -55,18 +55,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const fetchStaffByEmail = async (email: string) => {
-    const supabase = createClient()
-    const { data } = await supabase
-      .from('staff')
-      .select('*')
-      .ilike('email', email)
-      .eq('is_active', true)
-      .single()
-    return data as Staff | null
+    try {
+      const supabase = createClient()
+      const { data } = await supabase
+        .from('staff')
+        .select('*')
+        .ilike('email', email)
+        .eq('is_active', true)
+        .maybeSingle()
+      return data as Staff | null
+    } catch {
+      return null
+    }
   }
 
   useEffect(() => {
     let mounted = true
+
+    function finish(user: Staff | null) {
+      if (!mounted) return
+      setUser(user)
+      setLoading(false)
+    }
 
     // Check for tester/dev session first
     try {
@@ -75,21 +85,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const parsed = JSON.parse(stored) as Staff
         if (parsed.email && isDevMode) {
           setUser(parsed)
-          const supabase = createClient()
-          supabase.from('staff').select('*').ilike('email', parsed.email).eq('is_active', true).single().then(({ data }) => {
-            if (!mounted) return
-            if (data) {
-              setUser(data as Staff)
-            } else {
-              localStorage.removeItem(DEV_SESSION_KEY)
-              setUser(null)
+          ;(async () => {
+            try {
+              const supabase = createClient()
+              const { data } = await supabase
+                .from('staff').select('*').ilike('email', parsed.email).eq('is_active', true).maybeSingle()
+              if (!mounted) return
+              if (data) {
+                setUser(data as Staff)
+              } else {
+                localStorage.removeItem(DEV_SESSION_KEY)
+                setUser(null)
+              }
+              setLoading(false)
+            } catch {
+              if (mounted) setLoading(false)
             }
-            setLoading(false)
-          })
+          })()
           return
         }
-        setUser(parsed)
-        setLoading(false)
+        finish(parsed)
         return
       }
     } catch {
@@ -100,20 +115,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const supabase = createClient()
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!mounted) return
-      if (session?.user?.email) {
-        const staff = await fetchStaffByEmail(session.user.email)
-        if (mounted) setUser(staff)
+      try {
+        if (session?.user?.email) {
+          const staff = await fetchStaffByEmail(session.user.email)
+          if (mounted) setUser(staff)
+        }
+      } catch {
+        // staff lookup failed — proceed without user
       }
       if (mounted) setLoading(false)
     })
 
     const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return
-      if (session?.user?.email && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
-        const staff = await fetchStaffByEmail(session.user.email)
-        if (mounted) setUser(staff)
-      } else if (event === 'SIGNED_OUT') {
-        if (mounted) setUser(null)
+      try {
+        if (session?.user?.email && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
+          const staff = await fetchStaffByEmail(session.user.email)
+          if (mounted) setUser(staff)
+        } else if (event === 'SIGNED_OUT') {
+          if (mounted) setUser(null)
+        }
+      } catch {
+        // auth state change handler error — ignore
       }
     })
 
