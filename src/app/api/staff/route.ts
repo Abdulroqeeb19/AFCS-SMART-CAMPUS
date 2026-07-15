@@ -25,29 +25,32 @@ const updateStaffSchema = z.object({
 })
 
 export async function GET(request: Request) {
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
 
-  const { data, error } = await supabase
+  const adminSupabase = createAdminClient()
+  const { data, error } = await adminSupabase
     .from('staff')
     .select('*, department:department_id(id, name)')
     .order('full_name')
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) return NextResponse.json({ error: 'Failed to load staff' }, { status: 500 })
   return NextResponse.json(data)
 }
 
 export async function POST(request: Request) {
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
 
   const parsed = createStaffSchema.safeParse(await request.json())
-  if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+  if (!parsed.success) return NextResponse.json({ error: 'Invalid staff data' }, { status: 400 })
   const { staff_id, full_name, email, phone, department_id, role } = parsed.data
 
-  const { data: existing } = await supabase
+  const adminSupabase = createAdminClient()
+
+  const { data: existing } = await adminSupabase
     .from('staff')
     .select('id')
     .eq('staff_id', staff_id)
@@ -57,23 +60,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Staff ID already exists' }, { status: 409 })
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await adminSupabase
     .from('staff')
     .insert({
-      staff_id,
-      full_name,
-      email,
+      staff_id, full_name, email,
       phone: phone || null,
       department_id: department_id || null,
-      role,
-      is_active: true,
+      role, is_active: true,
     })
     .select('*, department:department_id(name)')
     .single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) return NextResponse.json({ error: 'Failed to create staff' }, { status: 500 })
 
-  await supabase.from('audit_logs').insert({
+  await adminSupabase.from('audit_logs').insert({
     staff_id: admin.id, action: 'create_staff', entity_type: 'staff', entity_id: data.id, changes: { staff_id, full_name },
   }).maybeSingle()
 
@@ -81,29 +81,30 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
 
   const parsed = updateStaffSchema.safeParse(await request.json())
-  if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+  if (!parsed.success) return NextResponse.json({ error: 'Invalid staff data' }, { status: 400 })
   const { id, ...updates } = parsed.data
 
-  // Prevent self-demotion
   if (id === admin.id && updates.role && updates.role !== 'admin' && updates.role !== 'commandant') {
     return NextResponse.json({ error: 'Cannot demote yourself' }, { status: 403 })
   }
 
-  const { data, error } = await supabase
+  const adminSupabase = createAdminClient()
+
+  const { data, error } = await adminSupabase
     .from('staff')
     .update({ ...updates, updated_at: new Date().toISOString() })
     .eq('id', id)
     .select('*, department:department_id(name)')
     .single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) return NextResponse.json({ error: 'Failed to update staff' }, { status: 500 })
 
-  await supabase.from('audit_logs').insert({
+  await adminSupabase.from('audit_logs').insert({
     staff_id: admin.id, action: 'update_staff', entity_type: 'staff', entity_id: id, changes: updates,
   }).maybeSingle()
 
@@ -111,7 +112,7 @@ export async function PATCH(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
 
@@ -120,10 +121,11 @@ export async function DELETE(request: Request) {
   if (!id) return NextResponse.json({ error: 'Staff ID required' }, { status: 400 })
   if (id === admin.id) return NextResponse.json({ error: 'Cannot delete yourself' }, { status: 403 })
 
-  const { error } = await supabase.from('staff').delete().eq('id', id)
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  const adminSupabase = createAdminClient()
+  const { error } = await adminSupabase.from('staff').delete().eq('id', id)
+  if (error) return NextResponse.json({ error: 'Failed to delete staff' }, { status: 500 })
 
-  await supabase.from('audit_logs').insert({
+  await adminSupabase.from('audit_logs').insert({
     staff_id: admin.id, action: 'delete_staff', entity_type: 'staff', entity_id: id, changes: {},
   }).maybeSingle()
 

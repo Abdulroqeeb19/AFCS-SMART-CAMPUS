@@ -2,9 +2,10 @@ import { NextResponse } from 'next/server'
 import { runAutomationEngine } from '@/lib/automation'
 import { getAuthStaff } from '@/lib/auth-utils'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 
 export async function POST(request: Request) {
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const staff = await getAuthStaff(supabase, request)
 
   const cronSecret = request.headers.get('x-cron-secret')

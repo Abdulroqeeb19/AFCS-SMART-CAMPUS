@@ -9,6 +9,10 @@ export async function GET(request: Request) {
   const classId = searchParams.get('class_id')
   const staffId = searchParams.get('staff_id')
 
+  const supabase = await createServerSupabaseClient()
+  const auth = await getAuthStaff(supabase, request)
+  if (!auth) return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+
   const adminSupabase = createAdminClient()
 
   let query = adminSupabase

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth-utils'
 
 
@@ -17,10 +18,13 @@ export async function GET(request: Request) {
   const status = searchParams.get('status')
   const limit = searchParams.get('limit') || '10'
 
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
-  let query = supabase
+
+  const adminSupabase = createAdminClient()
+
+  let query = adminSupabase
     .from('parade_sessions')
     .select('*, conductor:conducted_by(id, staff_id, full_name), briefings:parade_briefings(*), tasks:parade_tasks(*, assignee:assigned_to(id, staff_id, full_name)), acknowledgements:parade_acknowledgements(*, staff:staff_id(id, staff_id, full_name))')
     .order('date', { ascending: false })
@@ -36,14 +40,17 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
+
+  const adminSupabase = createAdminClient()
+
   const parsed = createParadeSchema.safeParse(await request.json())
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   const { date, type, conducted_by, notes } = parsed.data
 
-  const { data, error } = await supabase
+  const { data, error } = await adminSupabase
     .from('parade_sessions')
     .insert({
       date: date || new Date().toISOString().split('T')[0],

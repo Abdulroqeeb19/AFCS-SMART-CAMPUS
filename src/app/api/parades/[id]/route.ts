@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth-utils'
 import { sendParadeStartedNotification, sendParadeCancelledNotification } from '@/lib/notifications'
 
@@ -17,9 +18,12 @@ const updateParadeSchema = z.object({
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
+
+  const adminSupabase = createAdminClient()
+
   const parsed = updateParadeSchema.safeParse(await request.json())
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   const updates = parsed.data
@@ -31,7 +35,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     updates.start_time = new Date().toISOString()
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await adminSupabase
     .from('parade_sessions')
     .update({ ...updates, updated_at: new Date().toISOString() })
     .eq('id', id)
@@ -56,11 +60,13 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
 
-  const { error } = await supabase.from('parade_sessions').delete().eq('id', id)
+  const adminSupabase = createAdminClient()
+
+  const { error } = await adminSupabase.from('parade_sessions').delete().eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ success: true })
 }

@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { requireAdmin } from '@/lib/auth-utils'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { getAuthStaff, requireAdmin } from '@/lib/auth-utils'
 
 const acknowledgeSchema = z.object({
   staff_id: z.string().uuid(),
@@ -9,14 +10,17 @@ const acknowledgeSchema = z.object({
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Authentication required' }, { status: 403 })
+
+  const adminSupabase = createAdminClient()
+
   const parsed = acknowledgeSchema.safeParse(await request.json())
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   const { staff_id } = parsed.data
 
-  const { data, error } = await supabase
+  const { data, error } = await adminSupabase
     .from('parade_acknowledgements')
     .insert({
       parade_id: id,
@@ -37,9 +41,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
+  const auth = await getAuthStaff(supabase, request)
+  if (!auth) return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+  const adminSupabase = createAdminClient()
 
-  const { data, error } = await supabase
+  const { data, error } = await adminSupabase
     .from('parade_acknowledgements')
     .select('*, staff:staff_id(id, staff_id, full_name)')
     .eq('parade_id', id)

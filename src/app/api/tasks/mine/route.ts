@@ -1,21 +1,24 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { getAuthStaff } from '@/lib/auth-utils'
 
 export async function GET(request: Request) {
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const staff = await getAuthStaff(supabase, request)
   if (!staff) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
+  const adminSupabase = createAdminClient()
+
   const [paradeTasks, dutyRosters] = await Promise.all([
-    supabase
+    adminSupabase
       .from('parade_tasks')
       .select('*, assignee:assigned_to(id, staff_id, full_name), parade:parade_id(id, date, type, status)')
       .eq('assigned_to', staff.id)
       .order('created_at', { ascending: false })
       .limit(50),
 
-    supabase
+    adminSupabase
       .from('duty_rosters')
       .select('*, duty_type:duty_type_id(*), staff:staff_id(id, staff_id, full_name)')
       .eq('staff_id', staff.id)
@@ -35,16 +38,18 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const staff = await getAuthStaff(supabase, request)
   if (!staff) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+
+  const adminSupabase = createAdminClient()
 
   const { description, deadline } = await request.json()
   if (!description?.trim()) return NextResponse.json({ error: 'Description required' }, { status: 400 })
 
   // Find today's parade or create one
   const today = new Date().toISOString().split('T')[0]
-  let { data: parade } = await supabase
+  let { data: parade } = await adminSupabase
     .from('parade_sessions')
     .select('id')
     .eq('date', today)
@@ -53,7 +58,7 @@ export async function POST(request: Request) {
     .maybeSingle()
 
   if (!parade) {
-    const { data: created } = await supabase
+    const { data: created } = await adminSupabase
       .from('parade_sessions')
       .insert({ date: today, type: 'morning' })
       .select('id')
@@ -63,7 +68,7 @@ export async function POST(request: Request) {
 
   if (!parade) return NextResponse.json({ error: 'Failed to create parade' }, { status: 500 })
 
-  const { data, error } = await supabase
+  const { data, error } = await adminSupabase
     .from('parade_tasks')
     .insert({
       parade_id: parade.id,
@@ -80,16 +85,18 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const staff = await getAuthStaff(supabase, request)
   if (!staff) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+
+  const adminSupabase = createAdminClient()
 
   const { searchParams } = new URL(request.url)
   const taskId = searchParams.get('id')
   if (!taskId) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
 
   // Only allow deleting own tasks
-  const { data: task } = await supabase
+  const { data: task } = await adminSupabase
     .from('parade_tasks')
     .select('id, assigned_to')
     .eq('id', taskId)
@@ -98,7 +105,7 @@ export async function DELETE(request: Request) {
   if (!task) return NextResponse.json({ error: 'Task not found' }, { status: 404 })
   if (task.assigned_to !== staff.id) return NextResponse.json({ error: 'Not your task' }, { status: 403 })
 
-  const { error } = await supabase.from('parade_tasks').delete().eq('id', taskId)
+  const { error } = await adminSupabase.from('parade_tasks').delete().eq('id', taskId)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ deleted: 1 })
 }

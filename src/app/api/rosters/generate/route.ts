@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth-utils'
 import { notifyMultipleStaff } from '@/lib/notifications'
 
@@ -35,9 +36,11 @@ function matchStaffForDuty(
 }
 
 export async function POST(request: Request) {
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
+
+  const adminSupabase = createAdminClient()
 
   const { start_date, end_date } = await request.json()
 
@@ -45,13 +48,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'start_date and end_date are required' }, { status: 400 })
   }
 
-  const { data: dutyTypes } = await supabase
+  const { data: dutyTypes } = await adminSupabase
     .from('duty_types')
     .select('id, name')
     .eq('is_active', true)
     .order('sort_order')
 
-  const { data: rawStaff } = await supabase
+  const { data: rawStaff } = await adminSupabase
     .from('staff')
     .select('id, full_name, phone, telegram_chat_id, role, department:department_id(name)')
     .eq('is_active', true)
@@ -101,7 +104,7 @@ export async function POST(request: Request) {
     }
   }
 
-  const { data, error } = await supabase.from('duty_rosters').upsert(assignments, {
+  const { data, error } = await adminSupabase.from('duty_rosters').upsert(assignments, {
     onConflict: 'staff_id, duty_type_id, date',
     ignoreDuplicates: true,
   }).select()
@@ -140,7 +143,7 @@ export async function POST(request: Request) {
       }
     })
     if (logs.length > 0) {
-      await supabase.from('notification_logs').insert(logs)
+      await adminSupabase.from('notification_logs').insert(logs)
     }
   }
 

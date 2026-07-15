@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth-utils'
 
 
@@ -14,11 +15,13 @@ const createBriefingSchema = z.object({
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
 
-  const { data, error } = await supabase
+  const adminSupabase = createAdminClient()
+
+  const { data, error } = await adminSupabase
     .from('parade_briefings')
     .select('*, author:created_by(id, staff_id, full_name)')
     .eq('parade_id', id)
@@ -30,14 +33,17 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
+
+  const adminSupabase = createAdminClient()
+
   const parsed = createBriefingSchema.safeParse(await request.json())
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   const { title, content, priority, category, created_by } = parsed.data
 
-  const { data, error } = await supabase
+  const { data, error } = await adminSupabase
     .from('parade_briefings')
     .insert({
       parade_id: id,

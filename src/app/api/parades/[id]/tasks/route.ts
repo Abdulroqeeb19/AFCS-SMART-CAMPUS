@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { requireAdmin } from '@/lib/auth-utils'
+import { getAuthStaff, requireAdmin } from '@/lib/auth-utils'
 import { sendTaskAssignmentNotification } from '@/lib/notifications'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import type { Json } from '@/lib/database.types'
@@ -27,9 +27,12 @@ const updateTaskSchema = z.object({
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
+  const auth = await getAuthStaff(supabase, request)
+  if (!auth) return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+  const adminSupabase = createAdminClient()
 
-  const { data, error } = await supabase
+  const { data, error } = await adminSupabase
     .from('parade_tasks')
     .select('*, assignee:assigned_to(id, staff_id, full_name)')
     .eq('parade_id', id)
@@ -41,14 +44,17 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
+
+  const adminSupabase = createAdminClient()
+
   const parsed = createTaskSchema.safeParse(await request.json())
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   const { briefing_id, assigned_to, description, priority, deadline } = parsed.data
 
-  const { data, error } = await supabase
+  const { data, error } = await adminSupabase
     .from('parade_tasks')
     .insert({
       parade_id: id,
@@ -64,7 +70,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   if (assigned_to && data) {
-    const { data: staff } = await supabase
+    const { data: staff } = await adminSupabase
       .from('staff')
       .select('id, full_name, phone, telegram_chat_id')
       .eq('id', assigned_to)
@@ -81,7 +87,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         data.id,
       )
 
-      await supabase.from('notification_logs').insert({
+      await adminSupabase.from('notification_logs').insert({
         recipient_id: staff.id,
         recipient_phone: staff.phone,
         recipient_name: staff.full_name,
@@ -99,9 +105,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 }
 
 export async function DELETE(request: Request) {
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
+
+  const adminSupabase = createAdminClient()
 
   const { searchParams } = new URL(request.url)
   const taskId = searchParams.get('id')
@@ -115,7 +123,7 @@ export async function DELETE(request: Request) {
     const cutoff = new Date()
     cutoff.setDate(cutoff.getDate() - weeks * 7)
 
-    const { data: toDelete } = await supabase
+    const { data: toDelete } = await adminSupabase
       .from('parade_tasks')
       .select('id')
       .eq('status', 'completed')
@@ -125,9 +133,9 @@ export async function DELETE(request: Request) {
 
     const ids = toDelete.map((t) => t.id)
 
-    await supabase.from('task_responses').delete().in('task_id', ids)
-    await supabase.from('telegram_task_messages').delete().in('task_id', ids)
-    const { error } = await supabase.from('parade_tasks').delete().in('id', ids)
+    await adminSupabase.from('task_responses').delete().in('task_id', ids)
+    await adminSupabase.from('telegram_task_messages').delete().in('task_id', ids)
+    const { error } = await adminSupabase.from('parade_tasks').delete().in('id', ids)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
     return NextResponse.json({ deleted: ids.length })
@@ -136,18 +144,21 @@ export async function DELETE(request: Request) {
   // Single task delete
   if (!taskId) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
 
-  await supabase.from('task_responses').delete().eq('task_id', taskId)
-  await supabase.from('telegram_task_messages').delete().eq('task_id', taskId)
-  const { error } = await supabase.from('parade_tasks').delete().eq('id', taskId)
+  await adminSupabase.from('task_responses').delete().eq('task_id', taskId)
+  await adminSupabase.from('telegram_task_messages').delete().eq('task_id', taskId)
+  const { error } = await adminSupabase.from('parade_tasks').delete().eq('id', taskId)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   return NextResponse.json({ deleted: 1 })
 }
 
 export async function PATCH(request: Request) {
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
+
+  const adminSupabase = createAdminClient()
+
   const parsed = updateTaskSchema.safeParse(await request.json())
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   const { id, ...updates } = parsed.data
@@ -156,7 +167,7 @@ export async function PATCH(request: Request) {
     updates.completed_at = new Date().toISOString()
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await adminSupabase
     .from('parade_tasks')
     .update({ ...updates, updated_at: new Date().toISOString() })
     .eq('id', id)
@@ -166,7 +177,7 @@ export async function PATCH(request: Request) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   if (updates.assigned_to && data) {
-    const { data: staff } = await supabase
+    const { data: staff } = await adminSupabase
       .from('staff')
       .select('id, full_name, phone, telegram_chat_id')
       .eq('id', updates.assigned_to)
@@ -183,7 +194,7 @@ export async function PATCH(request: Request) {
         data.id,
       )
 
-      await supabase.from('notification_logs').insert({
+      await adminSupabase.from('notification_logs').insert({
         recipient_id: staff.id,
         recipient_phone: staff.phone,
         recipient_name: staff.full_name,

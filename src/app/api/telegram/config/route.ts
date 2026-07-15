@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth-utils'
 import { getTelegramBotToken } from '@/lib/telegram/token'
 import { getWebhookInfo, setWebhook } from '@/lib/telegram/send'
@@ -12,7 +13,7 @@ const configSchema = z.object({
 })
 
 export async function GET(request: Request) {
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
 
@@ -39,20 +40,22 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const supabase = createAdminClient()
+    const supabase = await createServerSupabaseClient()
     const admin = await requireAdmin(supabase, request)
     if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
+
+    const adminSupabase = createAdminClient()
 
     const parsed = configSchema.safeParse(await request.json())
     if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
     const body = parsed.data
 
     if (body.token) {
-      const { data: settings } = await supabase.from('settings').select('id').limit(1).maybeSingle()
+      const { data: settings } = await adminSupabase.from('settings').select('id').limit(1).maybeSingle()
       if (settings) {
-        await supabase.from('settings').update({ telegram_bot_token: body.token }).eq('id', settings.id)
+        await adminSupabase.from('settings').update({ telegram_bot_token: body.token }).eq('id', settings.id)
       } else {
-        await supabase.from('settings').insert({ telegram_bot_token: body.token, cutoff_hour: 8, cutoff_minute: 0 })
+        await adminSupabase.from('settings').insert({ telegram_bot_token: body.token, cutoff_hour: 8, cutoff_minute: 0 })
       }
     }
 

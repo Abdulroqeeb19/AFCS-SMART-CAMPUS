@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { getAuthStaff, requireAdmin } from '@/lib/auth-utils'
 
 const createRosterSchema = z.object({
@@ -21,8 +22,10 @@ const updateRosterSchema = z.object({
 })
 
 export async function GET(request: Request) {
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const staff = await getAuthStaff(supabase, request)
+
+  const adminSupabase = createAdminClient()
 
   const { searchParams } = new URL(request.url)
   const date = searchParams.get('date')
@@ -32,7 +35,7 @@ export async function GET(request: Request) {
   const dutyTypeId = searchParams.get('duty_type_id')
   const mine = searchParams.get('mine')
 
-  let query = supabase
+  let query = adminSupabase
     .from('duty_rosters')
     .select('*, staff:staff_id(id, staff_id, full_name, department:department_id(name)), duty_type:duty_type_id(*)')
     .order('date', { ascending: false })
@@ -58,15 +61,17 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
+
+  const adminSupabase = createAdminClient()
 
   const parsed = createRosterSchema.safeParse(await request.json())
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   const { staff_id, duty_type_id, date, notes } = parsed.data
 
-  const { data, error } = await supabase
+  const { data, error } = await adminSupabase
     .from('duty_rosters')
     .insert({
       staff_id,
@@ -82,9 +87,11 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
+
+  const adminSupabase = createAdminClient()
 
   const parsed = updateRosterSchema.safeParse(await request.json())
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
@@ -94,7 +101,7 @@ export async function PATCH(request: Request) {
     updates.completed_at = new Date().toISOString()
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await adminSupabase
     .from('duty_rosters')
     .update({ ...updates, updated_at: new Date().toISOString() })
     .eq('id', id)
@@ -106,14 +113,16 @@ export async function PATCH(request: Request) {
 }
 
 export async function DELETE(request: Request) {
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const admin = await requireAdmin(supabase, request)
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
+
+  const adminSupabase = createAdminClient()
 
   const { searchParams } = new URL(request.url)
   const id = searchParams.get('id')
   if (!id) return NextResponse.json({ error: 'Roster ID required' }, { status: 400 })
-  const { error } = await supabase.from('duty_rosters').delete().eq('id', id)
+  const { error } = await adminSupabase.from('duty_rosters').delete().eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ success: true })
 }

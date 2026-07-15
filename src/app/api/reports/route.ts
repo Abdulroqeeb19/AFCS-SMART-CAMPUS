@@ -8,6 +8,10 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const date = searchParams.get('date')
 
+  const supabase = await createServerSupabaseClient()
+  const auth = await getAuthStaff(supabase, request)
+  if (!auth) return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+
   const adminSupabase = createAdminClient()
   let query = adminSupabase
     .from('daily_reports')

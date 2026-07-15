@@ -1,22 +1,22 @@
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
-import { getAuthStaff } from '@/lib/auth-utils'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function POST(request: Request) {
-  const supabase = await createServerSupabaseClient()
-  const auth = await getAuthStaff(supabase, request)
-  if (!auth) {
-    return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+  const ip = request.headers.get('x-forwarded-for') || 'unknown'
+  const limit = await rateLimit(`lookup-staff:${ip}`, 30, 60)
+  if (!limit.allowed) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
   }
 
   const body = await request.json()
   const { identifier } = body
 
-  if (!identifier) {
+  if (!identifier || typeof identifier !== 'string') {
     return NextResponse.json({ error: 'identifier required' }, { status: 400 })
   }
 
+  const supabase = createAdminClient()
   const isEmail = identifier.includes('@')
   const query = supabase.from('staff').select('id, staff_id, full_name, email, role, department_id, is_active')
 

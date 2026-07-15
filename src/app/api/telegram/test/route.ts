@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth-utils'
 import { getTelegramBotToken } from '@/lib/telegram/token'
 import { sendTelegramMessage } from '@/lib/telegram/send'
 
 export async function POST(request: Request) {
-  const supabase = createAdminClient()
+  const supabase = await createServerSupabaseClient()
   const auth = await requireAdmin(supabase, request)
   if (!auth) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
 
@@ -14,8 +15,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'TELEGRAM_BOT_TOKEN not configured' }, { status: 400 })
   }
 
+  const adminSupabase = createAdminClient()
+
   // Get the admin's staff record
-  const { data: staff } = await supabase
+  const { data: staff } = await adminSupabase
     .from('staff')
     .select('id, full_name, telegram_chat_id')
     .eq('id', auth.id)

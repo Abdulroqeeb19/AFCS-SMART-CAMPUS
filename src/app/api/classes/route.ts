@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { requireAdmin } from '@/lib/auth-utils'
+import { getAuthStaff, requireAdmin } from '@/lib/auth-utils'
 
 const createClassSchema = z.object({
   name: z.string().min(1).max(10),
@@ -17,7 +17,10 @@ const updateClassSchema = z.object({
   class_teacher_id: z.string().uuid().nullable().optional(),
 })
 
-export async function GET() {
+export async function GET(request: Request) {
+  const supabase = await createServerSupabaseClient()
+  const auth = await getAuthStaff(supabase, request)
+  if (!auth) return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
   const adminSupabase = createAdminClient()
   const { data, error } = await adminSupabase
     .from('classes')
