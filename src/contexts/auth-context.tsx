@@ -111,20 +111,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem(DEV_SESSION_KEY)
     }
 
+    // Safety timeout — resolve loading even if auth hangs
+    const safetyTimer = setTimeout(() => { if (mounted) setLoading(false) }, 5000)
+
     // Fall back to Supabase Auth
-    const supabase = createClient()
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!mounted) return
-      try {
-        if (session?.user?.email) {
-          const staff = await fetchStaffByEmail(session.user.email)
-          if (mounted) setUser(staff)
-        }
-      } catch {
-        // staff lookup failed — proceed without user
-      }
+    let supabase
+    try {
+      supabase = createClient()
+    } catch {
       if (mounted) setLoading(false)
-    })
+      return
+    }
+
+    supabase.auth.getSession()
+      .then(async ({ data: { session } }) => {
+        if (!mounted) return
+        clearTimeout(safetyTimer)
+        try {
+          if (session?.user?.email) {
+            const staff = await fetchStaffByEmail(session.user.email)
+            if (mounted) setUser(staff)
+          }
+        } catch {
+          // staff lookup failed — proceed without user
+        }
+        if (mounted) setLoading(false)
+      })
+      .catch(() => { if (mounted) { clearTimeout(safetyTimer); setLoading(false) } })
 
     const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return
@@ -140,7 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     })
 
-    return () => { mounted = false; listener?.subscription.unsubscribe() }
+    return () => { mounted = false; clearTimeout(safetyTimer); listener?.subscription.unsubscribe() }
   }, [isDevMode])
 
   const role = user?.role
