@@ -41,11 +41,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchStaff = async (identifier: string) => {
     try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 10000)
       const res = await fetch('/api/auth/lookup-staff', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identifier }),
+        signal: controller.signal,
       })
+      clearTimeout(timeout)
       if (!res.ok) return null
       const { staff } = await res.json()
       return staff as Staff | null
@@ -170,12 +174,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { error: 'No staff account found with that email or Staff ID.' }
     }
 
-    const { error } = await supabase.auth.signInWithPassword({ email: staff.email, password })
-    if (error) {
-      if (error.message.includes('Invalid login')) {
-        return { error: 'Incorrect password. Try again.' }
+    try {
+      const { error } = await Promise.race([
+        supabase.auth.signInWithPassword({ email: staff.email, password }),
+        new Promise<any>((_, reject) =>
+          setTimeout(() => reject(new Error('Login timed out')), 15000)
+        ),
+      ])
+      if (error) {
+        if (error.message.includes('Invalid login')) {
+          return { error: 'Incorrect password. Try again.' }
+        }
+        return { error: error.message }
       }
-      return { error: error.message }
+    } catch {
+      return { error: 'Login request timed out. Check your network and try again.' }
     }
 
     setUser(staff)
