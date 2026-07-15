@@ -34,15 +34,45 @@ export function ResetPasswordForm() {
       }
     })
 
-    supabase.auth.getSession().then(({ data }) => {
+    async function init() {
+      const params = new URLSearchParams(window.location.search)
+      const code = params.get('code')
+      const hash = window.location.hash
+
+      let { data } = await supabase.auth.getSession()
+
+      if (!data.session && code) {
+        try {
+          await supabase.auth.exchangeCodeForSession(code)
+        } catch {
+          // code may have already been exchanged by auto-detect
+        }
+        const cleanUrl = window.location.origin + window.location.pathname
+        window.history.replaceState({}, '', cleanUrl)
+        const result = await supabase.auth.getSession()
+        data = result.data
+      }
+
+      if (!data.session && hash && hash.includes('type=recovery')) {
+        const cleanUrl = window.location.origin + window.location.pathname
+        window.history.replaceState({}, '', cleanUrl)
+      }
+
       if (data.session) {
         setHasSession(true)
       }
       setInitializing(false)
-    })
+    }
+
+    init()
+
+    const timeout = setTimeout(() => {
+      setInitializing(false)
+    }, 10000)
 
     return () => {
       subscription.unsubscribe()
+      clearTimeout(timeout)
     }
   }, [])
 
@@ -109,7 +139,10 @@ export function ResetPasswordForm() {
   if (initializing) {
     return (
       <div className="flex items-center justify-center min-h-[40vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
+        <div className="text-center space-y-3">
+          <Loader2 className="h-8 w-8 animate-spin text-zinc-400 mx-auto" />
+          <p className="text-sm text-zinc-500">Verifying reset link...</p>
+        </div>
       </div>
     )
   }
