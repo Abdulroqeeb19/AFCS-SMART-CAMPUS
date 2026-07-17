@@ -29,6 +29,13 @@ interface Department {
   code: string
 }
 
+interface Subject {
+  id: string
+  name: string
+  code: string
+  department_id: string | null
+}
+
 interface ClassInfo {
   id: string
   name: string
@@ -46,6 +53,7 @@ const roleConfig: Record<string, { label: string; variant: 'info' | 'warning' | 
 export function StaffList() {
   const [staff, setStaff] = useState<StaffMember[]>([])
   const [departments, setDepartments] = useState<Department[]>([])
+  const [allSubjects, setAllSubjects] = useState<Subject[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [showAdd, setShowAdd] = useState(false)
@@ -65,6 +73,8 @@ export function StaffList() {
     role: 'teacher',
   })
 
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([])
+
   const [editForm, setEditForm] = useState({
     full_name: '',
     email: '',
@@ -73,18 +83,25 @@ export function StaffList() {
     role: 'teacher',
   })
 
+  const [editSelectedSubjects, setEditSelectedSubjects] = useState<string[]>([])
+
+  const deptSubjects = allSubjects.filter((s) => s.department_id === form.department_id)
+  const editDeptSubjects = allSubjects.filter((s) => s.department_id === editForm.department_id)
+
   const loadStaff = async () => {
     setError('')
     try {
-      const [staffRes, deptRes, classesRes] = await Promise.all([
+      const [staffRes, deptRes, classesRes, subjectsRes] = await Promise.all([
         fetch('/api/staff'),
         fetch('/api/departments'),
         fetch('/api/classes'),
+        fetch('/api/subjects'),
       ])
       if (!staffRes.ok) { setError('Failed to load staff'); return }
       if (!deptRes.ok) { setError('Failed to load departments'); return }
       setStaff(await staffRes.json())
       if (deptRes.ok) setDepartments(await deptRes.json())
+      if (subjectsRes.ok) setAllSubjects(await subjectsRes.json())
       if (classesRes.ok) {
         const allClasses: ClassInfo[] = await classesRes.json()
         setClasses(allClasses)
@@ -108,11 +125,12 @@ export function StaffList() {
       const res = await fetch('/api/staff', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, subjects: selectedSubjects }),
       })
       if (res.ok) {
         setShowAdd(false)
         setForm({ staff_id: '', full_name: '', email: '', phone: '', department_id: '', role: 'teacher' })
+        setSelectedSubjects([])
         loadStaff()
       } else {
         const data = await res.json()
@@ -330,12 +348,40 @@ export function StaffList() {
                   { value: 'support', label: 'Support Staff' },
                 ]}
               />
+              {form.role === 'teacher' && deptSubjects.length > 0 && (
+                <div className="sm:col-span-2 lg:col-span-3">
+                  <label className="block text-xs font-medium text-zinc-600 mb-1.5">Assigned Subjects (from selected department)</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5 max-h-48 overflow-y-auto p-2 border border-zinc-200 rounded-lg bg-white">
+                    {deptSubjects.map((subj) => (
+                      <label
+                        key={subj.id}
+                        className="flex items-center gap-2 px-2 py-1.5 rounded text-sm cursor-pointer hover:bg-blue-50 has-[:checked]:bg-blue-100 has-[:checked]:text-blue-800 transition-colors"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedSubjects.includes(subj.id)}
+                          onChange={(e) => {
+                            setSelectedSubjects(
+                              e.target.checked
+                                ? [...selectedSubjects, subj.id]
+                                : selectedSubjects.filter((id) => id !== subj.id)
+                            )
+                          }}
+                          className="accent-blue-600"
+                        />
+                        <span className="font-medium">{subj.code}</span>
+                        <span className="text-zinc-500 text-xs">{subj.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-3">
                 <Button type="submit" disabled={adding}>
                   {adding ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <UserPlus className="h-4 w-4 mr-2" />}
                   {adding ? 'Saving...' : 'Save Staff'}
                 </Button>
-                <Button type="button" variant="ghost" onClick={() => setShowAdd(false)}>
+                <Button type="button" variant="ghost" onClick={() => { setShowAdd(false); setSelectedSubjects([]) }}>
                   Cancel
                 </Button>
               </div>

@@ -11,6 +11,7 @@ const createStaffSchema = z.object({
   phone: z.string().max(20).nullable().optional(),
   department_id: z.string().uuid().nullable().optional(),
   role: z.string().max(50).default('teacher'),
+  subjects: z.array(z.string().uuid()).optional(),
 })
 
 const updateStaffSchema = z.object({
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
 
   const parsed = createStaffSchema.safeParse(await request.json())
   if (!parsed.success) return NextResponse.json({ error: 'Invalid staff data' }, { status: 400 })
-  const { staff_id, full_name, email, phone, department_id, role } = parsed.data
+  const { staff_id, full_name, email, phone, department_id, role, subjects } = parsed.data
 
   const adminSupabase = createAdminClient()
 
@@ -76,6 +77,14 @@ export async function POST(request: Request) {
   await adminSupabase.from('audit_logs').insert({
     staff_id: admin.id, action: 'create_staff', entity_type: 'staff', entity_id: data.id, changes: { staff_id, full_name },
   }).maybeSingle()
+
+  if (subjects && subjects.length > 0 && role === 'teacher') {
+    const subjectInserts = subjects.map((subject_id) => ({
+      teacher_id: data.id, subject_id,
+      is_primary: false, max_periods_per_day: 4,
+    }))
+    await adminSupabase.from('teacher_subjects').insert(subjectInserts).maybeSingle()
+  }
 
   return NextResponse.json(data, { status: 201 })
 }
