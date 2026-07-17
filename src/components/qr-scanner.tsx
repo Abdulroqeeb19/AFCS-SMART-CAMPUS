@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Camera, CameraOff, Loader2, Scan } from 'lucide-react'
 import { Button } from './ui/button'
+import jsQR from 'jsqr'
 
 interface QRScannerProps {
   onScan: (text: string) => void
@@ -87,6 +88,7 @@ export function QRScanner({ onScan, onError: _onError, disabled, resetKey }: QRS
       const video = document.createElement('video')
       video.setAttribute('playsinline', '')
       video.setAttribute('autoplay', '')
+      video.width = W; video.height = H
       video.muted = true
       video.srcObject = stream
       await video.play()
@@ -131,6 +133,7 @@ export function QRScanner({ onScan, onError: _onError, disabled, resetKey }: QRS
 
   async function scan() {
     if (!aliveRef.current || lockRef.current || !videoRef.current) return
+    if (videoRef.current.readyState < 2) return
 
     let text: string | null = null
 
@@ -138,17 +141,16 @@ export function QRScanner({ onScan, onError: _onError, disabled, resetKey }: QRS
       try {
         const codes = await detectorRef.current.detect(videoRef.current)
         if (codes.length > 0) text = codes[0].rawValue
-      } catch {}
+      } catch (e) { console.warn('[QR] BarcodeDetector failed:', e) }
     }
 
     if (!text && ctxRef.current && canvasRef.current) {
       try {
         ctxRef.current.drawImage(videoRef.current, 0, 0, W, H)
         const id = ctxRef.current.getImageData(0, 0, W, H)
-        const { default: jsQR } = await import('jsqr')
         const r = jsQR(id.data, id.width, id.height)
         if (r) text = r.data
-      } catch {}
+      } catch (e) { console.warn('[QR] jsQR fallback failed:', e) }
     }
 
     if (text && !lockRef.current && aliveRef.current) {
