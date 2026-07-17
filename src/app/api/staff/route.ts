@@ -11,6 +11,7 @@ const createStaffSchema = z.object({
   phone: z.string().max(20).nullable().optional(),
   department_id: z.string().uuid().nullable().optional(),
   role: z.string().max(50).default('teacher'),
+  password: z.string().min(8).optional(),
   subjects: z.array(z.string().uuid()).optional(),
 })
 
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
 
   const parsed = createStaffSchema.safeParse(await request.json())
   if (!parsed.success) return NextResponse.json({ error: 'Invalid staff data' }, { status: 400 })
-  const { staff_id, full_name, email, phone, department_id, role, subjects } = parsed.data
+  const { staff_id, full_name, email, phone, department_id, role, password, subjects } = parsed.data
 
   const adminSupabase = createAdminClient()
 
@@ -77,6 +78,16 @@ export async function POST(request: Request) {
   await adminSupabase.from('audit_logs').insert({
     staff_id: admin.id, action: 'create_staff', entity_type: 'staff', entity_id: data.id, changes: { staff_id, full_name },
   }).maybeSingle()
+
+  if (password) {
+    const { error: authErr } = await supabase.auth.admin.createUser({
+      email, password, email_confirm: true,
+    })
+    if (authErr) {
+      await adminSupabase.from('staff').delete().eq('id', data.id)
+      return NextResponse.json({ error: 'Failed to create auth account: ' + authErr.message }, { status: 500 })
+    }
+  }
 
   if (subjects && subjects.length > 0 && role === 'teacher') {
     const subjectInserts = subjects.map((subject_id) => ({

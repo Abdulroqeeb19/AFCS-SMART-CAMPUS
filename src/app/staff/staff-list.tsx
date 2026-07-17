@@ -71,6 +71,7 @@ export function StaffList() {
     phone: '',
     department_id: '',
     role: 'teacher',
+    password: '',
   })
 
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([])
@@ -137,12 +138,16 @@ export function StaffList() {
     setError('')
     setAdding(true)
     try {
-      const payload = {
-        ...form,
-        department_id: form.department_id || null,
+      const payload: Record<string, unknown> = {
+        staff_id: form.staff_id,
+        full_name: form.full_name,
+        email: form.email,
         phone: form.phone || null,
+        department_id: form.department_id || null,
+        role: form.role,
         subjects: selectedSubjects,
       }
+      if (form.password) payload.password = form.password
       const res = await fetch('/api/staff', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -150,7 +155,7 @@ export function StaffList() {
       })
       if (res.ok) {
         setShowAdd(false)
-        setForm({ staff_id: '', full_name: '', email: '', phone: '', department_id: '', role: 'teacher' })
+        setForm({ staff_id: '', full_name: '', email: '', phone: '', department_id: '', role: 'teacher', password: '' })
         setSelectedSubjects([])
         loadStaff()
       } else {
@@ -356,7 +361,7 @@ export function StaffList() {
               />
               <Select
                 id="new-dept"
-                label="Department"
+                label="Department *"
                 value={form.department_id}
                 onChange={(e) => setForm({ ...form, department_id: e.target.value })}
                 options={departments.map((d) => ({ value: d.id, label: d.name }))}
@@ -373,6 +378,14 @@ export function StaffList() {
                   { value: 'commandant', label: 'Commandant' },
                   { value: 'support', label: 'Support Staff' },
                 ]}
+              />
+              <Input
+                id="new-password"
+                label="Password (optional)"
+                type="password"
+                placeholder="Set login password"
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
               />
               {form.role === 'teacher' && deptSubjects.length > 0 && (
                 <div className="sm:col-span-2 lg:col-span-3">

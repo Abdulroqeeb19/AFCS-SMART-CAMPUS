@@ -4,11 +4,6 @@ import { getAuthStaff } from '@/lib/auth-utils'
 
 export async function GET(request: Request) {
   const supabase = await createServerSupabaseClient()
-  const auth = await getAuthStaff(supabase, request)
-  if (!auth) {
-    return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
-  }
-
   const { data, error } = await supabase
     .from('departments')
     .select('*')

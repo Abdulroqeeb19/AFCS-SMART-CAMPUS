@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json()
-    const { email, password, fullName, staffId, role, captchaToken, captchaNonce, captchaAnswer } = body
+    const { email, password, fullName, staffId, role, captchaToken, captchaNonce, captchaAnswer, department_id, subjects } = body
 
     if (!email || !password || !fullName || !staffId || !role) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 })
@@ -88,17 +88,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Account creation failed' }, { status: 500 })
     }
 
-    const { error: staffError } = await adminSupabase.from('staff').insert({
+    const { data: staffRecord, error: staffError } = await adminSupabase.from('staff').insert({
       staff_id: staffId,
       full_name: fullName,
       email,
       role,
+      department_id: department_id || null,
       is_active: true,
     }).select().single()
 
     if (staffError) {
       await supabase.auth.admin.deleteUser(authData.user.id).catch(() => {})
       return NextResponse.json({ error: 'Failed to create staff record' }, { status: 500 })
+    }
+
+    if (subjects && subjects.length > 0 && role === 'teacher' && staffRecord) {
+      const subjectInserts = subjects.map((subject_id: string) => ({
+        teacher_id: staffRecord.id, subject_id,
+        is_primary: false, max_periods_per_day: 4,
+      }))
+      await adminSupabase.from('teacher_subjects').insert(subjectInserts)
     }
 
     return NextResponse.json({

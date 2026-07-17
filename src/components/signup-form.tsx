@@ -10,6 +10,9 @@ import {
   Shield, Loader2, AlertCircle, Eye, EyeOff, UserPlus, ChevronLeft, Crown, Calculator,
 } from 'lucide-react'
 
+interface Department { id: string; name: string; code: string }
+interface Subject { id: string; name: string; code: string; department_id: string | null }
+
 export function SignupForm() {
   const router = useRouter()
   const [fullName, setFullName] = useState('')
@@ -28,6 +31,12 @@ export function SignupForm() {
   const [success, setSuccess] = useState(false)
   const [commandantTaken, setCommandantTaken] = useState(false)
   const [checkingCommandant, setCheckingCommandant] = useState(true)
+  const [departments, setDepartments] = useState<Department[]>([])
+  const [allSubjects, setAllSubjects] = useState<Subject[]>([])
+  const [departmentId, setDepartmentId] = useState('')
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([])
+
+  const deptSubjects = allSubjects.filter((s) => s.department_id === departmentId)
 
   function fetchCaptcha() {
     fetch('/api/auth/captcha').then(r => r.json()).then(data => {
@@ -44,6 +53,8 @@ export function SignupForm() {
       setCommandantTaken(data.commandantExists)
       if (data.commandantExists && role === 'commandant') setRole('admin')
     }).catch(() => {}).finally(() => setCheckingCommandant(false))
+    fetch('/api/departments').then(r => r.ok && r.json()).then(d => { if (d) setDepartments(d) }).catch(() => {})
+    fetch('/api/subjects').then(r => r.ok && r.json()).then(s => { if (Array.isArray(s)) setAllSubjects(s) }).catch(() => {})
   }, [])
 
   async function handleSubmit(e: React.FormEvent) {
@@ -63,7 +74,7 @@ export function SignupForm() {
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, fullName, staffId, role, captchaToken, captchaNonce, captchaAnswer }),
+        body: JSON.stringify({ email, password, fullName, staffId, role, captchaToken, captchaNonce, captchaAnswer, department_id: departmentId || null, subjects: selectedSubjects }),
       })
 
       const data = await res.json()
@@ -228,6 +239,37 @@ export function SignupForm() {
                 </p>
               )}
             </div>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-zinc-700">Department</label>
+              <select
+                value={departmentId}
+                onChange={(e) => { setDepartmentId(e.target.value); setSelectedSubjects([]) }}
+                className="flex h-10 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-50"
+                disabled={loading}
+              >
+                <option value="">Select department</option>
+                {departments.map((d) => (
+                  <option key={d.id} value={d.id}>{d.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {role === 'teacher' && departmentId && deptSubjects.length > 0 && (
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-zinc-700">Assigned Subjects</label>
+                <div className="grid grid-cols-2 gap-1.5 max-h-40 overflow-y-auto p-2 border border-zinc-200 rounded-lg bg-white">
+                  {deptSubjects.map((subj) => (
+                    <label key={subj.id} className="flex items-center gap-2 px-2 py-1.5 rounded text-sm cursor-pointer hover:bg-blue-50 has-[:checked]:bg-blue-100 transition-colors">
+                      <input type="checkbox" checked={selectedSubjects.includes(subj.id)}
+                        onChange={(e) => setSelectedSubjects(e.target.checked ? [...selectedSubjects, subj.id] : selectedSubjects.filter((id) => id !== subj.id))}
+                        className="accent-blue-600" disabled={loading} />
+                      <span className="font-medium">{subj.code}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-zinc-700 flex items-center gap-1.5">
