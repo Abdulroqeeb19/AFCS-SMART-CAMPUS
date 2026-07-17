@@ -131,8 +131,18 @@ export async function DELETE(request: Request) {
   if (id === admin.id) return NextResponse.json({ error: 'Cannot delete yourself' }, { status: 403 })
 
   const adminSupabase = createAdminClient()
+
+  const { error: attendErr } = await adminSupabase.from('staff_attendance').delete().eq('staff_id', id)
+  if (attendErr) return NextResponse.json({ error: 'Failed to clear attendance records' }, { status: 500 })
+
+  const { error: classErr } = await adminSupabase.from('classes').update({ class_teacher_id: null }).eq('class_teacher_id', id)
+  if (classErr) return NextResponse.json({ error: 'Failed to unassign class teacher' }, { status: 500 })
+
   const { error } = await adminSupabase.from('staff').delete().eq('id', id)
-  if (error) return NextResponse.json({ error: 'Failed to delete staff' }, { status: 500 })
+  if (error) {
+    const msg = error.message.includes('foreign key') ? 'Staff has related records that could not be removed' : 'Failed to delete staff'
+    return NextResponse.json({ error: msg }, { status: 500 })
+  }
 
   await adminSupabase.from('audit_logs').insert({
     staff_id: admin.id, action: 'delete_staff', entity_type: 'staff', entity_id: id, changes: {},

@@ -122,10 +122,16 @@ export function StaffList() {
     setError('')
     setAdding(true)
     try {
+      const payload = {
+        ...form,
+        department_id: form.department_id || null,
+        phone: form.phone || null,
+        subjects: selectedSubjects,
+      }
       const res = await fetch('/api/staff', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, subjects: selectedSubjects }),
+        body: JSON.stringify(payload),
       })
       if (res.ok) {
         setShowAdd(false)
@@ -143,7 +149,7 @@ export function StaffList() {
     }
   }
 
-  const handleUpdate = async (id: string, data: Record<string, string>): Promise<boolean> => {
+  const handleUpdate = async (id: string, data: Record<string, string | null>): Promise<boolean> => {
     setError('')
     try {
       const res = await fetch('/api/staff', {
@@ -177,7 +183,12 @@ export function StaffList() {
   }
 
   const saveEdit = async (id: string) => {
-    const ok = await handleUpdate(id, editForm)
+    const clean = {
+      ...editForm,
+      department_id: editForm.department_id || null,
+      phone: editForm.phone || null,
+    }
+    const ok = await handleUpdate(id, clean)
     if (ok) setEditId(null)
   }
 
