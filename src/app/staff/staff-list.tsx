@@ -97,16 +97,22 @@ export function StaffList() {
         fetch('/api/classes'),
         fetch('/api/subjects'),
       ])
-      if (!staffRes.ok) { setError('Failed to load staff'); return }
-      if (!deptRes.ok) { setError('Failed to load departments'); return }
-      setStaff(await staffRes.json())
-      if (deptRes.ok) setDepartments(await deptRes.json())
-      if (subjectsRes.ok) setAllSubjects(await subjectsRes.json())
+      if (staffRes.ok) {
+        setStaff(await staffRes.json())
+      } else {
+        setError('Failed to load staff')
+      }
+      if (deptRes.ok) {
+        setDepartments(await deptRes.json())
+      } else if (!staffRes.ok) {
+        setError('Failed to load departments')
+      }
       if (classesRes.ok) {
         const allClasses: ClassInfo[] = await classesRes.json()
         setClasses(allClasses)
         setClassTeacherIds(allClasses.map((c) => c.class_teacher_id).filter(Boolean) as string[])
       }
+      if (subjectsRes.ok) setAllSubjects(await subjectsRes.json())
     } catch {
       setError('Network error. Please try again.')
     } finally {

@@ -83,7 +83,8 @@ export async function POST(request: Request) {
       teacher_id: data.id, subject_id,
       is_primary: false, max_periods_per_day: 4,
     }))
-    await adminSupabase.from('teacher_subjects').insert(subjectInserts).maybeSingle()
+    const { error: subjErr } = await adminSupabase.from('teacher_subjects').insert(subjectInserts)
+    if (subjErr) console.error('Failed to assign subjects:', subjErr.message)
   }
 
   return NextResponse.json(data, { status: 201 })
