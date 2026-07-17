@@ -80,7 +80,7 @@ export async function POST(request: Request) {
   }).maybeSingle()
 
   if (password) {
-    const { error: authErr } = await supabase.auth.admin.createUser({
+    const { error: authErr } = await adminSupabase.auth.admin.createUser({
       email, password, email_confirm: true,
     })
     if (authErr) {
