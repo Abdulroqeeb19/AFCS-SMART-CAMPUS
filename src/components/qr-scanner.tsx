@@ -46,6 +46,7 @@ export function QRScanner({ onScan, onError: _onError, disabled, resetKey }: QRS
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const lockRef = useRef(false)
   const aliveRef = useRef(true)
+  const lastScannedRef = useRef<{ text: string; time: number } | null>(null)
 
   useEffect(() => {
     aliveRef.current = true
@@ -143,6 +144,8 @@ export function QRScanner({ onScan, onError: _onError, disabled, resetKey }: QRS
       }
 
       if (text && !lockRef.current && aliveRef.current) {
+        if (lastScannedRef.current?.text === text && Date.now() - lastScannedRef.current.time < 3000) return
+        lastScannedRef.current = { text, time: Date.now() }
         lockRef.current = true
         onScan(text)
       }

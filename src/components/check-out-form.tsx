@@ -135,7 +135,6 @@ export function CheckOutForm() {
     } finally {
       setLoading(false)
       setLookupLoading(false)
-      setScanId((c) => c + 1)
     }
   }
 
@@ -183,6 +182,7 @@ export function CheckOutForm() {
     setError('')
     setPerson(null)
     setStaffId('')
+    setScanId((c) => c + 1)
   }
 
   if (result?.success) {
@@ -249,7 +249,7 @@ export function CheckOutForm() {
       <CardContent className="space-y-4">
         <div className="flex gap-1 rounded-xl bg-zinc-100 p-1">
           <button
-            onClick={() => { setMode('manual'); setPerson(null); setError('') }}
+            onClick={() => { setMode('manual'); setPerson(null); setError(''); setScanId((c) => c + 1) }}
             className={`flex items-center gap-2 flex-1 justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               mode === 'manual' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'
             }`}
@@ -258,7 +258,7 @@ export function CheckOutForm() {
             Manual
           </button>
           <button
-            onClick={() => { setMode('qr'); setPerson(null); setError('') }}
+            onClick={() => { setMode('qr'); setPerson(null); setError(''); setScanId((c) => c + 1) }}
             className={`flex items-center gap-2 flex-1 justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               mode === 'qr' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'
             }`}
