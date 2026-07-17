@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/auth-utils'
 
@@ -23,7 +24,7 @@ const updateSubjectSchema = z.object({
 })
 
 export async function GET() {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('subjects')
     .select('*, department:department_id(name)')
