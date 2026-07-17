@@ -1,6 +1,18 @@
 -- AFCS Smart Campus - Seed Data for Testing
 -- Run this AFTER 001_staff_schema.sql
 
+-- Ensure default departments exist (safe to re-run)
+INSERT INTO departments (name, code) VALUES
+  ('Administration', 'ADM'),
+  ('Science', 'SCI'),
+  ('Arts', 'ART'),
+  ('Mathematics', 'MTH'),
+  ('English', 'ENG'),
+  ('Military Training', 'MLT'),
+  ('ICT', 'ICT'),
+  ('Guidance & Counseling', 'GNC')
+ON CONFLICT (code) DO NOTHING;
+
 -- Only the commandant account is seeded. All other staff must be added via the admin UI.
 INSERT INTO staff (staff_id, full_name, email, phone, department_id, role) VALUES
   ('AFC-0001', 'Commandant', 'commandant@afcs.edu.ng', '+2348012345601',

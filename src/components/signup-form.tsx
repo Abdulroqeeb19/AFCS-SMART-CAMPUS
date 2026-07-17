@@ -53,8 +53,8 @@ export function SignupForm() {
       setCommandantTaken(data.commandantExists)
       if (data.commandantExists && role === 'commandant') setRole('admin')
     }).catch(() => {}).finally(() => setCheckingCommandant(false))
-    fetch('/api/departments').then(r => r.ok && r.json()).then(d => { if (d) setDepartments(d) }).catch(() => {})
-    fetch('/api/subjects').then(r => r.ok && r.json()).then(s => { if (Array.isArray(s)) setAllSubjects(s) }).catch(() => {})
+    fetch('/api/departments').then(async r => { if (r.ok) { const d = await r.json(); if (Array.isArray(d)) setDepartments(d) } }).catch(() => {})
+    fetch('/api/subjects').then(async r => { if (r.ok) { const s = await r.json(); if (Array.isArray(s)) setAllSubjects(s) } }).catch(() => {})
   }, [])
 
   async function handleSubmit(e: React.FormEvent) {
