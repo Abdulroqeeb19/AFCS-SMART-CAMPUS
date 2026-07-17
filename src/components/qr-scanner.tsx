@@ -94,8 +94,13 @@ export function QRScanner({ onScan, onError: _onError, disabled, resetKey }: QRS
       videoRef.current = video
 
       if (USE_NATIVE) {
-        detectorRef.current = new BarcodeDetector({ formats: [...BARCODE_FORMATS] })
-      } else {
+        try {
+          detectorRef.current = new BarcodeDetector({ formats: [...BARCODE_FORMATS] })
+        } catch {
+          detectorRef.current = null
+        }
+      }
+      {
         const c = document.createElement('canvas')
         c.width = W; c.height = H
         canvasRef.current = c
@@ -127,29 +132,31 @@ export function QRScanner({ onScan, onError: _onError, disabled, resetKey }: QRS
   async function scan() {
     if (!aliveRef.current || lockRef.current || !videoRef.current) return
 
-    try {
-      let text: string | null = null
+    let text: string | null = null
 
-      if (detectorRef.current) {
+    if (detectorRef.current) {
+      try {
         const codes = await detectorRef.current.detect(videoRef.current)
         if (codes.length > 0) text = codes[0].rawValue
-      } else if (ctxRef.current && canvasRef.current && videoRef.current) {
+      } catch {}
+    }
+
+    if (!text && ctxRef.current && canvasRef.current) {
+      try {
         ctxRef.current.drawImage(videoRef.current, 0, 0, W, H)
         const id = ctxRef.current.getImageData(0, 0, W, H)
-        try {
-          const { default: jsQR } = await import('jsqr')
-          const r = jsQR(id.data, id.width, id.height)
-          if (r) text = r.data
-        } catch {}
-      }
+        const { default: jsQR } = await import('jsqr')
+        const r = jsQR(id.data, id.width, id.height)
+        if (r) text = r.data
+      } catch {}
+    }
 
-      if (text && !lockRef.current && aliveRef.current) {
-        if (lastScannedRef.current?.text === text && Date.now() - lastScannedRef.current.time < 3000) return
-        lastScannedRef.current = { text, time: Date.now() }
-        lockRef.current = true
-        onScan(text)
-      }
-    } catch {}
+    if (text && !lockRef.current && aliveRef.current) {
+      if (lastScannedRef.current?.text === text && Date.now() - lastScannedRef.current.time < 3000) return
+      lastScannedRef.current = { text, time: Date.now() }
+      lockRef.current = true
+      onScan(text)
+    }
   }
 
   if (phase === 'error') {
