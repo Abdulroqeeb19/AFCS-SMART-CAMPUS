@@ -19,8 +19,9 @@ export function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
+  const allCookies = request.cookies.getAll()
   const devSession = request.cookies.get('afcs_dev_session')
-  const hasSession = request.cookies.get('sb-auth-token') || request.cookies.get('sb-refresh-token') || devSession
+  const hasSession = allCookies.some(c => c.name.startsWith('afcs-auth-token')) || devSession
 
   if (pathname === '/api/cron' || pathname === '/api/automation/engine') {
     return NextResponse.next()

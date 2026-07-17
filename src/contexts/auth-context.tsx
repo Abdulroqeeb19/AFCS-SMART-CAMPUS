@@ -61,13 +61,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchStaffByEmail = async (email: string) => {
     try {
       const supabase = createClient()
-      const { data } = await supabase
-        .from('staff')
-        .select('*')
-        .ilike('email', email)
-        .eq('is_active', true)
-        .maybeSingle()
-      return data as Staff | null
+      const data: Staff | null = await Promise.race([
+        supabase.from('staff').select('*').ilike('email', email).eq('is_active', true).maybeSingle().then(r => r.data as Staff | null),
+        new Promise<null>((_, reject) => setTimeout(() => reject(new Error('timeout')), 10000)),
+      ])
+      return data
     } catch {
       return null
     }
@@ -115,8 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem(DEV_SESSION_KEY)
     }
 
-    // Safety timeout — resolve loading even if auth hangs
-    const safetyTimer = setTimeout(() => { if (mounted) setLoading(false) }, 5000)
+    const safetyTimer = setTimeout(() => { if (mounted) setLoading(false) }, 15000)
 
     // Fall back to Supabase Auth
     let supabase
@@ -143,17 +140,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       })
       .catch(() => { if (mounted) { clearTimeout(safetyTimer); setLoading(false) } })
 
-    const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
       if (!mounted) return
-      try {
-        if (session?.user?.email && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
-          const staff = await fetchStaffByEmail(session.user.email)
+      if (session?.user?.email && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
+        fetchStaffByEmail(session.user.email).then(staff => {
           if (mounted) setUser(staff)
-        } else if (event === 'SIGNED_OUT') {
-          if (mounted) setUser(null)
-        }
-      } catch {
-        // auth state change handler error — ignore
+        }).catch(() => {})
+      } else if (event === 'SIGNED_OUT') {
+        if (mounted) setUser(null)
       }
     })
 
@@ -178,17 +172,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { error } = await Promise.race([
         supabase.auth.signInWithPassword({ email: staff.email, password }),
         new Promise<any>((_, reject) =>
-          setTimeout(() => reject(new Error('Login timed out')), 15000)
+          setTimeout(() => reject(new Error('Login request timed out. Check your network and try again.')), 30000)
         ),
       ])
       if (error) {
-        if (error.message.includes('Invalid login')) {
+        if (error.message.includes('Invalid login') || error.message.includes('InvalidLoginCredentials')) {
           return { error: 'Incorrect password. Try again.' }
         }
         return { error: error.message }
       }
-    } catch {
-      return { error: 'Login request timed out. Check your network and try again.' }
+    } catch (e) {
+      if (e instanceof Error && e.message.includes('timed out')) {
+        return { error: e.message }
+      }
+      return { error: 'Login failed. Please try again.' }
     }
 
     setUser(staff)
