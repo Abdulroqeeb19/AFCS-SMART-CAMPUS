@@ -91,30 +91,39 @@ export function StaffList() {
   const loadStaff = async () => {
     setError('')
     try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 15000)
+
       const [staffRes, deptRes, classesRes, subjectsRes] = await Promise.all([
-        fetch('/api/staff'),
-        fetch('/api/departments'),
-        fetch('/api/classes'),
-        fetch('/api/subjects'),
+        fetch('/api/staff', { signal: controller.signal }),
+        fetch('/api/departments', { signal: controller.signal }),
+        fetch('/api/classes', { signal: controller.signal }),
+        fetch('/api/subjects', { signal: controller.signal }),
       ])
-      if (staffRes.ok) {
-        setStaff(await staffRes.json())
-      } else {
-        setError('Failed to load staff')
-      }
-      if (deptRes.ok) {
-        setDepartments(await deptRes.json())
-      } else if (!staffRes.ok) {
-        setError('Failed to load departments')
-      }
+      clearTimeout(timeout)
+
+      if (staffRes.ok) setStaff(await staffRes.json())
+      else setError('Failed to load staff')
+
+      if (deptRes.ok) setDepartments(await deptRes.json())
+      else if (!staffRes.ok && !error) setError('Failed to load departments')
+
       if (classesRes.ok) {
         const allClasses: ClassInfo[] = await classesRes.json()
         setClasses(allClasses)
         setClassTeacherIds(allClasses.map((c) => c.class_teacher_id).filter(Boolean) as string[])
       }
-      if (subjectsRes.ok) setAllSubjects(await subjectsRes.json())
-    } catch {
-      setError('Network error. Please try again.')
+
+      if (subjectsRes.ok) {
+        const data = await subjectsRes.json()
+        if (Array.isArray(data)) setAllSubjects(data)
+      }
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        setError('Request timed out. Check your connection.')
+      } else {
+        setError('Network error. Please try again.')
+      }
     } finally {
       setLoading(false)
     }
