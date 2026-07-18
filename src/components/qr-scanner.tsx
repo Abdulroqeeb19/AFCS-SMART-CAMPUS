@@ -48,6 +48,9 @@ export function QRScanner({ onScan, onError: _onError, disabled, resetKey }: QRS
   const lockRef = useRef(false)
   const aliveRef = useRef(true)
   const lastScannedRef = useRef<{ text: string; time: number } | null>(null)
+  const onScanRef = useRef(onScan)
+  useEffect(() => { onScanRef.current = onScan }, [onScan])
+  const startingRef = useRef(false)
 
   useEffect(() => {
     aliveRef.current = true
@@ -59,7 +62,11 @@ export function QRScanner({ onScan, onError: _onError, disabled, resetKey }: QRS
   }, [disabled])
 
   useEffect(() => {
-    if (resetKey !== undefined) lockRef.current = false
+    if (resetKey !== undefined) {
+      lockRef.current = false
+      if (resetKey > 0) start()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetKey])
 
   function stop() {
@@ -73,7 +80,8 @@ export function QRScanner({ onScan, onError: _onError, disabled, resetKey }: QRS
   }
 
   async function start() {
-    if (!aliveRef.current) return
+    if (!aliveRef.current || startingRef.current) return
+    startingRef.current = true
     stop()
     setErrorMsg(null)
     setPhase('starting')
@@ -91,6 +99,14 @@ export function QRScanner({ onScan, onError: _onError, disabled, resetKey }: QRS
       video.width = W; video.height = H
       video.muted = true
       video.srcObject = stream
+
+      const root = rootRef.current
+      if (root) {
+        const existing = root.querySelector('video')
+        if (existing) existing.remove()
+        root.appendChild(video)
+      }
+
       await video.play()
       if (!aliveRef.current) { stop(); return }
       videoRef.current = video
@@ -109,13 +125,6 @@ export function QRScanner({ onScan, onError: _onError, disabled, resetKey }: QRS
         ctxRef.current = c.getContext('2d')
       }
 
-      const root = rootRef.current
-      if (root) {
-        const existing = root.querySelector('video')
-        if (existing) existing.remove()
-        root.appendChild(video)
-      }
-
       setPhase('active')
       pollRef.current = setInterval(scan, POLL_MS)
     } catch (err) {
@@ -128,6 +137,8 @@ export function QRScanner({ onScan, onError: _onError, disabled, resetKey }: QRS
         setErrorMsg('Camera not available. Use Manual entry instead.')
       }
       setPhase('error')
+    } finally {
+      startingRef.current = false
     }
   }
 
@@ -157,7 +168,7 @@ export function QRScanner({ onScan, onError: _onError, disabled, resetKey }: QRS
       if (lastScannedRef.current?.text === text && Date.now() - lastScannedRef.current.time < 3000) return
       lastScannedRef.current = { text, time: Date.now() }
       lockRef.current = true
-      onScan(text)
+      onScanRef.current(text)
     }
   }
 
