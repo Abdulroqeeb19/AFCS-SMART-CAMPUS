@@ -81,28 +81,23 @@ export function CheckInForm() {
     setResult(null)
     setPerson(null)
     setLookupLoading(true)
-    console.log('[QR] handleQRScan called with:', id)
     try {
-      console.log('[QR] fetching lookup...')
       const res = await fetch(`/api/checkin/lookup?identifier=${encodeURIComponent(id)}`)
       if (!res.ok) {
         const data = await res.json()
-        console.log('[QR] lookup failed:', res.status, data.error)
         setError(data.error || 'Staff not found')
         return
       }
       const data = await res.json()
-      console.log('[QR] lookup result:', data.type, data.full_name, data.is_active)
       if (data.type !== 'staff') {
         setError('This ID belongs to a student.')
         return
       }
-      if (!data.is_active) {
+      if (data.is_active === false) {
         setError('This staff account is not active.')
         return
       }
       if (data.today_attendance?.check_in && !data.today_attendance?.check_out) {
-        console.log('[QR] auto check-out...')
         setPerson(data)
         setLoading(true)
         const coRes = await fetch('/api/attendance/check-out', {
@@ -127,7 +122,6 @@ export function CheckInForm() {
         setError('Already checked out today')
         return
       }
-      console.log('[QR] auto check-in...')
       setLoading(true)
       const ciRes = await fetch('/api/attendance/check-in', {
         method: 'POST',
@@ -135,7 +129,6 @@ export function CheckInForm() {
         body: JSON.stringify({ staff_id: id }),
       })
       const ciData = await ciRes.json()
-      console.log('[QR] check-in response:', ciRes.status, ciData)
       if (!ciRes.ok) {
         if (ciRes.status === 409) {
           setResult({
@@ -155,8 +148,7 @@ export function CheckInForm() {
         status: ciData.status,
         time: ciData.check_in,
       })
-    } catch (e) {
-      console.log('[QR] catch:', e)
+    } catch {
       setError('Network error. Please try again.')
     } finally {
       setLoading(false)

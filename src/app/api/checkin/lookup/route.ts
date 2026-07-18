@@ -32,7 +32,7 @@ export async function GET(request: Request) {
     if (error || !student) {
       return NextResponse.json({ error: 'Student not found' }, { status: 404 })
     }
-    if (!student.is_active) {
+    if (student.is_active === false) {
       return NextResponse.json({ error: 'Student account is inactive' }, { status: 403 })
     }
 
@@ -64,7 +64,7 @@ export async function GET(request: Request) {
   if (error || !staff) {
     return NextResponse.json({ error: 'Staff not found' }, { status: 404 })
   }
-  if (!staff.is_active) {
+  if (staff.is_active === false) {
     return NextResponse.json({ error: 'Staff account is inactive' }, { status: 403 })
   }
 
