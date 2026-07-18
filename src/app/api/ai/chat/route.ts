@@ -8,6 +8,8 @@ const AI_API_KEY = process.env.AI_API_KEY || ''
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || ''
 const AI_MODEL = process.env.AI_MODEL || 'gpt-4o-mini'
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash'
+const OLLAMA_BASE_URL = (process.env.OLLAMA_BASE_URL || 'http://localhost:11434').replace(/\/+$/, '')
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'qwen3:4b'
 
 const SYSTEM_PROMPT = `You are AFCS AI, the official AI assistant for Air Force Comprehensive School, Igbara-Oke (AFCS Smart Campus). You help administrators, commandants, and teachers with:
 
@@ -377,6 +379,47 @@ async function callOpenAI(messages: { role: string; content: string }[], maxTurn
   return { content: 'Request completed after multiple processing steps.' }
 }
 
+async function callOllama(messages: { role: string; content: string }[], maxTurns = 5): Promise<{ content: string }> {
+  const currentMessages: { role: string; content: string; name?: string }[] = [...messages]
+
+  for (let turn = 0; turn < maxTurns; turn++) {
+    const payload = buildOpenAIPayload(currentMessages, undefined, OLLAMA_MODEL)
+    const res = await fetch(`${OLLAMA_BASE_URL}/v1/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+
+    if (!res.ok) {
+      const err = await res.text()
+      throw new Error(`Ollama API error: ${res.status} — ${err}`)
+    }
+
+    const data = await res.json()
+    const choice = data.choices?.[0]
+    if (!choice) throw new Error('No response from Ollama')
+
+    const message = choice.message
+
+    if (!message.tool_calls?.length) {
+      return { content: message.content || 'No response generated.' }
+    }
+
+    const toolResults: { name: string; result: unknown }[] = []
+    currentMessages.push({ role: 'assistant', content: message.content || '' })
+
+    for (const tc of message.tool_calls) {
+      const name = tc.function.name
+      const args = JSON.parse(tc.function.arguments)
+      const result = await executeTool(name, args)
+      toolResults.push({ name, result })
+      currentMessages.push({ role: 'tool', content: JSON.stringify(result), name })
+    }
+  }
+
+  return { content: 'Request completed after multiple processing steps.' }
+}
+
 export async function POST(request: Request) {
   try {
     const supabase = await createServerSupabaseClient()
@@ -404,6 +447,8 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'OpenAI not configured. Set AI_API_KEY in environment variables.' }, { status: 503 })
       }
       result = await callOpenAI(messages)
+    } else if (provider === 'ollama') {
+      result = await callOllama(messages)
     } else {
       if (!GEMINI_API_KEY && !AI_API_KEY) {
         return NextResponse.json({ error: 'Gemini not configured. Set GEMINI_API_KEY in environment variables.' }, { status: 503 })

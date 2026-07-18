@@ -45,16 +45,18 @@ export function AiAssistant() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showSuggestions, setShowSuggestions] = useState(true)
-  const [provider, setProvider] = useState<'openai' | 'gemini'>('openai')
+  const [provider, setProvider] = useState<'openai' | 'gemini' | 'ollama'>('openai')
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    const saved = localStorage.getItem('afcs_ai_provider') as 'openai' | 'gemini' | null
+    const saved = localStorage.getItem('afcs_ai_provider') as 'openai' | 'gemini' | 'ollama' | null
     if (saved) {
       setProvider(saved)
     } else if (process.env.NEXT_PUBLIC_AI_PROVIDER === 'gemini') {
       setProvider('gemini')
+    } else if (process.env.NEXT_PUBLIC_AI_PROVIDER === 'ollama') {
+      setProvider('ollama')
     }
   }, [])
 
@@ -131,25 +133,27 @@ export function AiAssistant() {
               <h2 className="text-sm font-semibold">AFCS AI Assistant</h2>
               <p className="text-xs text-white/60">Powered by
                 <button
-                  onClick={() => setProvider(provider === 'openai' ? 'gemini' : 'openai')}
+                  onClick={() => setProvider(provider === 'openai' ? 'gemini' : provider === 'gemini' ? 'ollama' : 'openai')}
                   className="ml-1 underline decoration-dotted hover:text-white transition-colors"
                 >
-                  {provider === 'openai' ? 'OpenAI' : 'Gemini'}
+                  {provider === 'openai' ? 'OpenAI' : provider === 'gemini' ? 'Gemini' : 'Ollama'}
                 </button>
               </p>
             </div>
           </div>
           <div className="flex items-center gap-1">
             <button
-              onClick={() => setProvider(provider === 'openai' ? 'gemini' : 'openai')}
+              onClick={() => setProvider(provider === 'openai' ? 'gemini' : provider === 'gemini' ? 'ollama' : 'openai')}
               className={`text-[10px] px-2 py-0.5 rounded-full font-medium transition-colors ${
                 provider === 'openai'
                   ? 'bg-green-600/20 text-green-300'
-                  : 'bg-blue-600/20 text-blue-300'
+                  : provider === 'gemini'
+                  ? 'bg-blue-600/20 text-blue-300'
+                  : 'bg-purple-600/20 text-purple-300'
               }`}
               title="Switch AI provider"
             >
-              {provider === 'openai' ? 'GPT' : 'Gem'}
+              {provider === 'openai' ? 'GPT' : provider === 'gemini' ? 'Gem' : 'Qwen'}
             </button>
             <button onClick={() => setOpen(false)} className="rounded-full p-1.5 hover:bg-white/10 transition-colors">
               <X className="h-5 w-5" />
