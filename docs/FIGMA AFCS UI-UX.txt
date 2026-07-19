@@ -1,0 +1,590 @@
+# Master Prompt: Figma UI/UX Design for AFCS Smart Campus Web Application (Phases A–D)
+
+## ROLE
+
+You are a Senior Product Designer, UX Researcher, UI Designer, Design System Architect, and Figma Expert with over 20 years of experience designing enterprise SaaS platforms, school management systems, ERP software, military administration portals, and AI-powered education platforms.
+
+Your mission is to design a **modern, intuitive, scalable, and production-ready UI/UX** for the **Airforce Comprehensive High School (AFCS), Igbara-Oke Smart Campus Web Application**, focusing **only on Phases A–D**. The design should support future expansion while keeping advanced phases out of scope for now.
+
+---
+
+# Project Overview
+
+Design a responsive web application that digitises and automates the core operations of Airforce Comprehensive High School, Igbara-Oke.
+
+The application should reflect:
+
+* Military professionalism
+* Educational excellence
+* Modern technology
+* Simplicity
+* Speed
+* Accessibility
+* Trust
+* Security
+
+The interface should be suitable for administrators, teachers, students, parents, bursary staff, ICT personnel, and the Commandant.
+
+---
+
+# Design Philosophy
+
+Create a premium enterprise experience inspired by:
+
+* Notion
+* Linear
+* Microsoft 365
+* Google Workspace
+* Supabase Dashboard
+* Stripe Dashboard
+* Vercel Dashboard
+
+Characteristics:
+
+* Clean layouts
+* Minimal visual clutter
+* Excellent typography
+* Spacious spacing
+* Rounded corners (12–16 px)
+* Soft shadows
+* Smooth interactions
+* Responsive design
+* Accessibility (WCAG AA)
+* Dark and Light mode support
+
+---
+
+# Colour Palette
+
+Primary
+
+* Air Force Blue (#1F4E79)
+
+Secondary
+
+* Sky Blue (#4DA6FF)
+
+Success
+
+* Green (#22C55E)
+
+Warning
+
+* Amber (#F59E0B)
+
+Danger
+
+* Red (#EF4444)
+
+Neutral
+
+* White
+* Slate Gray
+* Light Gray
+
+---
+
+# Typography
+
+Use:
+
+* Inter
+* Geist
+* SF Pro Display (fallback)
+
+Hierarchy:
+
+* H1
+* H2
+* H3
+* Body
+* Caption
+* Labels
+
+---
+
+# Grid System
+
+* 12-column responsive grid
+* 8 px spacing system
+* Responsive breakpoints:
+
+  * Desktop
+  * Tablet
+  * Mobile
+
+---
+
+# Navigation Structure
+
+Create:
+
+### Top Navigation
+
+Contains:
+
+* School Logo
+* Search
+* Notifications
+* Messages
+* User Profile
+* Settings
+
+---
+
+### Left Sidebar
+
+Modules
+
+Dashboard
+
+Students
+
+Staff
+
+Parents
+
+Admissions
+
+Academics
+
+Attendance
+
+Results
+
+Finance
+
+Documents
+
+Reports
+
+Settings
+
+Logout
+
+---
+
+# Dashboard Design
+
+Design a Command Centre Dashboard containing:
+
+## KPI Cards
+
+Total Students
+
+Total Staff
+
+Present Today
+
+Absent Today
+
+Revenue Collected
+
+Outstanding Fees
+
+Admissions
+
+Pending Requests
+
+---
+
+## Charts
+
+Student Enrollment
+
+Attendance Trend
+
+Revenue Analytics
+
+Academic Performance
+
+Fee Collection
+
+Department Statistics
+
+---
+
+## Widgets
+
+Today's Activities
+
+School Calendar
+
+Recent Notifications
+
+Quick Actions
+
+Recent Admissions
+
+Pending Approvals
+
+Upcoming Events
+
+---
+
+# User Roles
+
+Create unique dashboards for:
+
+## Commandant
+
+Strategic analytics
+
+School KPIs
+
+Approvals
+
+Reports
+
+Revenue overview
+
+---
+
+## Vice Principal
+
+Academic monitoring
+
+Attendance
+
+Performance
+
+Teacher activities
+
+---
+
+## ICT Administrator
+
+User management
+
+Permissions
+
+Audit logs
+
+System health
+
+---
+
+## Teachers
+
+Attendance
+
+Lesson plans
+
+Results
+
+Assignments
+
+Student profiles
+
+---
+
+## Bursary
+
+Payments
+
+Invoices
+
+Revenue dashboard
+
+Financial reports
+
+---
+
+## Parents
+
+Child profile
+
+Attendance
+
+Results
+
+Fees
+
+Messages
+
+Announcements
+
+---
+
+## Students
+
+Profile
+
+Timetable
+
+Assignments
+
+Attendance
+
+Results
+
+Notifications
+
+---
+
+# Phase A Screens
+
+Design complete interfaces for:
+
+* Login
+* Forgot Password
+* Dashboard
+* Student List
+* Student Details
+* Student Registration
+* Staff Directory
+* Staff Profile
+* Parent Portal
+* Admissions Portal
+* School Website Homepage
+* User Management
+* Role Management
+* Audit Logs
+
+---
+
+# Phase B Screens
+
+Design:
+
+Learning Management
+
+Course List
+
+Course Details
+
+Lesson Viewer
+
+Assignment Upload
+
+Assignment Submission
+
+Teacher Dashboard
+
+Student Dashboard
+
+CBT Dashboard
+
+Exam Interface
+
+Question Builder
+
+Question Bank
+
+Result Processing
+
+Gradebook
+
+Report Card
+
+Academic Analytics
+
+Timetable
+
+---
+
+# Phase C Screens
+
+Design:
+
+Student Attendance
+
+Staff Attendance
+
+QR Check-in
+
+Attendance Reports
+
+Leave Requests
+
+Approval Workflow
+
+Document Library
+
+Document Viewer
+
+Workflow Dashboard
+
+Notifications
+
+---
+
+# Phase D Screens
+
+Design:
+
+School Fees Dashboard
+
+Invoice Generation
+
+Payment History
+
+Outstanding Fees
+
+Revenue Dashboard
+
+Financial Reports
+
+Budget Management
+
+Transaction Details
+
+---
+
+# Component Library
+
+Create reusable components:
+
+Buttons
+
+Input Fields
+
+Dropdowns
+
+Tables
+
+Cards
+
+Charts
+
+Modals
+
+Sidebars
+
+Tabs
+
+Badges
+
+Alerts
+
+Notifications
+
+Progress Bars
+
+Calendars
+
+Date Pickers
+
+File Upload
+
+Search
+
+Pagination
+
+Breadcrumbs
+
+Data Tables
+
+Charts
+
+Stat Cards
+
+---
+
+# Design System
+
+Include:
+
+Colour Tokens
+
+Typography Scale
+
+Spacing Tokens
+
+Elevation
+
+Icons
+
+Illustrations
+
+Buttons
+
+Forms
+
+Tables
+
+Charts
+
+Navigation
+
+Status Indicators
+
+Accessibility Guidelines
+
+Interaction States
+
+Dark Theme
+
+Light Theme
+
+---
+
+# Prototyping
+
+Create clickable prototypes for:
+
+Student Registration
+
+Admission Workflow
+
+Attendance Recording
+
+CBT Examination
+
+Fee Payment
+
+Result Publishing
+
+Leave Approval
+
+Parent Portal
+
+---
+
+# UX Requirements
+
+Ensure:
+
+* Minimal clicks
+* Fast navigation
+* Clear visual hierarchy
+* Consistent interactions
+* Responsive layouts
+* Keyboard accessibility
+* Error prevention
+* Helpful validation messages
+* Empty states
+* Loading states
+* Success states
+* Error states
+
+---
+
+# Deliverables
+
+Produce a complete Figma project including:
+
+1. Cover Page
+2. Design System
+3. Component Library
+4. Desktop Screens
+5. Tablet Screens
+6. Mobile Responsive Screens
+7. Interactive Prototype
+8. User Flows
+9. Information Architecture
+10. Wireframes
+11. High-Fidelity Mockups
+12. Auto Layout
+13. Variables and Design Tokens
+14. Reusable Components
+15. Developer Handoff Specifications
+16. Export-ready Assets
+17. Responsive Constraints
+18. Accessibility Compliance
+
+
+# Future-Proofing
+
+Although only Phases A–D should be designed, structure the navigation and design system so that future modules (AI Command Centre, Smart Security, Hostel Management, Business Intelligence, and Super App) can be added without redesigning the overall application.
+The final design must be polished, production-ready, scalable, and suitable for handoff to developers for implementation in **Next.js + React + Tailwind CSS + TypeScript**, with a clean component structure that aligns with modern enterprise web application standards.
