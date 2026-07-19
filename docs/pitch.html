@@ -10,6 +10,7 @@
   h1 { font-size: 22pt; color: #001A4D; border-bottom: 3px solid #C9A84C; padding-bottom: 8pt; margin-bottom: 24pt; }
   h2 { font-size: 16pt; color: #001A4D; margin-top: 28pt; margin-bottom: 12pt; border-bottom: 1px solid #ddd; padding-bottom: 4pt; }
   h3 { font-size: 13pt; color: #003366; margin-top: 20pt; margin-bottom: 8pt; }
+  h4 { font-size: 11pt; color: #001A4D; margin-top: 14pt; margin-bottom: 6pt; }
   p { margin-bottom: 8pt; }
   ul, ol { margin-left: 20pt; margin-bottom: 12pt; }
   li { margin-bottom: 4pt; }
@@ -22,9 +23,17 @@
   .cover h1 { font-size: 28pt; border: none; margin-bottom: 8pt; }
   .cover .subtitle { font-size: 14pt; color: #666; margin-bottom: 20pt; }
   .cover .meta { font-size: 10pt; color: #999; }
+  .cover .badge { display: inline-block; background: #001A4D; color: #C9A84C; padding: 4pt 14pt; border-radius: 20pt; font-size: 9pt; font-weight: 600; margin-top: 12pt; }
   .highlight-box { background: #e8f0fe; border-left: 4px solid #001A4D; padding: 12pt 16pt; margin: 16pt 0; border-radius: 4pt; }
   .highlight-box strong { color: #001A4D; }
+  .stat-row { display: flex; gap: 12pt; margin: 16pt 0; flex-wrap: wrap; }
+  .stat-card { flex: 1; min-width: 120pt; background: #f0f4ff; border: 1px solid #d0d8e8; border-radius: 8pt; padding: 12pt 16pt; text-align: center; }
+  .stat-card .num { font-size: 24pt; font-weight: 700; color: #001A4D; }
+  .stat-card .lbl { font-size: 8pt; color: #666; text-transform: uppercase; letter-spacing: 0.5pt; }
   .page-break { page-break-before: always; }
+  .tag { display: inline-block; background: #e8f0fe; color: #001A4D; font-size: 8pt; padding: 1pt 6pt; border-radius: 3pt; margin-right: 3pt; }
+  .tag-green { background: #e6f7e6; color: #008751; }
+  .tag-gold { background: #fff7e6; color: #C9A84C; }
   @media print { body { padding: 0; } }
 </style>
 </head>
@@ -33,22 +42,32 @@
 <div class="cover">
   <h1>AFCS Smart Campus</h1>
   <div class="subtitle">Investment Pitching Document</div>
-  <div class="meta">
-    <p>Air Force Comprehensive School, Igbara-Oke</p>
-    <p>Version 1.0 &mdash; July 2026</p>
+  <div class="badge">Version 2.0 — July 2026</div>
+  <div class="meta" style="margin-top:16pt;">
+    <p>Air Force Comprehensive School, Igbara-Oke, Ondo State, Nigeria</p>
+    <p>Production Since: Early 2026</p>
   </div>
 </div>
 
+<div class="page-break"></div>
+
 <h2>Executive Summary</h2>
 
-<p>AFCS Smart Campus is a comprehensive school management operating system purpose-built for Nigerian secondary schools. Developed at Air Force Comprehensive School, Igbara-Oke (AFCS), it replaces fragmented paper-based processes with an integrated digital platform covering attendance, duty rosters, timetable generation, muster parades, daily reporting, and multi-channel communications.</p>
+<p>AFCS Smart Campus is a comprehensive, AI-powered school management operating system purpose-built for Nigerian secondary schools. Developed and deployed at <strong>Air Force Comprehensive School, Igbara-Oke (AFCS)</strong>, it replaces fragmented paper-based processes with an integrated digital platform covering attendance, duty rosters, AI timetable generation, muster parades, daily reporting, prefect management, and multi-channel communications (Telegram, WhatsApp, SMS).</p>
 
-<p>The system serves <strong>80+ staff members and 3000+ students</strong> in production, processing <strong>hundreds of daily check-ins</strong> and delivering <strong>automated notifications</strong> via Telegram, WhatsApp, and SMS. It has been live since early 2026 and is fully operational.</p>
+<div class="stat-row">
+  <div class="stat-card"><div class="num">80+</div><div class="lbl">Staff Served</div></div>
+  <div class="stat-card"><div class="num">3,000+</div><div class="lbl">Students Tracked</div></div>
+  <div class="stat-card"><div class="num">50+</div><div class="lbl">API Endpoints</div></div>
+  <div class="stat-card"><div class="num">13</div><div class="lbl">Automation Rules</div></div>
+</div>
 
-<p>AFCS Smart Campus represents a <strong>Nigerian-built, Nigerian-tested solution</strong> that addresses the acute need for digital transformation in Africa's educational sector.</p>
+<p>The system processes <strong>hundreds of daily check-ins</strong> via QR code and manual entry, runs <strong>13 scheduled automation rules</strong> (duty notifications, check-in reminders, absentee alerts, period reminders, daily summaries), and delivers <strong>multi-channel notifications</strong> via Telegram bot (25+ commands), WhatsApp Cloud API, and SMS. An <strong>AI-powered timetable generator</strong> uses constraint-satisfaction algorithms to produce conflict-free timetables. A <strong>global search bar</strong> provides instant access to all platform features.</p>
+
+<p>AFCS Smart Campus represents a <strong>Nigerian-built, Nigerian-tested solution</strong> that addresses the acute need for digital transformation in Africa's educational sector — now with <strong>18 prefect roles</strong>, <strong>Ollama AI provider support</strong>, and <strong>all automation notifications redirected to Telegram</strong> for reliability and zero-cost delivery.</p>
 
 <div class="highlight-box">
-  <strong>The Ask:</strong> &mdash; investment to productize, scale, and deploy AFCS Smart Campus to 100+ Nigerian schools within 24 months.
+  <strong>The Ask:</strong> NGN 50,000,000 (~$32,000) investment to productize, scale, and deploy AFCS Smart Campus to 100+ Nigerian schools within 24 months.
 </div>
 
 <div class="page-break"></div>
@@ -57,30 +76,37 @@
 
 <h3>Nigerian schools face critical operational challenges:</h3>
 <ul>
-  <li><strong>Paper-based record keeping</strong> — Attendance, duties, and reports are handwritten, lost easily, and nearly impossible to audit</li>
-  <li><strong>No real-time visibility</strong> — School administrators lack live data on who is present, who is on duty, or what tasks are pending</li>
-  <li><strong>Manual timetable generation</strong> — Creating conflict-free timetables for 30+ teachers across multiple classes takes days of manual work and frequently contains errors</li>
-  <li><strong>Inefficient communication</strong> — Broadcasting urgent announcements requires physical notice boards or unreliable SMS blasts</li>
-  <li><strong>No accountability framework</strong> — Task assignment and follow-up are informal; there is no audit trail</li>
-  <li><strong>Limited oversight</strong> — Proprietors and regulators cannot access school performance data remotely</li>
+  <li><strong>Paper-based record keeping</strong> — Attendance, duties, and reports are handwritten, lost easily, and nearly impossible to audit. A typical Nigerian school processes 500+ attendance records daily on paper.</li>
+  <li><strong>No real-time visibility</strong> — School administrators (commandants, principals) lack live data on who is present, who is on duty, or what tasks are pending — leading to accountability gaps.</li>
+  <li><strong>Manual timetable generation</strong> — Creating conflict-free timetables for 30+ teachers across multiple classes takes 3-5 days of manual work and frequently contains room/teacher/subject clashes.</li>
+  <li><strong>Fragmented communication</strong> — WhatsApp groups, physical notice boards, word-of-mouth. No unified system for task assignment, acknowledgment, or follow-up.</li>
+  <li><strong>No accountability framework</strong> — Task assignment and follow-up are informal. There is no digital audit trail for duty assignments, parade briefings, or attendance overrides.</li>
+  <li><strong>Limited oversight</strong> — Proprietors, education boards, and ministry officials cannot access school performance data remotely. No dashboards for attendance trends or staff performance.</li>
+  <li><strong>No student leadership management</strong> — Prefect assignments are manual, inconsistently tracked, and not integrated with the attendance or behavior monitoring system.</li>
 </ul>
 
 <h3>Market Gap</h3>
-<p>Existing solutions (Edusuite, SchoolTry, SkoolMedia) focus on <strong>academic records</strong> (grades, transcripts, fees). None provide integrated <strong>operations management</strong> — the daily workflow of running a boarding school: attendance tracking, duty rotations, parade management, real-time staff communication, and automated reporting. AFCS Smart Campus uniquely fills this gap.</p>
+<p>Existing solutions (Edusuite, SchoolTry, SkoolMedia, Eduplana) focus on <strong>academic records</strong> — grades, transcripts, fees, and learning management. None provide integrated <strong>school operations management</strong>: the daily workflow of running a boarding school — attendance tracking, duty rotations, parade management, real-time staff communication, automated reporting, and prefect management. AFCS Smart Campus uniquely fills this gap as the only platform combining operations management + academic scheduling + multi-channel communications + automation.</p>
+
+<div class="page-break"></div>
 
 <h2>The Solution</h2>
 
-<p>AFCS Smart Campus is a mobile-first, cloud-native school operating system with eight integrated modules:</p>
+<p>AFCS Smart Campus is a mobile-first, cloud-native school operating system with <strong>12 integrated modules</strong>:</p>
 
 <ol>
-  <li><strong>Smart Attendance</strong> — QR code and manual check-in/out with late detection, department and class breakdowns, real-time dashboard</li>
-  <li><strong>Duty Roster Engine</strong> — 8 duty types, auto-rotation algorithm, status tracking, Telegram notifications for daily assignments</li>
-  <li><strong>AI Timetable Generator</strong> — Constraint-satisfaction algorithm producing optimized, conflict-free timetables with morning priority for hard subjects, double-period support, and Friday 30-min periods</li>
-  <li><strong>Muster Parade Management</strong> — Digital session tracking, briefing delivery, task assignment with acknowledgement workflow</li>
-  <li><strong>Daily Intelligence Reports</strong> — Structured reporting with AI-generated summaries and trend analysis</li>
-  <li><strong>Multi-Channel Communications</strong> — Telegram bot (25+ commands), WhatsApp Cloud API, SMS (Termii + Africa's Talking)</li>
-  <li><strong>Automation Engine</strong> — 13 scheduled rules handling duty notification, check-in reminders, absentee alerts, period reminders, and daily digests</li>
-  <li><strong>AI Assistant</strong> — Natural language query interface with database function calling for instant insights</li>
+  <li><strong>Smart Attendance (Staff &amp; Student)</strong> — QR code and manual check-in/out with late detection, department and class breakdowns, real-time dashboard with auto-refresh. Configurable late cutoff and closing times.</li>
+  <li><strong>QR Code Scanner</strong> — Native barcode detection with pure-JavaScript fallback. Camera-based scanning for staff ID cards and student IDs. Now with improved reliability, auto-start, and stale-closure fixes.</li>
+  <li><strong>Duty Roster Engine</strong> — 8 duty types (Morning Talk, Assembly Duty, Inspection/Report, Time, Sanitary, Labour, Dining Hall, Sports). Auto-rotation algorithm, status tracking, Telegram notifications for daily assignments.</li>
+  <li><strong>AI Timetable Generator</strong> — Constraint-satisfaction algorithm producing optimized, conflict-free timetables. Supports double periods, Friday 30-min periods, morning priority for hard subjects, teacher-subject-class-room constraints. Quality metrics dashboard.</li>
+  <li><strong>Muster Parade Management</strong> — Digital parade session tracking, briefing delivery, task assignment with acknowledgment workflow, priority/deadline tracking, and live response feed for commandant.</li>
+  <li><strong>Prefect Roles System</strong> — 18 prefect roles (Head Boy/Girl through Time Prefect). Dropdown assignment on student cards, prefect badges, and filter-by-prefect search. Role-based leadership tracking.</li>
+  <li><strong>Daily Intelligence Reports</strong> — Structured reporting with activity descriptions, challenges, and suggestions. AI-generated summaries and trend analysis. Student activity reports by class teachers.</li>
+  <li><strong>Multi-Channel Communications</strong> — Telegram bot (25+ commands including /automate, /duty, /tasks, /attendance), WhatsApp Cloud API with templates, SMS via Termii + Africa's Talking. Cascade fallback: Telegram → SMS → WhatsApp → Queue.</li>
+  <li><strong>Automation Engine</strong> — 13 scheduled rules handling duty roster notifications, check-in reminders, absentee alerts (configurable threshold), next-period reminders, daily summary broadcasts, parade auto-close, duty auto-assign, assembly reminders, scheduled broadcast processing, and end-of-day digest. All notifications now delivered via Telegram.</li>
+  <li><strong>Global Search</strong> — Ctrl+K or sidebar search across all 30+ platform features. Keyboard-navigable modal with section grouping.</li>
+  <li><strong>AI Assistant</strong> — Natural language query interface with OpenAI (GPT-4o), Google Gemini, and Ollama (Qwen3:4b free local option). Database function calling for instant attendance, timetable, and staff insights.</li>
+  <li><strong>Notifications Hub</strong> — Full notification history with sent/failed/queued status. Print queue for offline distribution. SMS queue with retry mechanism.</li>
 </ol>
 
 <div class="page-break"></div>
@@ -88,43 +114,61 @@
 <h2>Technology &amp; Architecture</h2>
 
 <table>
-  <tr><th>Layer</th><th>Technology</th><th>Benefit</th></tr>
-  <tr><td>Frontend</td><td>Next.js 16 + React 19 + Tailwind v4</td><td>Modern, fast, responsive UI</td></tr>
-  <tr><td>Backend</td><td>Next.js API Routes</td><td>Serverless, auto-scaling, low cost</td></tr>
-  <tr><td>Database</td><td>Supabase PostgreSQL</td><td>Real-time capable, built-in auth, RLS</td></tr>
-  <tr><td>Hosting</td><td>Vercel</td><td>Global CDN, free tier, edge functions</td></tr>
-  <tr><td>AI</td><td>OpenAI / Gemini</td><td>Industry-leading LLM integration</td></tr>
-  <tr><td>Telegram</td><td>Bot API</td><td>Free, reliable, ubiquitous in Nigeria</td></tr>
-  <tr><td>WhatsApp</td><td>Cloud API (Meta)</td><td>Most-used messaging platform</td></tr>
-  <tr><td>SMS</td><td>Termii / Africa's Talking</td><td>Nigerian and pan-African gateways</td></tr>
+  <tr><th>Layer</th><th>Technology</th><th>Version / Detail</th></tr>
+  <tr><td>Frontend Framework</td><td>Next.js</td><td>16 (App Router), React 19, TypeScript</td></tr>
+  <tr><td>Styling</td><td>Tailwind CSS</td><td>v4, Lucide Icons</td></tr>
+  <tr><td>Backend</td><td>Next.js API Routes</td><td>50+ endpoints, Serverless</td></tr>
+  <tr><td>Database</td><td>Supabase PostgreSQL</td><td>Real-time, Row-Level Security, 30+ tables</td></tr>
+  <tr><td>Authentication</td><td>Supabase Auth</td><td>Password-based, role hierarchy (4 tiers)</td></tr>
+  <tr><td>CAPTCHA</td><td>Cloudflare Turnstile</td><td>Invisible, privacy-first</td></tr>
+  <tr><td>Hosting</td><td>Vercel</td><td>Global CDN, Edge Functions, Cron Jobs</td></tr>
+  <tr><td>AI Providers</td><td>OpenAI / Gemini / Ollama</td><td>GPT-4o, Gemini Pro, Qwen3:4b</td></tr>
+  <tr><td>Telegram</td><td>Bot API</td><td>Free, 25+ custom commands</td></tr>
+  <tr><td>WhatsApp</td><td>Meta Cloud API</td><td>v22.0, template + text messages</td></tr>
+  <tr><td>SMS Gateways</td><td>Termii / Africa's Talking</td><td>Nigerian + pan-African coverage</td></tr>
+  <tr><td>CI/CD</td><td>GitHub → Vercel</td><td>Auto-deploy on push</td></tr>
 </table>
+
+<h3>Security Architecture</h3>
+<ul>
+  <li><strong>Row-Level Security (RLS)</strong> — Every database query enforces per-user access policies. Staff see only their own data.</li>
+  <li><strong>Role-Based Access Control</strong> — 4-tier hierarchy: Commandant (100) &gt; Admin (80) &gt; Teacher (40) &gt; Support (20). Granular action-level permissions.</li>
+  <li><strong>Service Role Isolation</strong> — Admin API operations use a separate service-role client with elevated privileges, never exposed to client-side code.</li>
+  <li><strong>Complete Audit Trail</strong> — All overrides, staff edits, and task changes logged with user identity and timestamp.</li>
+  <li><strong>Zero-Knowledge Authentication</strong> — Supabase Auth handles all credentials. We never see or store passwords.</li>
+  <li><strong>Request Validation</strong> — Body size limits, type checking, and input sanitization on all write endpoints.</li>
+</ul>
+
+<div class="page-break"></div>
 
 <h2>Market Opportunity</h2>
 
-<h3>Target Market</h3>
+<h3>Target Market Size</h3>
 <table>
-  <tr><th>Segment</th><th>Count</th><th>Potential (est.)</th></tr>
-  <tr><td>Federal Unity Colleges</td><td>115</td><td>NGN 173M/yr</td></tr>
-  <tr><td>State Government Secondary Schools</td><td>&gt; 6,000</td><td>NGN 3.6B/yr</td></tr>
-  <tr><td>Private Secondary Schools (Nigeria)</td><td>&gt; 15,000</td><td>NGN 9B/yr</td></tr>
-  <tr><td>Pan-African Schools (Ghana, Kenya, SA)</td><td>~30,000</td><td>NGN 18B/yr</td></tr>
+  <tr><th>Segment</th><th>Count</th><th>Annual Potential</th></tr>
+  <tr><td>Federal Unity Colleges (Nigeria)</td><td>115</td><td>NGN 173M</td></tr>
+  <tr><td>State Government Secondary Schools</td><td>&gt; 6,000</td><td>NGN 3.6B</td></tr>
+  <tr><td>Private Secondary Schools (Nigeria)</td><td>&gt; 15,000</td><td>NGN 9B</td></tr>
+  <tr><td>Pan-African Schools (Ghana, Kenya, SA)</td><td>~30,000</td><td>NGN 18B</td></tr>
 </table>
-
 <p><em>At a conservative NGN 600,000/school/year license fee.</em></p>
 
 <h3>Competitive Advantage</h3>
 <ul>
-  <li>Only platform combining <strong>operations management + academic scheduling + communications</strong></li>
-  <li><strong>Built by educators, for educators</strong> — developed by AFCS staff, refined through daily use</li>
-  <li><strong>Offline-resilient</strong> — Telegram bot works on basic phones with minimal data</li>
-  <li><strong>Lowest total cost of ownership</strong> — serverless architecture keeps infrastructure costs near zero</li>
-  <li><strong>Nigerian-built</strong> — complies with local data regulations, understands local school culture</li>
+  <li><strong>Only platform combining operations management + academic scheduling + communications + automation</strong> — No competitor offers this full stack.</li>
+  <li><strong>Built by educators, for educators</strong> — Developed at AFCS, refined through daily production use by actual school administrators. Every feature is user-driven.</li>
+  <li><strong>Telegram-native communications</strong> — 25+ bot commands running on zero-cost infrastructure. Works on 2G networks with basic phones. No app installation required.</li>
+  <li><strong>Offline-resilient architecture</strong> — Serverless edge deployment with Supabase real-time sync, SMS fallback, and notification queue for retry.</li>
+  <li><strong>Lowest total cost of ownership</strong> — Serverless infrastructure (Vercel + Supabase) keeps hosting costs near zero even at scale.</li>
+  <li><strong>Nigerian-built, NDPR-compliant</strong> — Understands local school culture, complies with Nigeria Data Protection Regulation.</li>
+  <li><strong>Production-proven</strong> — Live since early 2026 at AFCS Igbara-Oke, processing hundreds of daily transactions.</li>
 </ul>
 
 <div class="page-break"></div>
 
 <h2>Business Model</h2>
 
+<h3>Pricing Tiers</h3>
 <table>
   <tr><th>Tier</th><th>Features</th><th>Annual Fee</th></tr>
   <tr><td>Essential</td><td>Attendance + Duty Roster + Reports</td><td>NGN 350,000</td></tr>
@@ -134,15 +178,15 @@
 
 <h3>Additional Revenue Streams</h3>
 <ul>
-  <li><strong>Deployment &amp; Training</strong> — NGN 250,000 one-time setup fee per school</li>
+  <li><strong>Deployment &amp; Training</strong> — NGN 250,000 one-time setup fee per school (onboarding, data migration, staff training)</li>
   <li><strong>Hardware Bundles</strong> — QR scanners, tablets, biometric devices (10-15% margin)</li>
-  <li><strong>Annual Maintenance</strong> — 15% of license fee for priority support</li>
+  <li><strong>Annual Maintenance</strong> — 15% of license fee for priority support and updates</li>
   <li><strong>SMS Credits</strong> — Volume-based SMS pricing (buy bulk, resell per message)</li>
   <li><strong>Data Analytics</strong> — Premium reporting dashboard for education boards/ministries</li>
+  <li><strong>Custom Integration</strong> — API access, custom dashboard, white-labeling for school groups</li>
 </ul>
 
 <h2>Financial Projections</h2>
-
 <table>
   <tr><th>Metric</th><th>Year 1</th><th>Year 2</th><th>Year 3</th><th>Year 5</th></tr>
   <tr><td>Schools Deployed</td><td>10</td><td>35</td><td>80</td><td>200</td></tr>
@@ -151,62 +195,138 @@
   <tr><td>Setup Fees (one-time)</td><td>NGN 2.5M</td><td>NGN 6.25M</td><td>NGN 11.25M</td><td>NGN 3.75M</td></tr>
   <tr><td>Gross Revenue</td><td>NGN 10M</td><td>NGN 30.75M</td><td>NGN 63.25M</td><td>NGN 123.75M</td></tr>
   <tr><td>Operating Costs</td><td>NGN 8M</td><td>NGN 15M</td><td>NGN 25M</td><td>NGN 40M</td></tr>
-  <tr><td>Net Profit</td><td>NGN 2M</td><td>NGN 15.75M</td><td>NGN 38.25M</td><td>NGN 83.75M</td></tr>
+  <tr><td><strong>Net Profit</strong></td><td><strong>NGN 2M</strong></td><td><strong>NGN 15.75M</strong></td><td><strong>NGN 38.25M</strong></td><td><strong>NGN 83.75M</strong></td></tr>
+  <tr><td>Margin</td><td>20%</td><td>51%</td><td>60%</td><td>68%</td></tr>
 </table>
+
+<div class="page-break"></div>
+
+<h2>Product Maturity &amp; Milestones</h2>
+
+<h3>Current Feature Status (July 2026)</h3>
+<table>
+  <tr><th>Feature</th><th>Status</th><th>Notes</th></tr>
+  <tr><td>Staff Attendance (QR + Manual)</td><td><span class="tag tag-green">Production</span></td><td>Check-in/out, late detection, duration tracking, daily override</td></tr>
+  <tr><td>Student Attendance (QR + Manual)</td><td><span class="tag tag-green">Production</span></td><td>3-period tracking (morning/afternoon/evening), class-based</td></tr>
+  <tr><td>Duty Roster Engine</td><td><span class="tag tag-green">Production</span></td><td>8 duty types, auto-rotation, generation, day/week views</td></tr>
+  <tr><td>AI Timetable Generator</td><td><span class="tag tag-green">Production</span></td><td>Constraint satisfaction, conflict detection, quality metrics</td></tr>
+  <tr><td>Muster Parade Management</td><td><span class="tag tag-green">Production</span></td><td>Sessions, briefings, tasks with acknowledge/complete flow</td></tr>
+  <tr><td>Prefect Roles System</td><td><span class="tag tag-green">Production</span></td><td>18 roles, student assignment, badges, filters</td></tr>
+  <tr><td>Telegram Bot (25+ commands)</td><td><span class="tag tag-green">Production</span></td><td>Attendance, duties, tasks, automations, broadcasts</td></tr>
+  <tr><td>WhatsApp Cloud API</td><td><span class="tag tag-green">Production</span></td><td>Template + text messages, task notifications</td></tr>
+  <tr><td>Automation Engine (13 rules)</td><td><span class="tag tag-green">Production</span></td><td>Scheduled + event-driven, Vercel Cron integration</td></tr>
+  <tr><td>Global Search</td><td><span class="tag tag-green">Production</span></td><td>Ctrl+K, 30+ features, keyboard navigation</td></tr>
+  <tr><td>AI Assistant</td><td><span class="tag tag-green">Production</span></td><td>OpenAI + Gemini + Ollama, database function calling</td></tr>
+  <tr><td>QR Scanner</td><td><span class="tag tag-green">Production</span></td><td>BarcodeDetector + jsQR, 7 reliability fixes applied</td></tr>
+  <tr><td>Notifications Hub</td><td><span class="tag tag-green">Production</span></td><td>History, queue, print, status dashboard</td></tr>
+  <tr><td>Daily Reports + AI Summaries</td><td><span class="tag tag-green">Production</span></td><td>Structured reporting, trend analysis</td></tr>
+  <tr><td>SMS (Termii + Africa's Talking)</td><td><span class="tag tag-green">Production</span></td><td>Fallback channel with queue + retry</td></tr>
+  <tr><td>Staff &amp; Student CRUD</td><td><span class="tag tag-green">Production</span></td><td>Full create/read/update/delete with role-based access</td></tr>
+  <tr><td>System Settings &amp; Config</td><td><span class="tag tag-green">Production</span></td><td>Attendance rules, school info, prompts, templates</td></tr>
+</table>
+
+<h3>Development Phases Completed</h3>
+<ul>
+  <li><strong>Phase 1 (100%):</strong> Staff Attendance — QR/manual check-in/out, late detection, real-time dashboard</li>
+  <li><strong>Phase 2 (100%):</strong> Student Attendance — Class-based tracking, 3-period system, teacher attendance</li>
+  <li><strong>Phase 3 (100%):</strong> Duty Roster &amp; Reporting — 8 duty types, auto-assignment, daily reports, AI summaries</li>
+  <li><strong>Phase 4 (100%):</strong> Muster Parade Automation — Sessions, briefings, tasks, acknowledgments</li>
+  <li><strong>Phase 5 (100%):</strong> AI Timetable Generator — Constraint-satisfaction algorithm, quality metrics, history</li>
+  <li><strong>Phase 6 (100%):</strong> Multi-Channel Communications — Telegram bot, WhatsApp API, SMS fallback, automation engine</li>
+  <li><strong>Phase 7 (100%):</strong> Prefect Roles &amp; Global Search — Student leadership tracking, cross-feature search</li>
+</ul>
 
 <div class="page-break"></div>
 
 <h2>Use of Funds</h2>
 
 <table>
-  <tr><th>Category</th><th>Amount</th><th>Details</th></tr>
-  <tr><td>Product Development</td><td>40%</td><td>Multi-tenancy, white-labeling, mobile apps, analytics dashboard</td></tr>
-  <tr><td>Sales &amp; Marketing</td><td>30%</td><td>Sales team, school visits, demo events, digital marketing</td></tr>
-  <tr><td>Operations</td><td>20%</td><td>Support team, infrastructure, compliance</td></tr>
-  <tr><td>Reserves</td><td>10%</td><td>Working capital buffer</td></tr>
+  <tr><th>Category</th><th>Allocation</th><th>Amount</th><th>Details</th></tr>
+  <tr><td>Product Development</td><td>40%</td><td>NGN 20M</td><td>Multi-tenancy architecture, white-labeling, mobile apps (React Native), analytics dashboard, e-exam platform</td></tr>
+  <tr><td>Sales &amp; Marketing</td><td>30%</td><td>NGN 15M</td><td>Sales team (3 FTE), school visitation program, demo events at AFCS commands, digital marketing, conference attendance</td></tr>
+  <tr><td>Operations &amp; Support</td><td>20%</td><td>NGN 10M</td><td>24/7 support desk, deployment engineers, training material production, self-paced onboarding portal</td></tr>
+  <tr><td>Infrastructure &amp; Compliance</td><td>10%</td><td>NGN 5M</td><td>Cloud costs (Vercel + Supabase), penetration testing, SOC 2 readiness, NDPR compliance audit</td></tr>
 </table>
 
 <h2>Risk Mitigation</h2>
 
 <table>
-  <tr><th>Risk</th><th>Mitigation</th></tr>
-  <tr><td>Slow school adoption</td><td>Free pilot program for first 10 schools; testimonial-driven sales</td></tr>
-  <tr><td>Internet reliability</td><td>Telegram bot works on 2G; offline check-in queue; SMS fallback</td></tr>
-  <tr><td>Competition</td><td>Unique ops-management focus; first-mover in this niche</td></tr>
-  <tr><td>Staff turnover</td><td>Self-paced training portal; admin delegation built into product</td></tr>
-  <tr><td>Data security</td><td>Supabase RLS plus service-role isolation; regular security audits</td></tr>
-  <tr><td>Regulatory changes</td><td>Nigeria Data Protection Regulation (NDPR) compliant architecture</td></tr>
+  <tr><th>Risk</th><th>Probability</th><th>Impact</th><th>Mitigation</th></tr>
+  <tr><td>Slow school adoption</td><td>Medium</td><td>High</td><td>Free pilot program for first 10 schools; testimonial-driven sales; ROI calculator for school leadership</td></tr>
+  <tr><td>Internet reliability</td><td>High</td><td>Medium</td><td>Telegram bot works on 2G; offline check-in queue; SMS fallback; cached dashboard data</td></tr>
+  <tr><td>Competition</td><td>Medium</td><td>Medium</td><td>Unique ops-management focus; first-mover in this niche; 18-month head start</td></tr>
+  <tr><td>Staff turnover at client schools</td><td>High</td><td>Low</td><td>Self-paced training portal; admin delegation built into product; no single point of failure</td></tr>
+  <tr><td>Data security breach</td><td>Low</td><td>Critical</td><td>Supabase RLS + service-role isolation; regular security audits; no password storage</td></tr>
+  <tr><td>Regulatory changes</td><td>Low</td><td>Medium</td><td>NDPR-compliant architecture; data residency in Nigeria (via Supabase); adaptable to new regulations</td></tr>
+  <tr><td>Founder dependency</td><td>Medium</td><td>High</td><td>Comprehensive documentation; code quality standards; team hiring plan in Year 1</td></tr>
 </table>
+
+<div class="page-break"></div>
 
 <h2>Investment Ask</h2>
 
 <div class="highlight-box">
-  <strong>Investment Amount:</strong> NGN 50,000,000 (~$32,000 USD)<br>
-  <strong>Use:</strong> Product development (multi-tenancy, mobile apps), sales team, 10-school pilot deployment<br>
-  <strong>Timeline:</strong> 24 months to 100 schools<br>
-  <strong>ROI for Schools:</strong> 10x reduction in admin time, 100% audit trail, real-time operational visibility<br>
-  <strong>ROI for Investors:</strong> Path to NGN 120M ARR by Year 5 with 68% net margins
+  <strong>Investment Amount:</strong> NGN 50,000,000 (~$32,000 USD)<br><br>
+  <strong>Structure:</strong> Seed Round — 15% Equity<br><br>
+  <strong>Use of Funds:</strong> Product development (multi-tenancy, mobile apps), sales team expansion, 10-school pilot deployment<br><br>
+  <strong>Timeline:</strong> 24 months to deploy across 100 Nigerian schools<br><br>
+  <strong>ROI for Schools:</strong> 10x reduction in admin time, 100% audit trail, real-time operational visibility, zero communication cost via Telegram<br><br>
+  <strong>ROI for Investors:</strong> Path to NGN 120M ARR by Year 5 with 68% net margins. Scalable to NGN 1B+ across Africa.
 </div>
 
 <h2>Why Now?</h2>
 <ul>
-  <li><strong>Proven product</strong> — Live at AFCS with 80+ staff and 3000+ students since early 2026</li>
-  <li><strong>Growing demand</strong> — Nigerian edtech market projected to reach $3.1B by 2028 (GSMA)</li>
-  <li><strong>Government push</strong> — Federal Ministry of Education digital transformation initiatives</li>
-  <li><strong>Mobile-first</strong> — 85%+ of Nigerian teachers use WhatsApp/Telegram daily</li>
-  <li><strong>First-mover advantage</strong> — No competitor offers integrated operations management for schools</li>
-  <li><strong>Scalable architecture</strong> — Serverless stack scales from 50 to 50,000 users without re-architecture</li>
+  <li><strong>Proven product, real traction</strong> — Live at AFCS with 80+ staff and 3,000+ students since early 2026. All 12 core modules in production.</li>
+  <li><strong>Growing market</strong> — Nigerian edtech market projected to reach $3.1B by 2028 (GSMA). Federal Ministry of Education driving digital transformation.</li>
+  <li><strong>Mobile-first, low-barrier adoption</strong> — 85%+ of Nigerian teachers use WhatsApp/Telegram daily. Zero app installation required. Works on $30 phones.</li>
+  <li><strong>First-mover advantage</strong> — No competitor offers integrated operations management + academic scheduling + automation for African schools.</li>
+  <li><strong>Scalable architecture</strong> — Serverless stack scales from 50 to 50,000 users without re-architecture. Vercel + Supabase handle global scale.</li>
+  <li><strong>Government tailwind</strong> — Federal Ministry of Education Smart Education initiative; AFCS commands across 6 geo-political zones as natural expansion path.</li>
+  <li><strong>AI cost collapse</strong> — Ollama + Qwen3:4b provide free, private AI inference. OpenAI costs continue to drop. Our AI features become cheaper over time.</li>
 </ul>
+
+<div class="page-break"></div>
+
+<h2>Roadmap: Post-Investment</h2>
+
+<table>
+  <tr><th>Quarter</th><th>Milestone</th><th>Deliverable</th></tr>
+  <tr><td>Q3 2026</td><td>Multi-Tenancy &amp; White-Label</td><td>Separate school instances, custom branding, per-school admin panel</td></tr>
+  <tr><td>Q3 2026</td><td>Mobile App (React Native)</td><td>Staff check-in/out, task management, notifications on mobile</td></tr>
+  <tr><td>Q4 2026</td><td>Parent Portal</td><td>Real-time absence alerts, report cards, fee payment tracking, behavior reports</td></tr>
+  <tr><td>Q4 2026</td><td>E-Examination Platform</td><td>Secure digital exams with auto-grading, anti-cheating, result analytics</td></tr>
+  <tr><td>Q1 2027</td><td>Asset &amp; Inventory Management</td><td>QR-code asset tracking, textbook distribution, lab equipment, maintenance alerts</td></tr>
+  <tr><td>Q1 2027</td><td>AI Counselling &amp; Welfare</td><td>Flags attendance drops, academic decline, behavioral patterns for guidance counselors</td></tr>
+  <tr><td>Q2 2027</td><td>10-School Pilot Deployment</td><td>AFCS commands in 3 geo-political zones, 5 private schools</td></tr>
+  <tr><td>Q3 2027</td><td>Business Intelligence Suite</td><td>Cross-school analytics for education boards, trend dashboards, performance benchmarking</td></tr>
+  <tr><td>Q4 2027</td><td>Pan-African Expansion</td><td>Ghana, Kenya, South Africa — local currency pricing, regional hosting</td></tr>
+</table>
+
+<div class="page-break"></div>
 
 <h2>The Team</h2>
+
 <ul>
-  <li><strong>Built by educators and technologists</strong> at Air Force Comprehensive School, Igbara-Oke</li>
-  <li><strong>Deep domain expertise</strong> — understands boarding school operations, military precision, duty culture</li>
-  <li><strong>Technical excellence</strong> — Modern stack (Next.js, Supabase, Telegram API, AI integration)</li>
-  <li><strong>User-driven development</strong> — Every feature requested and tested by actual school administrators</li>
+  <li><strong>Built by educators and technologists</strong> at Air Force Comprehensive School, Igbara-Oke — the team that uses the product daily.</li>
+  <li><strong>Deep domain expertise</strong> — Intimate understanding of boarding school operations, military command structure, duty culture, and the unique challenges of Nigerian secondary education.</li>
+  <li><strong>Technical excellence</strong> — Modern full-stack JavaScript (Next.js 16, TypeScript, Tailwind CSS v4), cloud infrastructure (Vercel, Supabase), AI integration (OpenAI, Gemini, Ollama), multi-channel messaging (Telegram API, Meta Cloud API, SMS gateways).</li>
+  <li><strong>User-driven development</strong> — Every feature requested, tested, and validated by actual school administrators and commandant. The product roadmap is dictated by real user needs, not assumptions.</li>
+  <li><strong>Lean, capital-efficient</strong> — Built to production with minimal external funding. Proves the team's ability to execute efficiently.</li>
 </ul>
 
-<p style="text-align:center; margin-top: 40pt; color: #999; font-size: 10pt;">AFCS Smart Campus — Investment Pitch v1.0 &copy; 2026</p>
+<h2>Contact</h2>
+
+<div class="highlight-box">
+  <strong>Email:</strong> dewaleprotocols@gmail.com<br>
+  <strong>Address:</strong> Air Force Comprehensive School, Igbara-Oke, Ondo State, Nigeria<br>
+  <strong>Platform:</strong> <a href="https://afcs-smart-campus.vercel.app">afcs-smart-campus.vercel.app</a><br>
+  <strong>Repository:</strong> GitHub — Abdulroqeeb19/AFCS-SMART-CAMPUS
+</div>
+
+<p style="text-align:center; margin-top: 40pt; color: #999; font-size: 10pt;">
+  AFCS Smart Campus — Investment Pitch v2.0 &copy; 2026<br>
+  <em>Nigerian-built. Nigerian-tested. Ready for the world.</em>
+</p>
 
 </body>
 </html>
