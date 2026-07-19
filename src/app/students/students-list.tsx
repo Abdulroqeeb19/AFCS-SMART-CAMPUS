@@ -9,6 +9,7 @@ import { Select } from '@/components/ui/select'
 import { Loader2, Plus, Search, GraduationCap, UserPlus, Pencil, X, Check, Power, PowerOff, BookOpen, Trash2, AlertCircle } from 'lucide-react'
 import { Skeleton } from '@/components/skeleton'
 import { QRButton } from '@/components/qr-code'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 
 
 interface PrefectRole {
@@ -62,6 +63,9 @@ export function StudentsList() {
     parent_phone: '',
     parent_email: '',
   })
+
+  const [confirmDeleteStudent, setConfirmDeleteStudent] = useState<Student | null>(null)
+  const [confirmDeleteClassId, setConfirmDeleteClassId] = useState<string | null>(null)
 
   const [editForm, setEditForm] = useState({
     full_name: '',
@@ -164,7 +168,7 @@ export function StudentsList() {
   }
 
   const handleDelete = async (student: Student) => {
-    if (!confirm(`Delete ${student.full_name} (${student.student_id})? This cannot be undone.`)) return
+    setConfirmDeleteStudent(null)
     setError('')
     try {
       const res = await fetch(`/api/students?id=${student.id}`, { method: 'DELETE' })
@@ -317,11 +321,7 @@ export function StudentsList() {
               {classes.map((c) => (
                 <div key={c.id} className="flex items-center justify-between py-2">
                   <span className="text-sm text-zinc-700">{c.name} {c.arm}</span>
-                  <button onClick={async () => {
-                    if (!confirm(`Delete class ${c.name} ${c.arm}?`)) return
-                    await fetch(`/api/classes?id=${c.id}`, { method: 'DELETE' })
-                    loadData()
-                  }} className="p-1 text-zinc-400 hover:text-red-600 transition-colors">
+                  <button onClick={() => setConfirmDeleteClassId(c.id)} className="p-1 text-zinc-400 hover:text-red-600 transition-colors">
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
@@ -451,7 +451,7 @@ export function StudentsList() {
                           {s.is_active ? 'Deactivate' : 'Activate'}
                         </button>
                         <button
-                          onClick={() => handleDelete(s)}
+                          onClick={() => setConfirmDeleteStudent(s)}
                           className="flex items-center gap-1 text-xs text-red-600 hover:text-red-800 transition-colors"
                         >
                           <Trash2 className="h-3 w-3" /> Delete
@@ -466,6 +466,34 @@ export function StudentsList() {
         </>
       )}
 
+      {/* Confirm delete student */}
+      <ConfirmDialog
+        open={!!confirmDeleteStudent}
+        onConfirm={() => confirmDeleteStudent && handleDelete(confirmDeleteStudent)}
+        onCancel={() => setConfirmDeleteStudent(null)}
+        title="Delete Student"
+        message={confirmDeleteStudent ? `Delete ${confirmDeleteStudent.full_name} (${confirmDeleteStudent.student_id})? This cannot be undone.` : ''}
+        confirmLabel="Delete"
+        variant="danger"
+      />
+
+      {/* Confirm delete class */}
+      <ConfirmDialog
+        open={!!confirmDeleteClassId}
+        onConfirm={async () => {
+          const id = confirmDeleteClassId
+          setConfirmDeleteClassId(null)
+          if (id) {
+            await fetch(`/api/classes?id=${id}`, { method: 'DELETE' })
+            loadData()
+          }
+        }}
+        onCancel={() => setConfirmDeleteClassId(null)}
+        title="Delete Class"
+        message="Delete this class? This may affect associated students."
+        confirmLabel="Delete"
+        variant="danger"
+      />
     </div>
   )
 }

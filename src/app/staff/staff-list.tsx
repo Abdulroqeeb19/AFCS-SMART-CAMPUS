@@ -9,6 +9,7 @@ import { Select } from '@/components/ui/select'
 import { Loader2, Plus, UserPlus, Search, Users, Pencil, X, Check, Power, PowerOff, Trash2, AlertCircle, Shield, GraduationCap } from 'lucide-react'
 import { Skeleton } from '@/components/skeleton'
 import { QRButton } from '@/components/qr-code'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 
 
 interface StaffMember {
@@ -60,6 +61,7 @@ export function StaffList() {
   const [adding, setAdding] = useState(false)
   const [editId, setEditId] = useState<string | null>(null)
   const [error, setError] = useState('')
+  const [confirmDeleteMember, setConfirmDeleteMember] = useState<StaffMember | null>(null)
   const [classes, setClasses] = useState<ClassInfo[]>([])
   const [classTeacherIds, setClassTeacherIds] = useState<string[]>([])
   const [assigning, setAssigning] = useState<string | null>(null)
@@ -217,7 +219,7 @@ export function StaffList() {
   }
 
   const handleDelete = async (member: StaffMember) => {
-    if (!confirm(`Delete ${member.full_name} (${member.staff_id})? This cannot be undone.`)) return
+    setConfirmDeleteMember(null)
     setError('')
     try {
       const res = await fetch(`/api/staff?id=${member.id}`, { method: 'DELETE' })
@@ -549,7 +551,7 @@ export function StaffList() {
                             {member.is_active ? 'Deactivate' : 'Activate'}
                           </button>
                           <button
-                            onClick={() => handleDelete(member)}
+                            onClick={() => setConfirmDeleteMember(member)}
                             className="flex items-center gap-1 text-xs text-red-600 hover:text-red-800 transition-colors"
                           >
                             <Trash2 className="h-3 w-3" /> Delete
@@ -615,6 +617,15 @@ export function StaffList() {
         </>
       )}
 
+      <ConfirmDialog
+        open={!!confirmDeleteMember}
+        onConfirm={() => confirmDeleteMember && handleDelete(confirmDeleteMember)}
+        onCancel={() => setConfirmDeleteMember(null)}
+        title="Delete Staff Member"
+        message={confirmDeleteMember ? `Delete ${confirmDeleteMember.full_name} (${confirmDeleteMember.staff_id})? This cannot be undone.` : ''}
+        confirmLabel="Delete"
+        variant="danger"
+      />
     </div>
   )
 }

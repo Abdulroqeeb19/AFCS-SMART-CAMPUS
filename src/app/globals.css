@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 @theme {
   --color-blue-50: #E8EDF5;
   --color-blue-100: #C5D1E8;
@@ -26,10 +28,71 @@
   --color-naf-gold-light: #E8D48B;
   --color-naf-gold-dark: #A88830;
 
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F4F4F5;
+  --color-bg-sidebar: #001A4D;
+  --color-bg-card: #FFFFFF;
+  --color-bg-hover: #F4F4F5;
+  --color-bg-muted: #F4F4F5;
+
+  --color-text-primary: #18181B;
+  --color-text-secondary: #52525B;
+  --color-text-muted: #A1A1AA;
+  --color-text-sidebar: #FFFFFF;
+  --color-text-sidebar-muted: #BFDBFE;
+
+  --color-border: #E4E4E7;
+  --color-border-hover: #D4D4D8;
+  --color-border-sidebar: #1E40AF;
+
+  --color-accent: #C9A84C;
+  --color-accent-hover: #A88830;
+  --color-accent-light: #E8D48B;
+
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-info: #3B82F6;
+
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", Consolas, "Courier New", monospace;
 }
 
+:root {
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F4F4F5;
+  --color-bg-sidebar: #001A4D;
+  --color-bg-card: #FFFFFF;
+  --color-bg-hover: #F4F4F5;
+  --color-bg-muted: #F4F4F5;
+  --color-text-primary: #18181B;
+  --color-text-secondary: #52525B;
+  --color-text-muted: #A1A1AA;
+  --color-text-sidebar: #FFFFFF;
+  --color-text-sidebar-muted: #BFDBFE;
+  --color-border: #E4E4E7;
+  --color-border-hover: #D4D4D8;
+  --color-border-sidebar: #1E40AF;
+}
+
+[data-theme="dark"] {
+  --color-bg-primary: #09090B;
+  --color-bg-secondary: #18181B;
+  --color-bg-sidebar: #0F0F1A;
+  --color-bg-card: #18181B;
+  --color-bg-hover: #27272A;
+  --color-bg-muted: #27272A;
+  --color-text-primary: #FAFAFA;
+  --color-text-secondary: #A1A1AA;
+  --color-text-muted: #71717A;
+  --color-text-sidebar: #E4E4E7;
+  --color-text-sidebar-muted: #71717A;
+  --color-border: #27272A;
+  --color-border-hover: #3F3F46;
+  --color-border-sidebar: #27272A;
+}
+
 body {
-  background-color: var(--color-zinc-50);
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
 }

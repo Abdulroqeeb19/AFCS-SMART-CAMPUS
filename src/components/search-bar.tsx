@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, Command, ExternalLink } from 'lucide-react'
 import { SIDEBAR_SECTIONS } from '@/lib/constants'
+import { cn } from '@/lib/utils'
 
 interface SearchItem {
   href: string
@@ -18,7 +19,11 @@ for (const section of SIDEBAR_SECTIONS) {
   }
 }
 
-export function SearchBar() {
+interface SearchBarProps {
+  variant?: 'full' | 'compact'
+}
+
+export function SearchBar({ variant = 'full' }: SearchBarProps) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -80,14 +85,23 @@ export function SearchBar() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 w-full px-3 py-2 rounded-lg bg-white/10 text-white/50 hover:bg-white/15 hover:text-white/70 transition-all text-sm border border-white/10"
+        className={cn(
+          'flex items-center gap-2 transition-all text-sm',
+          variant === 'full'
+            ? 'w-full px-3 py-2 rounded-lg bg-white/10 text-white/50 hover:bg-white/15 hover:text-white/70 border border-white/10'
+            : 'px-2 py-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)]',
+        )}
         title="Search features (Ctrl+K)"
       >
         <Search className="h-4 w-4 shrink-0" />
-        <span className="flex-1 text-left">Search features...</span>
-        <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] text-white/30 bg-white/5 rounded px-1.5 py-0.5">
-          <Command className="h-2.5 w-2.5" />K
-        </kbd>
+        {variant === 'full' && (
+          <>
+            <span className="flex-1 text-left">Search features...</span>
+            <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] text-white/30 bg-white/5 rounded px-1.5 py-0.5">
+              <Command className="h-2.5 w-2.5" />K
+            </kbd>
+          </>
+        )}
       </button>
 
       {open && (
