@@ -34,8 +34,8 @@ export async function GET(request: Request) {
         .select('id, name, display_order')
         .in('id', ids)
       const roleMap = new Map((roles || []).map((r: { id: string; name: string; display_order: number }) => [r.id, r]))
-      for (const s of students) {
-        s.prefect_role = roleMap.get(s.prefect_role_id) || null
+      for (const s of students as Array<Record<string, unknown>>) {
+        s.prefect_role = roleMap.get(s.prefect_role_id as string) || null
       }
     }
   }
@@ -117,7 +117,7 @@ export async function PATCH(request: Request) {
 
   const { data, error } = await adminSupabase
     .from('students')
-    .update(cleanUpdates)
+    .update(cleanUpdates as any)
     .eq('id', id)
     .select('*, class:class_id(id, name, arm)')
     .single()

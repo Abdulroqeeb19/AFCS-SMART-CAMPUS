@@ -50,6 +50,7 @@ const iconMap: Record<string, LucideIcon> = {
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/auth-context'
 import { SIDEBAR_SECTIONS } from '@/lib/constants'
+import { SearchBar } from '@/components/search-bar'
 
 export function Nav() {
   const pathname = usePathname()
@@ -97,6 +98,11 @@ export function Nav() {
             <p className="text-[10px] text-blue-200 leading-tight">Smart Campus</p>
           </div>
         </Link>
+
+        {/* Search */}
+        <div className="p-3 pb-0">
+          <SearchBar />
+        </div>
 
         {/* Navigation items */}
         <div className="flex-1 overflow-y-auto p-3 space-y-1">

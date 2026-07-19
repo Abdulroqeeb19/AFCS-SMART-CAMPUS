@@ -1,6 +1,5 @@
 import { DashboardContent } from './dashboard-content'
 import { ErrorBoundary } from '@/components/error-boundary'
-import { AiAssistant } from '@/components/ai-assistant'
 
 export default function DashboardPage() {
   return (
@@ -14,7 +13,6 @@ export default function DashboardPage() {
       <ErrorBoundary>
         <DashboardContent />
       </ErrorBoundary>
-      <AiAssistant />
     </div>
   )
 }

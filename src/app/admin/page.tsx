@@ -12,7 +12,6 @@ import { StudentAttendanceTable } from '@/components/student-attendance-table'
 import { StudentActivityReportsView } from '@/components/student-activity-reports-view'
 import { StatsSkeleton, TableSkeleton } from '@/components/skeleton'
 import { ErrorBoundary } from '@/components/error-boundary'
-import { AiAssistant } from '@/components/ai-assistant'
 import {
   AlertCircle, RefreshCw, Users, ChevronRight, Database,
 } from 'lucide-react'
@@ -216,7 +215,6 @@ function AdminDashboardContent() {
           )}
         </div>
       </ErrorBoundary>
-      <AiAssistant />
     </>
   )
 }

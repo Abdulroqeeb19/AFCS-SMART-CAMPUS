@@ -1,6 +1,5 @@
 import { AuthGuard } from '@/components/auth-guard'
 import { ClassTeacherDashboard } from '@/components/class-teacher-dashboard'
-import { AiAssistant } from '@/components/ai-assistant'
 
 export default function TeacherDashboardPage() {
   return (
@@ -22,7 +21,6 @@ export default function TeacherDashboardPage() {
         </div>
         <ClassTeacherDashboard />
       </div>
-      <AiAssistant />
     </AuthGuard>
   )
 }

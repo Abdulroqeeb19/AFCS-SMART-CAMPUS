@@ -94,7 +94,7 @@ export function StudentCheckinForm() {
         setError('This ID belongs to a staff member.')
         return
       }
-      if (!data.is_active) {
+      if (data.is_active === false) {
         setError('This student account is not active.')
         return
       }
