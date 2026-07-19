@@ -49,7 +49,8 @@ export async function POST(request: Request) {
   if (!admin) return NextResponse.json({ error: 'Admin privileges required' }, { status: 403 })
 
   const body = await request.json()
-  if (!body.student_id?.trim() || !body.full_name?.trim() || !body.class_id) {
+  const studentId = body.student_id?.trim().toUpperCase()
+  if (!studentId || !body.full_name?.trim() || !body.class_id) {
     return NextResponse.json({ error: 'Student ID, full name, and class are required' }, { status: 400 })
   }
 
@@ -58,8 +59,8 @@ export async function POST(request: Request) {
   const { data: existing } = await adminSupabase
     .from('students')
     .select('id')
-    .eq('student_id', body.student_id)
-    .single()
+    .eq('student_id', studentId)
+    .maybeSingle()
 
   if (existing) {
     return NextResponse.json({ error: 'Student ID already exists' }, { status: 409 })
@@ -68,7 +69,7 @@ export async function POST(request: Request) {
   const { data, error } = await adminSupabase
     .from('students')
     .insert({
-      student_id: body.student_id,
+      student_id: studentId,
       full_name: body.full_name,
       class_id: body.class_id,
       parent_name: body.parent_name || null,

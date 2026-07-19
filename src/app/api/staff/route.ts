@@ -56,7 +56,7 @@ export async function POST(request: Request) {
     .from('staff')
     .select('id')
     .eq('staff_id', staff_id)
-    .single()
+    .maybeSingle()
 
   if (existing) {
     return NextResponse.json({ error: 'Staff ID already exists' }, { status: 409 })

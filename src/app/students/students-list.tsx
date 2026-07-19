@@ -417,6 +417,21 @@ export function StudentsList() {
                             <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium bg-yellow-100 text-yellow-800">{s.prefect_role.name}</span>
                           </p>
                         )}
+                        <p className="flex items-center gap-1.5 mt-1">
+                          <span className="text-[10px] uppercase text-zinc-400 w-16">Role:</span>
+                          <select
+                            value={s.prefect_role_id || ''}
+                            onChange={async (e) => {
+                              await handleUpdate(s.id, { prefect_role_id: e.target.value })
+                            }}
+                            className="text-xs border border-zinc-300 rounded px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-yellow-500 max-w-[180px]"
+                          >
+                            <option value="">No role</option>
+                            {prefectRoles.map((r) => (
+                              <option key={r.id} value={r.id}>{r.name}</option>
+                            ))}
+                          </select>
+                        </p>
                       </div>
                       <div className="mt-3 flex items-center gap-2 pt-2 border-t border-zinc-100 flex-wrap">
                         <button
@@ -426,43 +441,6 @@ export function StudentsList() {
                           <Pencil className="h-3 w-3" /> Edit
                         </button>
                         <QRButton id={s.student_id} name={s.full_name} title="Student ID Card" />
-                        <div className="relative">
-                          <button
-                            onClick={() => setAssignRoleId(assignRoleId === s.id ? null : s.id)}
-                            className={`flex items-center gap-1 text-xs transition-colors ${
-                              s.prefect_role ? 'text-yellow-600 hover:text-yellow-800' : 'text-zinc-400 hover:text-zinc-600'
-                            }`}
-                          >
-                            <GraduationCap className="h-3 w-3" />
-                            {s.prefect_role ? 'Prefect' : 'Assign Role'}
-                          </button>
-                          {assignRoleId === s.id && (
-                            <div className="absolute bottom-full left-0 mb-2 z-20 min-w-[200px] bg-white border border-zinc-200 rounded-lg shadow-xl p-2">
-                              <button
-                                onClick={async () => {
-                                  await handleUpdate(s.id, { prefect_role_id: '' })
-                                  setAssignRoleId(null)
-                                }}
-                                className={`block w-full text-left text-xs px-3 py-1.5 rounded-md hover:bg-zinc-50 ${!s.prefect_role ? 'font-semibold text-zinc-900 bg-zinc-50' : 'text-zinc-500'}`}
-                              >
-                                None
-                              </button>
-                              <div className="h-px bg-zinc-100 my-1" />
-                              {prefectRoles.map((r) => (
-                                <button
-                                  key={r.id}
-                                  onClick={async () => {
-                                    await handleUpdate(s.id, { prefect_role_id: r.id })
-                                    setAssignRoleId(null)
-                                  }}
-                                  className={`block w-full text-left text-xs px-3 py-1.5 rounded-md hover:bg-zinc-50 ${s.prefect_role?.id === r.id ? 'font-semibold text-yellow-700 bg-yellow-50' : 'text-zinc-600'}`}
-                                >
-                                  {r.name}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
                         <button
                           onClick={() => toggleActive(s)}
                           className={`flex items-center gap-1 text-xs transition-colors ${
