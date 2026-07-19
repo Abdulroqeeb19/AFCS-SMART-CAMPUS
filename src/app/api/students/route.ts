@@ -14,16 +14,33 @@ export async function GET(request: Request) {
   const classId = searchParams.get('class_id')
 
   const adminSupabase = createAdminClient()
+
   let query = adminSupabase
     .from('students')
-    .select('*, class:class_id(id, name, arm), prefect_role:prefect_role_id(id, name, display_order)')
+    .select('*, class:class_id(id, name, arm)')
     .order('full_name')
-
   if (classId) query = query.eq('class_id', classId)
 
   const { data, error } = await query
   if (error) return NextResponse.json({ error: 'Failed to load students' }, { status: 500 })
-  return NextResponse.json(data)
+
+  const students = data || []
+
+  if (students.length > 0 && 'prefect_role_id' in students[0]) {
+    const ids = students.filter((s: Record<string, unknown>) => s.prefect_role_id).map((s: Record<string, unknown>) => s.prefect_role_id)
+    if (ids.length > 0) {
+      const { data: roles } = await adminSupabase
+        .from('prefect_roles')
+        .select('id, name, display_order')
+        .in('id', ids)
+      const roleMap = new Map((roles || []).map((r: { id: string; name: string; display_order: number }) => [r.id, r]))
+      for (const s of students) {
+        s.prefect_role = roleMap.get(s.prefect_role_id) || null
+      }
+    }
+  }
+
+  return NextResponse.json(students)
 }
 
 export async function POST(request: Request) {

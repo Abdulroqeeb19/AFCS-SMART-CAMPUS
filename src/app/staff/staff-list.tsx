@@ -283,7 +283,7 @@ export function StaffList() {
 
   if (loading) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 6 }).map((_, i) => (
           <Card key={i}>
             <CardContent className="p-4">
@@ -440,7 +440,7 @@ export function StaffList() {
           <p className="text-sm text-zinc-500">
             Showing {filtered.length} of {staff.length} staff member{staff.length !== 1 ? 's' : ''}
           </p>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {filtered.map((member) => {
               const roleInfo = roleConfig[member.role] || roleConfig.teacher
               const RoleIcon = roleInfo.icon
@@ -531,7 +531,7 @@ export function StaffList() {
                             </p>
                           )}
                         </div>
-                        <div className="mt-3 flex items-center gap-2 pt-2 border-t border-zinc-100">
+                        <div className="mt-3 flex items-center gap-2 pt-2 border-t border-zinc-100 flex-wrap">
                           <button
                             onClick={() => startEdit(member)}
                             className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"

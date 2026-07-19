@@ -26,6 +26,7 @@ interface Student {
   parent_phone: string | null
   parent_email: string | null
   is_active: boolean
+  prefect_role_id: string | null
   prefect_role: PrefectRole | null
   class: { id: string; name: string; arm: string } | null
 }
@@ -189,7 +190,7 @@ export function StudentsList() {
 
   if (loading) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 6 }).map((_, i) => (
           <Card key={i}><CardContent className="p-4">
             <Skeleton className="h-5 w-32 mb-2" /><Skeleton className="h-3 w-20 mb-3" /><Skeleton className="h-3 w-24" />
@@ -341,7 +342,7 @@ export function StudentsList() {
           <p className="text-sm text-zinc-500">
             Showing {filtered.length} of {students.length} student{students.length !== 1 ? 's' : ''}
           </p>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {filtered.map((s) => (
               <Card key={s.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
