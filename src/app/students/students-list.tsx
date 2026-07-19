@@ -11,6 +11,12 @@ import { Skeleton } from '@/components/skeleton'
 import { QRButton } from '@/components/qr-code'
 
 
+interface PrefectRole {
+  id: string
+  name: string
+  display_order: number
+}
+
 interface Student {
   id: string
   student_id: string
@@ -20,6 +26,7 @@ interface Student {
   parent_phone: string | null
   parent_email: string | null
   is_active: boolean
+  prefect_role: PrefectRole | null
   class: { id: string; name: string; arm: string } | null
 }
 
@@ -32,15 +39,18 @@ interface Class {
 export function StudentsList() {
   const [students, setStudents] = useState<Student[]>([])
   const [classes, setClasses] = useState<Class[]>([])
+  const [prefectRoles, setPrefectRoles] = useState<PrefectRole[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [classFilter, setClassFilter] = useState('')
+  const [prefectFilter, setPrefectFilter] = useState('')
   const [showAdd, setShowAdd] = useState(false)
   const [adding, setAdding] = useState(false)
   const [editId, setEditId] = useState<string | null>(null)
   const [showClasses, setShowClasses] = useState(false)
   const [newClassName, setNewClassName] = useState('')
   const [newClassArm, setNewClassArm] = useState('')
+  const [assignRoleId, setAssignRoleId] = useState<string | null>(null)
   const [error, setError] = useState('')
 
   const [form, setForm] = useState({
@@ -58,19 +68,22 @@ export function StudentsList() {
     parent_name: '',
     parent_phone: '',
     parent_email: '',
+    prefect_role_id: '',
   })
 
   const loadData = async () => {
     setError('')
     try {
-      const [studentRes, classRes] = await Promise.all([
+      const [studentRes, classRes, roleRes] = await Promise.all([
         fetch('/api/students'),
         fetch('/api/classes'),
+        fetch('/api/prefect-roles'),
       ])
       if (studentRes.ok) setStudents(await studentRes.json())
       else setError('Failed to load students')
       if (classRes.ok) setClasses(await classRes.json())
       else setError('Failed to load classes')
+      if (roleRes.ok) setPrefectRoles(await roleRes.json())
     } catch {
       setError('Network error. Please try again.')
     } finally {
@@ -135,6 +148,7 @@ export function StudentsList() {
       parent_name: student.parent_name || '',
       parent_phone: student.parent_phone || '',
       parent_email: student.parent_email || '',
+      prefect_role_id: student.prefect_role?.id || '',
     })
     setEditId(student.id)
   }
@@ -169,7 +183,8 @@ export function StudentsList() {
       s.student_id.toLowerCase().includes(search.toLowerCase()) ||
       (s.parent_name?.toLowerCase().includes(search.toLowerCase()) ?? false)
     const matchClass = !classFilter || s.class_id === classFilter
-    return matchSearch && matchClass
+    const matchPrefect = !prefectFilter || s.prefect_role?.id === prefectFilter || (prefectFilter === 'none' && !s.prefect_role)
+    return matchSearch && matchClass && matchPrefect
   })
 
   if (loading) {
@@ -202,6 +217,16 @@ export function StudentsList() {
           <option value="">All Classes</option>
           {classes.map((c) => (
             <option key={c.id} value={c.id}>{c.name} {c.arm}</option>
+          ))}
+        </select>
+        <select
+          value={prefectFilter} onChange={(e) => setPrefectFilter(e.target.value)}
+          className="h-10 rounded-lg border border-zinc-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">All Roles</option>
+          <option value="none">No Prefect Role</option>
+          {prefectRoles.map((r) => (
+            <option key={r.id} value={r.id}>{r.name}</option>
           ))}
         </select>
         <Button onClick={() => setShowAdd(!showAdd)} className="gap-2">
@@ -340,6 +365,13 @@ export function StudentsList() {
                         onChange={(e) => setEditForm({ ...editForm, parent_phone: e.target.value })} />
                       <Input label="Parent Email" type="email" value={editForm.parent_email}
                         onChange={(e) => setEditForm({ ...editForm, parent_email: e.target.value })} />
+                      <Select label="Prefect Role" value={editForm.prefect_role_id}
+                        onChange={(e) => setEditForm({ ...editForm, prefect_role_id: e.target.value })}
+                        options={[
+                          { value: '', label: 'None' },
+                          ...prefectRoles.map((r) => ({ value: r.id, label: r.name })),
+                        ]}
+                        placeholder="No prefect role" />
                       <Button onClick={() => saveEdit(s.id)} size="sm" className="gap-1.5 w-full">
                         <Check className="h-3.5 w-3.5" /> Save Changes
                       </Button>
@@ -378,8 +410,14 @@ export function StudentsList() {
                             <span className="truncate">{s.parent_email}</span>
                           </p>
                         )}
+                        {s.prefect_role && (
+                          <p className="flex items-center gap-1.5 mt-1">
+                            <span className="text-[10px] uppercase text-zinc-400 w-16">Prefect:</span>
+                            <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium bg-yellow-100 text-yellow-800">{s.prefect_role.name}</span>
+                          </p>
+                        )}
                       </div>
-                      <div className="mt-3 flex items-center gap-2 pt-2 border-t border-zinc-100">
+                      <div className="mt-3 flex items-center gap-2 pt-2 border-t border-zinc-100 flex-wrap">
                         <button
                           onClick={() => startEdit(s)}
                           className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
@@ -387,6 +425,43 @@ export function StudentsList() {
                           <Pencil className="h-3 w-3" /> Edit
                         </button>
                         <QRButton id={s.student_id} name={s.full_name} title="Student ID Card" />
+                        <div className="relative">
+                          <button
+                            onClick={() => setAssignRoleId(assignRoleId === s.id ? null : s.id)}
+                            className={`flex items-center gap-1 text-xs transition-colors ${
+                              s.prefect_role ? 'text-yellow-600 hover:text-yellow-800' : 'text-zinc-400 hover:text-zinc-600'
+                            }`}
+                          >
+                            <GraduationCap className="h-3 w-3" />
+                            {s.prefect_role ? 'Prefect' : 'Assign Role'}
+                          </button>
+                          {assignRoleId === s.id && (
+                            <div className="absolute bottom-full left-0 mb-2 z-20 min-w-[200px] bg-white border border-zinc-200 rounded-lg shadow-xl p-2">
+                              <button
+                                onClick={async () => {
+                                  await handleUpdate(s.id, { prefect_role_id: '' })
+                                  setAssignRoleId(null)
+                                }}
+                                className={`block w-full text-left text-xs px-3 py-1.5 rounded-md hover:bg-zinc-50 ${!s.prefect_role ? 'font-semibold text-zinc-900 bg-zinc-50' : 'text-zinc-500'}`}
+                              >
+                                None
+                              </button>
+                              <div className="h-px bg-zinc-100 my-1" />
+                              {prefectRoles.map((r) => (
+                                <button
+                                  key={r.id}
+                                  onClick={async () => {
+                                    await handleUpdate(s.id, { prefect_role_id: r.id })
+                                    setAssignRoleId(null)
+                                  }}
+                                  className={`block w-full text-left text-xs px-3 py-1.5 rounded-md hover:bg-zinc-50 ${s.prefect_role?.id === r.id ? 'font-semibold text-yellow-700 bg-yellow-50' : 'text-zinc-600'}`}
+                                >
+                                  {r.name}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                         <button
                           onClick={() => toggleActive(s)}
                           className={`flex items-center gap-1 text-xs transition-colors ${

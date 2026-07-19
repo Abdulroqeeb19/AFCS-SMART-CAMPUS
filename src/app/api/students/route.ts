@@ -16,8 +16,7 @@ export async function GET(request: Request) {
   const adminSupabase = createAdminClient()
   let query = adminSupabase
     .from('students')
-    .select('*, class:class_id(id, name, arm)')
-    .eq('is_active', true)
+    .select('*, class:class_id(id, name, arm), prefect_role:prefect_role_id(id, name, display_order)')
     .order('full_name')
 
   if (classId) query = query.eq('class_id', classId)
@@ -85,6 +84,7 @@ export async function PATCH(request: Request) {
     parent_phone?: string | null
     parent_email?: string | null
     is_active?: boolean
+    prefect_role_id?: string | null
     updated_at?: string
   }
 
@@ -95,6 +95,7 @@ export async function PATCH(request: Request) {
   if (updates.parent_phone !== undefined) cleanUpdates.parent_phone = updates.parent_phone
   if (updates.parent_email !== undefined) cleanUpdates.parent_email = updates.parent_email
   if (updates.is_active !== undefined) cleanUpdates.is_active = updates.is_active === true || updates.is_active === 'true'
+  if (updates.prefect_role_id !== undefined) cleanUpdates.prefect_role_id = updates.prefect_role_id || null
 
   const { data, error } = await adminSupabase
     .from('students')
