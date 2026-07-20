@@ -1,6 +1,7 @@
 import { AuthGuard } from '@/components/auth-guard'
 import { SettingsForm } from './settings-form'
 import { TelegramSetup } from '@/components/telegram-setup'
+import { LicenseCard } from '@/components/license-card'
 
 export default function SettingsPage() {
   return (
@@ -19,6 +20,7 @@ export default function SettingsPage() {
           </div>
         </div>
         <TelegramSetup />
+        <LicenseCard />
         <SettingsForm />
       </div>
     </AuthGuard>

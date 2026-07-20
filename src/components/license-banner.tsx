@@ -1,0 +1,64 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { AlertTriangle, XCircle, X } from 'lucide-react'
+
+export function LicenseBanner() {
+  const [dismissed, setDismissed] = useState(false)
+  const [status, setStatus] = useState<{ is_expired: boolean; days_remaining: number; tier: string | null } | null>(null)
+
+  useEffect(() => {
+    fetch('/api/license')
+      .then(r => r.json())
+      .then(d => {
+        if (d.license_key) setStatus({ is_expired: d.is_expired, days_remaining: d.days_remaining, tier: d.tier })
+        else setStatus({ is_expired: true, days_remaining: 0, tier: null })
+      })
+      .catch(() => {})
+  }, [])
+
+  if (!status || dismissed) return null
+
+  const isExpired = status.is_expired
+  const expiringSoon = !isExpired && status.days_remaining <= 30
+
+  if (!isExpired && !expiringSoon && status.tier) return null
+
+  if (!status.tier) {
+    return (
+      <div className="flex items-center gap-2 px-4 py-1.5 bg-[var(--color-danger)]/10 border-b border-[var(--color-danger)]/20">
+        <XCircle className="h-3.5 w-3.5 shrink-0 text-[var(--color-danger)]" />
+        <p className="text-xs text-[var(--color-danger)] flex-1">No license key found. Go to Settings to generate one.</p>
+        <button onClick={() => setDismissed(true)} className="text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]">
+          <X className="h-3 w-3" />
+        </button>
+      </div>
+    )
+  }
+
+  if (isExpired) {
+    return (
+      <div className="flex items-center gap-2 px-4 py-1.5 bg-[var(--color-danger)]/10 border-b border-[var(--color-danger)]/20">
+        <XCircle className="h-3.5 w-3.5 shrink-0 text-[var(--color-danger)]" />
+        <p className="text-xs text-[var(--color-danger)] flex-1">License expired. Renew to restore full access.</p>
+        <button onClick={() => setDismissed(true)} className="text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]">
+          <X className="h-3 w-3" />
+        </button>
+      </div>
+    )
+  }
+
+  if (expiringSoon) {
+    return (
+      <div className="flex items-center gap-2 px-4 py-1.5 bg-[var(--color-warning)]/10 border-b border-[var(--color-warning)]/20">
+        <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-[var(--color-warning)]" />
+        <p className="text-xs text-[var(--color-warning)] flex-1">License expires in {status.days_remaining} day{status.days_remaining !== 1 ? 's' : ''}. Renew to avoid disruption.</p>
+        <button onClick={() => setDismissed(true)} className="text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]">
+          <X className="h-3 w-3" />
+        </button>
+      </div>
+    )
+  }
+
+  return null
+}

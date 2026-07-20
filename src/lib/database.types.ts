@@ -1589,6 +1589,45 @@ export interface Database {
         }
         Relationships: []
       }
+      licenses: {
+        Row: {
+          id: string
+          license_key: string
+          tier: string
+          school_name: string
+          issued_at: string
+          expires_at: string
+          is_active: boolean
+          features: any
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          license_key: string
+          tier: string
+          school_name?: string
+          issued_at?: string
+          expires_at: string
+          is_active?: boolean
+          features?: any
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          license_key?: string
+          tier?: string
+          school_name?: string
+          issued_at?: string
+          expires_at?: string
+          is_active?: boolean
+          features?: any
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: Record<string, never>

@@ -3,6 +3,7 @@ import "./globals.css";
 
 import { Nav } from "@/components/nav";
 import { TopNav } from "@/components/top-nav";
+import { LicenseBanner } from "@/components/license-banner";
 import { DevAuthInterceptor } from "@/components/dev-auth-interceptor";
 import { AuthGate } from "@/components/auth-gate";
 import { AuthProvider } from "@/contexts/auth-context";
@@ -33,6 +34,7 @@ export default function RootLayout({
                 <Nav />
                 <div className="flex flex-1 flex-col min-w-0">
                   <TopNav />
+                  <LicenseBanner />
                   <main className="flex-1 overflow-auto p-4 md:p-8">
                     <AuthGate>{children}</AuthGate>
                   </main>
