@@ -89,12 +89,50 @@ export function LicenseCard() {
             <XCircle className="h-8 w-8 mx-auto mb-2 text-[var(--color-danger)]" />
             <p className="text-sm font-medium text-[var(--color-text-primary)]">No License Found</p>
             <p className="text-xs text-[var(--color-text-muted)] mt-1">Generate a license key to enable all features</p>
-            <button
-              onClick={() => setShowGenerate(true)}
-              className="mt-3 px-4 py-1.5 text-xs font-medium rounded-lg bg-[var(--color-info)] text-white hover:brightness-90"
-            >
-              Generate License
-            </button>
+            {!showGenerate ? (
+              <button
+                onClick={() => setShowGenerate(true)}
+                className="mt-3 px-4 py-1.5 text-xs font-medium rounded-lg bg-[var(--color-info)] text-white hover:brightness-90"
+              >
+                Generate License
+              </button>
+            ) : (
+              <div className="mt-3 pt-3 border-t border-[var(--color-border)] space-y-2 text-left">
+                <select
+                  value={genTier}
+                  onChange={e => setGenTier(e.target.value)}
+                  className="w-full text-xs px-2 py-1.5 rounded border border-[var(--color-border)] bg-[var(--color-bg-input)] text-[var(--color-text-primary)]"
+                >
+                  <option value="essential">Essential</option>
+                  <option value="professional">Professional</option>
+                  <option value="enterprise">Enterprise</option>
+                </select>
+                <input
+                  value={genSchool}
+                  onChange={e => setGenSchool(e.target.value)}
+                  placeholder="School name"
+                  className="w-full text-xs px-2 py-1.5 rounded border border-[var(--color-border)] bg-[var(--color-bg-input)] text-[var(--color-text-primary)]"
+                />
+                <select
+                  value={genYears}
+                  onChange={e => setGenYears(Number(e.target.value))}
+                  className="w-full text-xs px-2 py-1.5 rounded border border-[var(--color-border)] bg-[var(--color-bg-input)] text-[var(--color-text-primary)]"
+                >
+                  {[1, 2, 3, 5].map(y => (
+                    <option key={y} value={y}>{y} year{y > 1 ? 's' : ''}</option>
+                  ))}
+                </select>
+                <button
+                  onClick={generateLicense}
+                  className="w-full py-1.5 text-xs font-medium rounded-lg bg-[var(--color-info)] text-white hover:brightness-90"
+                >
+                  <Key className="h-3 w-3 inline mr-1" /> Generate License Key
+                </button>
+                {message && (
+                  <p className="text-xs text-[var(--color-text-secondary)] break-all">{message}</p>
+                )}
+              </div>
+            )}
           </div>
         ) : (
           <>
@@ -165,44 +203,6 @@ export function LicenseCard() {
                 <p className="text-xs text-[var(--color-danger)] text-center">
                   License expired. Some features may be restricted.
                 </p>
-              </div>
-            )}
-
-            {!license?.license_key && showGenerate && (
-              <div className="mt-3 pt-3 border-t border-[var(--color-border)] space-y-2">
-                <select
-                  value={genTier}
-                  onChange={e => setGenTier(e.target.value)}
-                  className="w-full text-xs px-2 py-1.5 rounded border border-[var(--color-border)] bg-[var(--color-bg-input)] text-[var(--color-text-primary)]"
-                >
-                  <option value="essential">Essential</option>
-                  <option value="professional">Professional</option>
-                  <option value="enterprise">Enterprise</option>
-                </select>
-                <input
-                  value={genSchool}
-                  onChange={e => setGenSchool(e.target.value)}
-                  placeholder="School name"
-                  className="w-full text-xs px-2 py-1.5 rounded border border-[var(--color-border)] bg-[var(--color-bg-input)] text-[var(--color-text-primary)]"
-                />
-                <select
-                  value={genYears}
-                  onChange={e => setGenYears(Number(e.target.value))}
-                  className="w-full text-xs px-2 py-1.5 rounded border border-[var(--color-border)] bg-[var(--color-bg-input)] text-[var(--color-text-primary)]"
-                >
-                  {[1, 2, 3, 5].map(y => (
-                    <option key={y} value={y}>{y} year{y > 1 ? 's' : ''}</option>
-                  ))}
-                </select>
-                <button
-                  onClick={generateLicense}
-                  className="w-full py-1.5 text-xs font-medium rounded-lg bg-[var(--color-info)] text-white hover:brightness-90"
-                >
-                  <Key className="h-3 w-3 inline mr-1" /> Generate License Key
-                </button>
-                {message && (
-                  <p className="text-xs text-[var(--color-text-secondary)] break-all">{message}</p>
-                )}
               </div>
             )}
           </>
