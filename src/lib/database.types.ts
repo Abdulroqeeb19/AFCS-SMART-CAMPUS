@@ -744,6 +744,8 @@ export interface Database {
           status: string
           provider_response: Json | null
           sent_at: string | null
+          is_read: boolean | null
+          read_at: string | null
           created_at: string
         }
         Insert: {
@@ -757,6 +759,8 @@ export interface Database {
           status?: string
           provider_response?: Json | null
           sent_at?: string | null
+          is_read?: boolean | null
+          read_at?: string | null
           created_at?: string
         }
         Update: {
@@ -770,6 +774,8 @@ export interface Database {
           status?: string
           provider_response?: Json | null
           sent_at?: string | null
+          is_read?: boolean | null
+          read_at?: string | null
           created_at?: string
         }
         Relationships: [
@@ -1790,6 +1796,8 @@ export interface NotificationLog {
   status: string
   provider_response: Json | null
   sent_at: string | null
+  is_read: boolean | null
+  read_at: string | null
   created_at: string
 }
 

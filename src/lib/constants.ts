@@ -72,7 +72,6 @@ export const SIDEBAR_SECTIONS = [
     items: [
       { href: '/automation', label: 'Automation Hub', icon: 'Bell', roles: ['commandant', 'admin'] as const },
       { href: '/settings', label: 'Settings', icon: 'Settings', roles: ['commandant', 'admin'] as const },
-      { href: '/settings/prompts', label: 'System Config', icon: 'MessageSquare', roles: ['commandant', 'admin'] as const },
       { href: '/notifications', label: 'Notifications', icon: 'Smartphone', roles: ['commandant', 'admin'] as const },
     ],
   },

@@ -4,23 +4,11 @@ import { CollapsibleSection } from '@/components/collapsible-section'
 import React, { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
-  Save, Plus, Send, Trash2, MessageSquare, ClipboardList,
-  Loader2, CheckCircle2, Megaphone,
+  Plus, Send, Trash2, ClipboardList,
+  Loader2, Megaphone,
 } from 'lucide-react'
 
-type Tab = 'prompts' | 'broadcasts' | 'templates'
-
-interface PromptItem {
-  id: string
-  label: string
-  category: string
-  key: string
-  prompt_text: string
-  default_text: string | null
-  is_active: boolean
-  description: string | null
-  updated_at: string
-}
+type Tab = 'broadcasts' | 'templates'
 
 interface BroadcastItem {
   id: string
@@ -51,15 +39,9 @@ interface DutyTypeItem {
 }
 
 export default function SettingsPromptsPage() {
-  const [tab, setTab] = useState<Tab>('prompts')
+  const [tab, setTab] = useState<Tab>('broadcasts')
   const [loading, setLoading] = useState(true)
   const supabase = createClient()
-
-  const [prompts, setPrompts] = useState<PromptItem[]>([])
-  const [editingPrompt, setEditingPrompt] = useState<string | null>(null)
-  const [editText, setEditText] = useState('')
-  const [saving, setSaving] = useState(false)
-  const [savedId, setSavedId] = useState<string | null>(null)
 
   const [broadcasts, setBroadcasts] = useState<BroadcastItem[]>([])
   const [newBroadcast, setNewBroadcast] = useState({ title: '', content: '', priority: 'normal', target_roles: '' })
@@ -71,20 +53,17 @@ export default function SettingsPromptsPage() {
   const [showNewTemplate, setShowNewTemplate] = useState(false)
 
   const tabs: { id: Tab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-    { id: 'prompts', label: 'System Prompts', icon: MessageSquare },
     { id: 'broadcasts', label: 'Broadcast Messages', icon: Megaphone },
     { id: 'templates', label: 'Task Templates', icon: ClipboardList },
   ]
 
   useEffect(() => {
     async function load() {
-      const [p, b, t, d] = await Promise.all([
-        supabase.from('system_prompts').select('*').order('category').order('label'),
+      const [b, t, d] = await Promise.all([
         supabase.from('broadcast_messages').select('*, author:created_by(id, staff_id, full_name)').order('created_at', { ascending: false }),
         supabase.from('task_templates').select('*').order('title'),
         supabase.from('duty_types').select('*').eq('is_active', true).order('name'),
       ])
-      if (p.data) setPrompts(p.data)
       if (b.data) setBroadcasts(b.data)
       if (t.data) setTemplates(t.data)
       if (d.data) setDutyTypes(d.data)
@@ -92,21 +71,6 @@ export default function SettingsPromptsPage() {
     }
     load()
   }, [supabase])
-
-  const handleSavePrompt = async (id: string) => {
-    setSaving(true)
-    await supabase.from('system_prompts').update({ prompt_text: editText, updated_at: new Date().toISOString() }).eq('id', id)
-    setPrompts((prev) => prev.map((p) => p.id === id ? { ...p, prompt_text: editText } : p))
-    setEditingPrompt(null)
-    setSavedId(id)
-    setSaving(false)
-    setTimeout(() => setSavedId(null), 2000)
-  }
-
-  const handleTogglePrompt = async (id: string, current: boolean) => {
-    await supabase.from('system_prompts').update({ is_active: !current }).eq('id', id)
-    setPrompts((prev) => prev.map((p) => p.id === id ? { ...p, is_active: !current } : p))
-  }
 
   const handleSendBroadcast = async () => {
     if (!newBroadcast.content) return
@@ -168,79 +132,6 @@ export default function SettingsPromptsPage() {
           </button>
         ))}
       </div>
-
-      {/* Prompts Tab */}
-      {tab === 'prompts' && (
-        <div className="space-y-4">
-          <p className="text-xs text-[var(--color-text-muted)]">
-            Edit the message templates used by the system. Use {'{{variable_name}}'} placeholders for dynamic content.
-          </p>
-          {prompts.length === 0 ? (
-            <p className="text-sm text-[var(--color-text-muted)] text-center py-8">No prompts found. Run migration 012_system_prompts.sql</p>
-          ) : (
-            <CollapsibleSection
-              items={prompts}
-              keyExtractor={(prompt) => prompt.id}
-              defaultVisible={5}
-              className="space-y-3"
-              renderItem={(prompt) => (
-                <div className="bg-[var(--color-bg-card)] rounded-lg border overflow-hidden">
-                  <div className="flex items-center gap-3 px-4 py-3 bg-[var(--color-bg-secondary)] border-b">
-                    <button onClick={() => handleTogglePrompt(prompt.id, prompt.is_active)}
-                      className={`px-2 py-0.5 rounded text-xs font-medium ${
-                        prompt.is_active ? 'bg-[var(--color-success)]/20 text-[var(--color-success)]' : 'bg-[var(--color-bg-muted)] text-[var(--color-text-secondary)]'
-                      }`}
-                    >
-                      {prompt.is_active ? 'Active' : 'Inactive'}
-                    </button>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-[var(--color-text-primary)]">{prompt.label}</p>
-                      <p className="text-xs text-[var(--color-text-muted)]">{prompt.category} — {prompt.key}</p>
-                    </div>
-                    {prompt.description && (
-                      <p className="text-xs text-[var(--color-text-muted)] hidden md:block max-w-xs truncate">{prompt.description}</p>
-                    )}
-                    {savedId === prompt.id && <CheckCircle2 className="h-4 w-4 text-[var(--color-success)] shrink-0" />}
-                  </div>
-                  <div className="p-4">
-                    {editingPrompt === prompt.id ? (
-                      <div className="space-y-3">
-                        <textarea
-                          value={editText}
-                          onChange={(e) => setEditText(e.target.value)}
-                          className="w-full rounded-lg border border-[var(--color-info)]/40 px-3 py-2 text-sm font-mono min-h-[120px] bg-[var(--color-bg-card)]"
-                        />
-                        <div className="flex gap-2">
-                          <button onClick={() => handleSavePrompt(prompt.id)} disabled={saving}
-                            className="inline-flex items-center gap-1 rounded-lg bg-[var(--color-bg-sidebar)] text-[var(--color-text-sidebar)] px-4 py-1.5 text-sm font-medium hover:bg-[var(--color-bg-sidebar)] disabled:opacity-50 transition-colors"
-                          >
-                            {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />} Save
-                          </button>
-                          <button onClick={() => setEditingPrompt(null)}
-                            className="rounded-lg border border-[var(--color-border-hover)] px-4 py-1.5 text-sm font-medium hover:bg-[var(--color-bg-hover)] transition-colors"
-                          >Cancel</button>
-                          <button onClick={() => setEditText(prompt.default_text || '')}
-                            className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] ml-auto"
-                          >Reset to default</button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="relative group">
-                        <pre className="text-xs text-[var(--color-text-secondary)] whitespace-pre-wrap font-mono bg-[var(--color-bg-secondary)] rounded p-3 max-h-24 overflow-y-auto">
-                          {prompt.prompt_text}
-                        </pre>
-                        <button onClick={() => { setEditingPrompt(prompt.id); setEditText(prompt.prompt_text) }}
-                          className="absolute top-2 right-2 rounded bg-[var(--color-bg-card)] border border-[var(--color-border)] px-2 py-1 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[var(--color-bg-hover)]"
-                        >Edit</button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            />
-          )}
-        </div>
-      )}
 
       {/* Broadcasts Tab */}
       {tab === 'broadcasts' && (
