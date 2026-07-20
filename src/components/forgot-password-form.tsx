@@ -48,18 +48,18 @@ export function ForgotPasswordForm() {
     return (
       <Card className="w-full max-w-md border-emerald-200 shadow-lg">
         <CardHeader className="text-center pb-4">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
-            <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-success)]/20">
+            <CheckCircle2 className="h-8 w-8 text-[var(--color-success)]" />
           </div>
-          <CardTitle className="text-xl text-emerald-700">Check Your Email</CardTitle>
+          <CardTitle className="text-xl text-[var(--color-success)]">Check Your Email</CardTitle>
           <CardDescription>
             If an account exists with <strong>{email}</strong>, a password reset link has been sent.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          <p className="text-sm text-zinc-500 text-center">
+          <p className="text-sm text-[var(--color-text-secondary)] text-center">
             Didn&apos;t receive it? Check your spam folder or{' '}
-            <button onClick={() => { setSent(false); setLoading(false) }} className="text-[#001A4D] underline hover:no-underline">
+            <button onClick={() => { setSent(false); setLoading(false) }} className="text-[var(--color-text-primary)] underline hover:no-underline">
               try again
             </button>.
           </p>
@@ -73,16 +73,16 @@ export function ForgotPasswordForm() {
 
   return (
     <div className="w-full max-w-md space-y-4">
-      <Link href="/login" className="inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 transition-colors">
+      <Link href="/login" className="inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
         <ChevronLeft className="h-4 w-4" /> Back to login
       </Link>
 
-      <Card className="border-[#C5D1E8] shadow-lg shadow-blue-900/10">
+      <Card className="border-[var(--color-border-light)] shadow-lg shadow-black/5">
         <CardHeader className="text-center pb-4">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#001A4D] shadow-lg shadow-blue-900/20">
-            <Shield className="h-8 w-8 text-naf-gold" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--color-bg-sidebar)] shadow-lg shadow-black/10">
+            <Shield className="h-8 w-8 text-[var(--color-accent)]" />
           </div>
-          <CardTitle className="text-xl text-[#001A4D]">
+          <CardTitle className="text-xl text-[var(--color-text-primary)]">
             Forgot Password
           </CardTitle>
           <CardDescription>
@@ -104,9 +104,9 @@ export function ForgotPasswordForm() {
             />
 
             {error && (
-              <div className="flex items-start gap-2 rounded-lg bg-red-50 border border-red-200 p-3 text-sm">
-                <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
-                <span className="text-red-700">{error}</span>
+              <div className="flex items-start gap-2 rounded-lg bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 p-3 text-sm">
+                <AlertCircle className="h-4 w-4 text-[var(--color-danger)] mt-0.5 shrink-0" />
+                <span className="text-[var(--color-danger)]">{error}</span>
               </div>
             )}
 

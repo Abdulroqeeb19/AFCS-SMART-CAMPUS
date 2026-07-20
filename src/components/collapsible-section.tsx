@@ -40,10 +40,10 @@ export function CollapsibleSection<T>({
       {expanded && items.slice(defaultVisible).map((item, i) => (
         <div key={keyExtractor(item, i + defaultVisible)}>{renderItem(item, i + defaultVisible)}</div>
       ))}
-      <div className="flex items-center justify-between border-t border-zinc-100 pt-1 mt-1">
+      <div className="flex items-center justify-between border-t border-[var(--color-border)] pt-1 mt-1">
         <button
           onClick={() => setExpanded(!expanded)}
-          className="flex items-center gap-1.5 py-1.5 px-2 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50/50 rounded-lg transition-colors"
+          className="flex items-center gap-1.5 py-1.5 px-2 text-xs font-medium text-[var(--color-info)] hover:text-[var(--color-info)] hover:bg-[var(--color-info)]/10 rounded-lg transition-colors"
         >
           {expanded ? (
             <>
@@ -60,7 +60,7 @@ export function CollapsibleSection<T>({
         {viewAllLink && (
           <Link
             href={viewAllLink}
-            className="flex items-center gap-1 py-1.5 px-2 text-xs font-medium text-zinc-500 hover:text-zinc-700 hover:bg-zinc-50 rounded-lg transition-colors"
+            className="flex items-center gap-1 py-1.5 px-2 text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)] rounded-lg transition-colors"
           >
             View All
             <ArrowUpRight className="h-3 w-3" />

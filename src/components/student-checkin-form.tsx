@@ -188,12 +188,12 @@ export function StudentCheckinForm() {
     return (
       <Card>
         <CardContent className="p-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
-            <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-success)]/20">
+            <CheckCircle2 className="h-8 w-8 text-[var(--color-success)]" />
           </div>
-          <h2 className="text-xl font-semibold text-zinc-900 mb-1">{result.message}</h2>
+          <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-1">{result.message}</h2>
           {result.class && (
-            <p className="text-sm text-zinc-500 mb-3">
+            <p className="text-sm text-[var(--color-text-secondary)] mb-3">
               Class {result.class.name} {result.class.arm}
             </p>
           )}
@@ -201,8 +201,8 @@ export function StudentCheckinForm() {
             <Badge variant={result.status === 'late' ? 'warning' : 'success'} className="text-sm px-3 py-1">
               {result.status === 'late' ? 'Late' : 'Present'}
             </Badge>
-            <span className="text-zinc-400">|</span>
-            <span className="text-lg font-medium text-zinc-600">
+            <span className="text-[var(--color-text-muted)]">|</span>
+            <span className="text-lg font-medium text-[var(--color-text-secondary)]">
               {result.time ? formatTime(result.time) : ''}
             </span>
           </div>
@@ -217,8 +217,8 @@ export function StudentCheckinForm() {
   return (
     <Card>
       <CardHeader className="text-center">
-        <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-violet-100">
-          <GraduationCap className="h-7 w-7 text-violet-600" />
+        <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-accent)]/10">
+          <GraduationCap className="h-7 w-7 text-[var(--color-accent)]/70" />
         </div>
         <CardTitle>Student Check-In</CardTitle>
         <CardDescription>
@@ -226,11 +226,11 @@ export function StudentCheckinForm() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex gap-1 rounded-xl bg-zinc-100 p-1">
+        <div className="flex gap-1 rounded-xl bg-[var(--color-bg-muted)] p-1">
           <button
             onClick={() => { setMode('manual'); setPerson(null); setError(''); setScanId((c) => c + 1) }}
             className={`flex items-center gap-2 flex-1 justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              mode === 'manual' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'
+              mode === 'manual' ? 'bg-[var(--color-bg-card)] text-[var(--color-text-primary)] shadow-sm' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)]'
             }`}
           >
             <UserCheck className="h-4 w-4" />
@@ -239,7 +239,7 @@ export function StudentCheckinForm() {
           <button
             onClick={() => { setMode('qr'); setPerson(null); setError(''); setScanId((c) => c + 1) }}
             className={`flex items-center gap-2 flex-1 justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              mode === 'qr' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'
+              mode === 'qr' ? 'bg-[var(--color-bg-card)] text-[var(--color-text-primary)] shadow-sm' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)]'
             }`}
           >
             <QrCode className="h-4 w-4" />
@@ -286,22 +286,22 @@ export function StudentCheckinForm() {
         )}
 
         {lookupLoading && (
-          <div className="flex items-center justify-center gap-2 py-4 text-sm text-zinc-400">
+          <div className="flex items-center justify-center gap-2 py-4 text-sm text-[var(--color-text-muted)]">
             <Loader2 className="h-4 w-4 animate-spin" />
             Looking up student...
           </div>
         )}
 
         {person && !lookupLoading && (
-          <Card className="border-2 border-violet-200 bg-violet-50/30">
+          <Card className="border-2 border-[var(--color-accent)]/20 bg-[var(--color-accent)]/10">
             <CardContent className="p-4">
               <div className="flex items-center gap-4">
-                <div className="h-16 w-16 rounded-full bg-violet-200 flex items-center justify-center overflow-hidden shrink-0">
-                  <User className="h-8 w-8 text-violet-500" />
+                <div className="h-16 w-16 rounded-full bg-[var(--color-accent)]/15 flex items-center justify-center overflow-hidden shrink-0">
+                  <User className="h-8 w-8 text-[var(--color-accent)]/70" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-zinc-900 text-lg">{person.full_name}</p>
-                  <p className="text-sm text-zinc-500">{person.student_id}</p>
+                  <p className="font-semibold text-[var(--color-text-primary)] text-lg">{person.full_name}</p>
+                  <p className="text-sm text-[var(--color-text-secondary)]">{person.student_id}</p>
                   <div className="flex items-center gap-2 mt-1 flex-wrap">
                     {person.class && (
                       <Badge variant="info" className="text-[10px]">
@@ -320,7 +320,7 @@ export function StudentCheckinForm() {
 
               <div className="mt-4 flex gap-2">
                 {person.today_attendance ? (
-                  <div className="flex-1 text-center py-2 text-sm text-zinc-400">
+                  <div className="flex-1 text-center py-2 text-sm text-[var(--color-text-muted)]">
                     Already checked in for {person.today_attendance.period} period
                   </div>
                 ) : (
@@ -346,9 +346,9 @@ export function StudentCheckinForm() {
         )}
 
         {error && (
-          <div className="flex items-start gap-2 rounded-lg bg-red-50 border border-red-200 p-3 text-sm">
-            <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
-            <span className="text-red-700">{error}</span>
+          <div className="flex items-start gap-2 rounded-lg bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 p-3 text-sm">
+            <AlertCircle className="h-4 w-4 text-[var(--color-danger)] mt-0.5 shrink-0" />
+            <span className="text-[var(--color-danger)]">{error}</span>
           </div>
         )}
       </CardContent>

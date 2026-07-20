@@ -82,9 +82,9 @@ export function DailyReportForm() {
     return (
       <Card>
         <CardContent className="p-8 text-center">
-          <CheckCircle2 className="h-12 w-12 text-emerald-500 mx-auto mb-3" />
-          <h2 className="text-lg font-semibold text-zinc-900">{result.message}</h2>
-          <p className="text-sm text-zinc-500 mt-1">{formatDate(new Date())}</p>
+          <CheckCircle2 className="h-12 w-12 text-[var(--color-success)] mx-auto mb-3" />
+          <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">{result.message}</h2>
+          <p className="text-sm text-[var(--color-text-secondary)] mt-1">{formatDate(new Date())}</p>
           <Button onClick={() => setResult(null)} variant="outline" className="mt-6">
             Submit Another Report
           </Button>
@@ -97,8 +97,8 @@ export function DailyReportForm() {
     <Card>
       <CardHeader>
         <div className="flex items-center gap-3 mb-1">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
-            <FileText className="h-5 w-5 text-blue-600" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-info)]/20">
+            <FileText className="h-5 w-5 text-[var(--color-info)]" />
           </div>
           <div>
             <CardTitle>End-of-Day Report</CardTitle>
@@ -109,18 +109,18 @@ export function DailyReportForm() {
       <CardContent>
         {dutyLoading ? (
           <div className="flex items-center justify-center py-4">
-            <Loader2 className="h-5 w-5 animate-spin text-zinc-400" />
+            <Loader2 className="h-5 w-5 animate-spin text-[var(--color-text-muted)]" />
           </div>
         ) : (
           <>
             {dutyStaff && (
-              <div className="mb-4 rounded-lg bg-emerald-50 border border-emerald-200 p-3 flex items-center gap-3">
-                <Calendar className="h-5 w-5 text-emerald-600 shrink-0" />
+              <div className="mb-4 rounded-lg bg-[var(--color-success)]/10 border border-[var(--color-success)]/30 p-3 flex items-center gap-3">
+                <Calendar className="h-5 w-5 text-[var(--color-success)] shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-emerald-800">
+                  <p className="text-sm font-medium text-[var(--color-success)]">
                     Today&apos;s Duty Staff: {dutyStaff.full_name}
                   </p>
-                  <p className="text-xs text-emerald-600">
+                  <p className="text-xs text-[var(--color-success)]">
                     Staff ID: {dutyStaff.staff_id}
                   </p>
                 </div>
@@ -128,9 +128,9 @@ export function DailyReportForm() {
               </div>
             )}
             {notOnDuty && (
-              <div className="mb-4 rounded-lg bg-amber-50 border border-amber-200 p-3 flex items-center gap-3">
-                <AlertCircle className="h-5 w-5 text-amber-600 shrink-0" />
-                <p className="text-sm text-amber-700">
+              <div className="mb-4 rounded-lg bg-[var(--color-warning)]/10 border border-[var(--color-warning)]/30 p-3 flex items-center gap-3">
+                <AlertCircle className="h-5 w-5 text-[var(--color-warning)] shrink-0" />
+                <p className="text-sm text-[var(--color-warning)]">
                   No staff assigned for today&apos;s duty report. Contact the administration.
                 </p>
               </div>
@@ -147,8 +147,8 @@ export function DailyReportForm() {
               />
 
               <div className="space-y-1.5">
-                <label htmlFor="activities" className="text-sm font-medium text-zinc-700">
-                  Activities Done <span className="text-red-500">*</span>
+                <label htmlFor="activities" className="text-sm font-medium text-[var(--color-text-primary)]">
+                  Activities Done <span className="text-[var(--color-danger)]">*</span>
                 </label>
                 <textarea
                   id="activities"
@@ -156,13 +156,13 @@ export function DailyReportForm() {
                   value={activities}
                   onChange={(e) => setActivities(e.target.value)}
                   placeholder="Describe what you did today (lessons taught, tasks completed, etc.)"
-                  className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50 resize-none"
+                  className="w-full rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring-focus)] focus:ring-offset-1 disabled:opacity-50 resize-none"
                   disabled={loading}
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="challenges" className="text-sm font-medium text-zinc-700">
+                <label htmlFor="challenges" className="text-sm font-medium text-[var(--color-text-primary)]">
                   Challenges Faced
                 </label>
                 <textarea
@@ -171,7 +171,7 @@ export function DailyReportForm() {
                   value={challenges}
                   onChange={(e) => setChallenges(e.target.value)}
                   placeholder="Any challenges or issues encountered"
-                  className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50 resize-none"
+                  className="w-full rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring-focus)] focus:ring-offset-1 disabled:opacity-50 resize-none"
                   disabled={loading}
                 />
               </div>
@@ -186,9 +186,9 @@ export function DailyReportForm() {
               />
 
               {error && (
-                <div className="flex items-start gap-2 rounded-lg bg-red-50 border border-red-200 p-3 text-sm">
-                  <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
-                  <span className="text-red-700">{error}</span>
+                <div className="flex items-start gap-2 rounded-lg bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 p-3 text-sm">
+                  <AlertCircle className="h-4 w-4 text-[var(--color-danger)] mt-0.5 shrink-0" />
+                  <span className="text-[var(--color-danger)]">{error}</span>
                 </div>
               )}
 

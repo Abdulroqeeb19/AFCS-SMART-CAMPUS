@@ -31,10 +31,10 @@ export function StudentRecentActivity({ records, defaultOpen = true }: StudentRe
     return (
       <CollapsibleCard
         title="Student Check-In Activity"
-        icon={<Activity className="h-4 w-4 text-violet-500" />}
+        icon={<Activity className="h-4 w-4 text-[var(--color-accent)]/70" />}
         defaultOpen={defaultOpen}
       >
-        <div className="flex flex-col items-center justify-center py-8 text-zinc-400">
+        <div className="flex flex-col items-center justify-center py-8 text-[var(--color-text-muted)]">
           <Activity className="h-10 w-10 mb-2" />
           <p className="text-sm">No student activity yet today</p>
         </div>
@@ -45,7 +45,7 @@ export function StudentRecentActivity({ records, defaultOpen = true }: StudentRe
   return (
     <CollapsibleCard
       title="Recent Student Activity"
-      icon={<Activity className="h-4 w-4 text-violet-500" />}
+      icon={<Activity className="h-4 w-4 text-[var(--color-accent)]/70" />}
       defaultOpen={defaultOpen}
     >
       <div className="space-y-3">
@@ -56,8 +56,8 @@ export function StudentRecentActivity({ records, defaultOpen = true }: StudentRe
           return (
             <div key={record.id} className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2 min-w-0">
-                <Clock className={`h-3.5 w-3.5 shrink-0 ${record.status === 'late' ? 'text-amber-600' : 'text-emerald-600'}`} />
-                <span className="text-zinc-700 truncate">
+                <Clock className={`h-3.5 w-3.5 shrink-0 ${record.status === 'late' ? 'text-[var(--color-warning)]' : 'text-[var(--color-success)]'}`} />
+                <span className="text-[var(--color-text-primary)] truncate">
                   {record.student?.full_name || 'Unknown'}
                 </span>
                 <Badge
@@ -70,13 +70,13 @@ export function StudentRecentActivity({ records, defaultOpen = true }: StudentRe
                   {record.period}
                 </Badge>
                 {record.check_out && (
-                  <span className="text-[10px] text-zinc-400 flex items-center gap-0.5">
+                  <span className="text-[10px] text-[var(--color-text-muted)] flex items-center gap-0.5">
                     <LogOut className="h-2.5 w-2.5" />
                     {duration && <span>{duration}</span>}
                   </span>
                 )}
               </div>
-              <span className="text-zinc-400 text-xs whitespace-nowrap ml-2">
+              <span className="text-[var(--color-text-muted)] text-xs whitespace-nowrap ml-2">
                 {record.check_in ? formatTime(record.check_in) : ''}
               </span>
             </div>

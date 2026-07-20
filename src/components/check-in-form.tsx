@@ -250,10 +250,10 @@ export function CheckInForm() {
     return (
       <Card>
         <CardContent className="p-8 text-center">
-          <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full ${result.isCheckOut ? 'bg-blue-100' : 'bg-emerald-100'}`}>
-            {result.isCheckOut ? <LogOut className="h-8 w-8 text-blue-600" /> : <CheckCircle2 className="h-8 w-8 text-emerald-600" />}
+          <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full ${result.isCheckOut ? 'bg-[var(--color-info)]/20' : 'bg-[var(--color-success)]/20'}`}>
+            {result.isCheckOut ? <LogOut className="h-8 w-8 text-[var(--color-info)]" /> : <CheckCircle2 className="h-8 w-8 text-[var(--color-success)]" />}
           </div>
-          <h2 className="text-xl font-semibold text-zinc-900 mb-1">{result.message}</h2>
+          <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-1">{result.message}</h2>
           {result.time && (
             <div className="flex items-center justify-center gap-2 mt-3">
               {!result.isCheckOut && (
@@ -261,7 +261,7 @@ export function CheckInForm() {
                   {result.status === 'late' ? 'Late Arrival' : 'On Time'}
                 </Badge>
               )}
-              <span className="text-lg font-medium text-zinc-600">
+              <span className="text-lg font-medium text-[var(--color-text-secondary)]">
                 {formatTime(result.time)}
               </span>
             </div>
@@ -277,8 +277,8 @@ export function CheckInForm() {
   return (
     <Card>
       <CardHeader className="text-center">
-        <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100">
-          <ClipboardCheck className="h-7 w-7 text-blue-600" />
+        <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-info)]/20">
+          <ClipboardCheck className="h-7 w-7 text-[var(--color-info)]" />
         </div>
         <CardTitle>Staff Check-In</CardTitle>
         <CardDescription>
@@ -286,11 +286,11 @@ export function CheckInForm() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex gap-1 rounded-xl bg-zinc-100 p-1">
+        <div className="flex gap-1 rounded-xl bg-[var(--color-bg-muted)] p-1">
           <button
             onClick={() => { setMode('manual'); setPerson(null); setError(''); setScanId((c) => c + 1) }}
             className={`flex items-center gap-2 flex-1 justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              mode === 'manual' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'
+              mode === 'manual' ? 'bg-[var(--color-bg-card)] text-[var(--color-text-primary)] shadow-sm' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)]'
             }`}
           >
             <ClipboardCheck className="h-4 w-4" />
@@ -299,7 +299,7 @@ export function CheckInForm() {
           <button
             onClick={() => { setMode('qr'); setPerson(null); setError(''); setScanId((c) => c + 1) }}
             className={`flex items-center gap-2 flex-1 justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              mode === 'qr' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'
+              mode === 'qr' ? 'bg-[var(--color-bg-card)] text-[var(--color-text-primary)] shadow-sm' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)]'
             }`}
           >
             <QrCode className="h-4 w-4" />
@@ -336,27 +336,27 @@ export function CheckInForm() {
         )}
 
         {lookupLoading && (
-          <div className="flex items-center justify-center gap-2 py-4 text-sm text-zinc-400">
+          <div className="flex items-center justify-center gap-2 py-4 text-sm text-[var(--color-text-muted)]">
             <Loader2 className="h-4 w-4 animate-spin" />
             Looking up person...
           </div>
         )}
 
         {person && !lookupLoading && (
-          <Card className="border-2 border-blue-200 bg-blue-50/30">
+          <Card className="border-[var(--color-info)]/30 bg-[var(--color-info)]/10">
             <CardContent className="p-4">
               <div className="flex items-center gap-4">
-                <div className="h-16 w-16 rounded-full bg-blue-200 flex items-center justify-center overflow-hidden shrink-0">
+                <div className="h-16 w-16 rounded-full bg-[var(--color-info)]/30 flex items-center justify-center overflow-hidden shrink-0">
                   {person.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={person.avatar_url} alt="" className="h-full w-full object-cover" />
                   ) : (
-                    <User className="h-8 w-8 text-blue-500" />
+                    <User className="h-8 w-8 text-[var(--color-info)]" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-zinc-900 text-lg">{person.full_name}</p>
-                  <p className="text-sm text-zinc-500">{person.staff_id}</p>
+                  <p className="font-semibold text-[var(--color-text-primary)] text-lg">{person.full_name}</p>
+                  <p className="text-sm text-[var(--color-text-secondary)]">{person.staff_id}</p>
                   <div className="flex items-center gap-2 mt-1 flex-wrap">
                     <Badge variant="info" className="text-[10px] capitalize">
                       <Shield className="h-3 w-3 mr-1" />
@@ -393,7 +393,7 @@ export function CheckInForm() {
                     Check Out
                   </Button>
                 ) : person.today_attendance?.check_out ? (
-                  <div className="flex-1 text-center py-2 text-sm text-zinc-400">
+                  <div className="flex-1 text-center py-2 text-sm text-[var(--color-text-muted)]">
                     Already checked out today
                   </div>
                 ) : (
@@ -419,9 +419,9 @@ export function CheckInForm() {
         )}
 
         {error && (
-          <div className="flex items-start gap-2 rounded-lg bg-red-50 border border-red-200 p-3 text-sm">
-            <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
-            <span className="text-red-700">{error}</span>
+          <div className="flex items-start gap-2 rounded-lg bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 p-3 text-sm">
+            <AlertCircle className="h-4 w-4 text-[var(--color-danger)] mt-0.5 shrink-0" />
+            <span className="text-[var(--color-danger)]">{error}</span>
           </div>
         )}
       </CardContent>

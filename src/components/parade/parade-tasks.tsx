@@ -30,8 +30,8 @@ export function ParadeTasks({ tasks, onStatusUpdate, onDelete }: Props) {
   if (tasks.length === 0) {
     return (
       <div className="text-center py-8">
-        <CheckCircle2 className="h-10 w-10 text-zinc-300 mx-auto mb-2 stroke-1" />
-        <p className="text-xs text-zinc-400">No tasks assigned</p>
+        <CheckCircle2 className="h-10 w-10 text-[var(--color-text-muted)] mx-auto mb-2 stroke-1" />
+        <p className="text-xs text-[var(--color-text-muted)]">No tasks assigned</p>
       </div>
     )
   }
@@ -51,18 +51,18 @@ export function ParadeTasks({ tasks, onStatusUpdate, onDelete }: Props) {
           const isOverdue = task.deadline && new Date(task.deadline) < new Date() && task.status !== 'completed' && task.status !== 'cancelled'
 
           return (
-            <Card className={`${isOverdue ? 'border-red-200 bg-red-50/30' : ''}`}>
+            <Card className={`${isOverdue ? 'border-[var(--color-danger)]/30 bg-[var(--color-danger)]/10' : ''}`}>
               <CardContent className="p-3">
                 <div className="flex items-start gap-3">
                   <button
                     onClick={() => onStatusUpdate?.(task.id, task.status === 'completed' ? 'pending' : 'completed')}
-                    className={`mt-0.5 rounded-full p-1 transition-colors ${task.status === 'completed' ? 'text-emerald-500' : 'text-zinc-300 hover:text-emerald-400'}`}
+                    className={`mt-0.5 rounded-full p-1 transition-colors ${task.status === 'completed' ? 'text-[var(--color-success)]' : 'text-[var(--color-text-muted)] hover:text-[var(--color-success)]'}`}
                   >
                     <CheckCircle2 className="h-4 w-4" />
                   </button>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className={`text-sm font-medium ${task.status === 'completed' ? 'line-through text-zinc-400' : 'text-zinc-900'}`}>
+                      <span className={`text-sm font-medium ${task.status === 'completed' ? 'line-through text-[var(--color-text-muted)]' : 'text-[var(--color-text-primary)]'}`}>
                         {task.description}
                       </span>
                       <Badge variant={statusConfig[task.status as keyof typeof statusConfig].variant}>
@@ -75,14 +75,14 @@ export function ParadeTasks({ tasks, onStatusUpdate, onDelete }: Props) {
                         </Badge>
                       )}
                     </div>
-                    <div className="flex items-center gap-4 mt-1.5 text-[10px] text-zinc-400">
+                    <div className="flex items-center gap-4 mt-1.5 text-[10px] text-[var(--color-text-muted)]">
                       {task.assignee && (
                         <span className="flex items-center gap-1">
                           <User className="h-3 w-3" /> {task.assignee.full_name}
                         </span>
                       )}
                       {task.deadline && (
-                        <span className={`flex items-center gap-1 ${isOverdue ? 'text-red-500 font-medium' : ''}`}>
+                        <span className={`flex items-center gap-1 ${isOverdue ? 'text-[var(--color-danger)] font-medium' : ''}`}>
                           <Calendar className="h-3 w-3" /> {format(new Date(task.deadline), 'MMM d')}
                           {isOverdue && ' (Overdue)'}
                         </span>
@@ -97,12 +97,12 @@ export function ParadeTasks({ tasks, onStatusUpdate, onDelete }: Props) {
                         </Button>
                       )}
                       {task.status === 'in_progress' && (
-                        <Button onClick={() => onStatusUpdate(task.id, 'completed')} size="sm" variant="ghost" className="text-xs h-7 text-emerald-600">
+                        <Button onClick={() => onStatusUpdate(task.id, 'completed')} size="sm" variant="ghost" className="text-xs h-7 text-[var(--color-success)]">
                           Done
                         </Button>
                       )}
                       {(task.status === 'completed' || task.status === 'cancelled') && onDelete && (
-                        <Button onClick={() => onDelete(task.id)} size="sm" variant="ghost" className="text-xs h-7 text-red-400 hover:text-red-600">
+                        <Button onClick={() => onDelete(task.id)} size="sm" variant="ghost" className="text-xs h-7 text-[var(--color-danger)] hover:text-[var(--color-danger)]">
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       )}

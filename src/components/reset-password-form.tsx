@@ -119,10 +119,10 @@ export function ResetPasswordForm() {
     return (
       <Card className="w-full max-w-md border-emerald-200 shadow-lg">
         <CardHeader className="text-center pb-4">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
-            <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-success)]/20">
+            <CheckCircle2 className="h-8 w-8 text-[var(--color-success)]" />
           </div>
-          <CardTitle className="text-xl text-emerald-700">Password Updated</CardTitle>
+          <CardTitle className="text-xl text-[var(--color-success)]">Password Updated</CardTitle>
           <CardDescription>
             Your password has been successfully changed.
           </CardDescription>
@@ -140,8 +140,8 @@ export function ResetPasswordForm() {
     return (
       <div className="flex items-center justify-center min-h-[40vh]">
         <div className="text-center space-y-3">
-          <Loader2 className="h-8 w-8 animate-spin text-zinc-400 mx-auto" />
-          <p className="text-sm text-zinc-500">Verifying reset link...</p>
+          <Loader2 className="h-8 w-8 animate-spin text-[var(--color-text-muted)] mx-auto" />
+          <p className="text-sm text-[var(--color-text-secondary)]">Verifying reset link...</p>
         </div>
       </div>
     )
@@ -149,12 +149,12 @@ export function ResetPasswordForm() {
 
   if (!hasSession) {
     return (
-      <Card className="w-full max-w-md border-red-200 shadow-lg">
+      <Card className="w-full max-w-md border-[var(--color-danger)]/30 shadow-lg">
         <CardHeader className="text-center pb-4">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
-            <AlertCircle className="h-8 w-8 text-red-500" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-danger)]/20">
+            <AlertCircle className="h-8 w-8 text-[var(--color-danger)]" />
           </div>
-          <CardTitle className="text-xl text-red-700">Invalid or Expired Link</CardTitle>
+          <CardTitle className="text-xl text-[var(--color-danger)]">Invalid or Expired Link</CardTitle>
           <CardDescription>
             This password reset link is invalid or has expired. Please request a new one.
           </CardDescription>
@@ -170,12 +170,12 @@ export function ResetPasswordForm() {
 
   return (
     <div className="w-full max-w-md space-y-4">
-      <Card className="border-[#C5D1E8] shadow-lg shadow-blue-900/10">
+      <Card className="border-[var(--color-border-light)] shadow-lg shadow-black/5">
         <CardHeader className="text-center pb-4">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#001A4D] shadow-lg shadow-blue-900/20">
-            <KeyRound className="h-8 w-8 text-naf-gold" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--color-bg-sidebar)] shadow-lg shadow-black/10">
+            <KeyRound className="h-8 w-8 text-[var(--color-accent)]" />
           </div>
-          <CardTitle className="text-xl text-[#001A4D]">
+          <CardTitle className="text-xl text-[var(--color-text-primary)]">
             Reset Password
           </CardTitle>
           <CardDescription>
@@ -199,7 +199,7 @@ export function ResetPasswordForm() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-[38px] text-zinc-400 hover:text-zinc-600"
+                className="absolute right-3 top-[38px] text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -218,9 +218,9 @@ export function ResetPasswordForm() {
             />
 
             {error && (
-              <div className="flex items-start gap-2 rounded-lg bg-red-50 border border-red-200 p-3 text-sm">
-                <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
-                <span className="text-red-700">{error}</span>
+              <div className="flex items-start gap-2 rounded-lg bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 p-3 text-sm">
+                <AlertCircle className="h-4 w-4 text-[var(--color-danger)] mt-0.5 shrink-0" />
+                <span className="text-[var(--color-danger)]">{error}</span>
               </div>
             )}
 

@@ -16,29 +16,29 @@ export function AttendanceStats({ total, present, late, absent }: Props) {
       label: 'Total Staff',
       value: total,
       icon: Users,
-      color: 'text-blue-600',
-      bg: 'bg-blue-100',
+      color: 'text-[var(--color-info)]',
+      bg: 'bg-[var(--color-info)]/20',
     },
     {
       label: 'Present',
       value: present,
       icon: CheckCircle,
-      color: 'text-emerald-600',
-      bg: 'bg-emerald-100',
+      color: 'text-[var(--color-success)]',
+      bg: 'bg-[var(--color-success)]/20',
     },
     {
       label: 'Late',
       value: late,
       icon: Clock,
-      color: 'text-amber-600',
-      bg: 'bg-amber-100',
+      color: 'text-[var(--color-warning)]',
+      bg: 'bg-[var(--color-warning)]/20',
     },
     {
       label: 'Absent',
       value: absent,
       icon: AlertTriangle,
-      color: 'text-red-600',
-      bg: 'bg-red-100',
+      color: 'text-[var(--color-danger)]',
+      bg: 'bg-[var(--color-danger)]/20',
     },
   ]
 
@@ -51,8 +51,8 @@ export function AttendanceStats({ total, present, late, absent }: Props) {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-zinc-500">{stat.label}</p>
-                  <p className="text-3xl font-bold text-zinc-900 mt-1">{stat.value}</p>
+                  <p className="text-sm font-medium text-[var(--color-text-secondary)]">{stat.label}</p>
+                  <p className="text-3xl font-bold text-[var(--color-text-primary)] mt-1">{stat.value}</p>
                 </div>
                 <div className={`rounded-full p-3 ${stat.bg}`}>
                   <Icon className={`h-5 w-5 ${stat.color}`} />

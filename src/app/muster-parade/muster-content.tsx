@@ -142,8 +142,8 @@ export function MusterContent() {
     return (
       <Card>
         <CardContent className="p-12 text-center">
-          <AlertCircle className="h-10 w-10 text-amber-400 mx-auto mb-3" />
-          <p className="text-zinc-500 text-sm mb-4">{error}</p>
+          <AlertCircle className="h-10 w-10 text-[var(--color-warning)] mx-auto mb-3" />
+          <p className="text-[var(--color-text-secondary)] text-sm mb-4">{error}</p>
           <Button onClick={loadSessions} variant="outline" className="gap-2">
             <RefreshCw className="h-4 w-4" /> Retry
           </Button>
@@ -156,33 +156,33 @@ export function MusterContent() {
     <div className="space-y-6">
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <Card><CardContent className="p-4 text-center">
-          <p className="text-xs font-medium text-zinc-500 uppercase">Total Tasks</p>
-          <p className="text-2xl font-bold text-blue-600">{stats.total}</p>
+          <p className="text-xs font-medium text-[var(--color-text-secondary)] uppercase">Total Tasks</p>
+          <p className="text-2xl font-bold text-[var(--color-info)]">{stats.total}</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
-          <p className="text-xs font-medium text-zinc-500 uppercase">Open</p>
-          <p className="text-2xl font-bold text-amber-600">{stats.open}</p>
+          <p className="text-xs font-medium text-[var(--color-text-secondary)] uppercase">Open</p>
+          <p className="text-2xl font-bold text-[var(--color-warning)]">{stats.open}</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
-          <p className="text-xs font-medium text-zinc-500 uppercase">Completed</p>
-          <p className="text-2xl font-bold text-emerald-600">{stats.completed}</p>
+          <p className="text-xs font-medium text-[var(--color-text-secondary)] uppercase">Completed</p>
+          <p className="text-2xl font-bold text-[var(--color-success)]">{stats.completed}</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
-          <p className="text-xs font-medium text-zinc-500 uppercase">High / Urgent</p>
-          <p className="text-2xl font-bold text-red-600">{stats.highUrgent}</p>
+          <p className="text-xs font-medium text-[var(--color-text-secondary)] uppercase">High / Urgent</p>
+          <p className="text-2xl font-bold text-[var(--color-danger)]">{stats.highUrgent}</p>
         </CardContent></Card>
       </div>
 
       <Card>
         <CardHeader className="flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-sm">
-            <ListChecks className="h-4 w-4 text-emerald-500" />
+            <ListChecks className="h-4 w-4 text-[var(--color-success)]" />
             Tasks
             <Badge variant="default">{allTasks.filter((t) => t.status !== 'completed').length} open</Badge>
           </CardTitle>
           <div className="flex items-center gap-2">
             {isAdminOrCommandant && stats.completed > 0 && (
-              <Button onClick={handleCleanupOld} size="sm" variant="outline" className="gap-1 text-red-600 border-red-200 hover:bg-red-50">
+              <Button onClick={handleCleanupOld} size="sm" variant="outline" className="gap-1 text-[var(--color-danger)] border-[var(--color-danger)]/30 hover:bg-[var(--color-danger)]/10">
                 <Trash2 className="h-3 w-3" /> Clean up old
               </Button>
             )}
@@ -199,30 +199,30 @@ export function MusterContent() {
         </CardHeader>
         <CardContent>
           {showAddTask && (
-            <div className="mb-4 space-y-3 rounded-lg border border-emerald-200 bg-emerald-50/50 p-3">
+            <div className="mb-4 space-y-3 rounded-lg border border-[var(--color-success)]/30 bg-[var(--color-success)]/10 p-3">
               <textarea
                 placeholder="Task description"
                 value={taskForm.description}
                 onChange={(e) => setTaskForm({ ...taskForm, description: e.target.value })}
-                className="w-full min-h-[60px] rounded-lg border border-emerald-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-y"
+                className="w-full min-h-[60px] rounded-lg border border-[var(--color-success)]/40 bg-[var(--color-bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-success)] resize-y"
               />
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <select value={taskForm.assigned_to} onChange={(e) => setTaskForm({ ...taskForm, assigned_to: e.target.value })}
-                  className="h-9 rounded-lg border border-emerald-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                  className="h-9 rounded-lg border border-[var(--color-success)]/40 bg-[var(--color-bg-card)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-success)]">
                   <option value="">Assign to...</option>
                   {allStaff.map((s) => (
                     <option key={s.id} value={s.id}>{s.full_name}</option>
                   ))}
                 </select>
                 <select value={taskForm.priority} onChange={(e) => setTaskForm({ ...taskForm, priority: e.target.value })}
-                  className="h-9 rounded-lg border border-emerald-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                  className="h-9 rounded-lg border border-[var(--color-success)]/40 bg-[var(--color-bg-card)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-success)]">
                   <option value="low">Low Priority</option>
                   <option value="normal">Normal</option>
                   <option value="high">High</option>
                   <option value="urgent">Urgent</option>
                 </select>
                 <input type="date" value={taskForm.deadline} onChange={(e) => setTaskForm({ ...taskForm, deadline: e.target.value })}
-                  className="h-9 rounded-lg border border-emerald-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                  className="h-9 rounded-lg border border-[var(--color-success)]/40 bg-[var(--color-bg-card)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-success)]" />
               </div>
               <Button onClick={handleAddTask} size="sm" className="gap-1.5">
                 <Send className="h-3.5 w-3.5" /> Create Task
@@ -237,9 +237,9 @@ export function MusterContent() {
             />
           ) : (
             <div className="text-center py-10">
-              <CheckCircle2 className="h-12 w-12 text-zinc-300 mx-auto mb-3 stroke-1" />
-              <p className="text-sm text-zinc-500">No tasks yet</p>
-              <p className="text-xs text-zinc-400 mt-1">Click &quot;Add Task&quot; to assign one</p>
+              <CheckCircle2 className="h-12 w-12 text-[var(--color-text-muted)] mx-auto mb-3 stroke-1" />
+              <p className="text-sm text-[var(--color-text-secondary)]">No tasks yet</p>
+              <p className="text-xs text-[var(--color-text-muted)] mt-1">Click &quot;Add Task&quot; to assign one</p>
             </div>
           )}
         </CardContent>

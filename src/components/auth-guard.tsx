@@ -15,7 +15,7 @@ export function AuthGuard({ children, requiredRole, fallback }: AuthGuardProps) 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-[var(--color-text-muted)]" />
       </div>
     )
   }
@@ -24,9 +24,9 @@ export function AuthGuard({ children, requiredRole, fallback }: AuthGuardProps) 
     return (
       fallback ?? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <Shield className="h-16 w-16 text-zinc-300 mb-4" />
-          <h2 className="text-xl font-semibold text-zinc-600">Authentication Required</h2>
-          <p className="text-zinc-400 mt-1">Please sign in to access this page</p>
+          <Shield className="h-16 w-16 text-[var(--color-text-muted)] mb-4" />
+          <h2 className="text-xl font-semibold text-[var(--color-text-secondary)]">Authentication Required</h2>
+          <p className="text-[var(--color-text-muted)] mt-1">Please sign in to access this page</p>
         </div>
       )
     )
@@ -35,9 +35,9 @@ export function AuthGuard({ children, requiredRole, fallback }: AuthGuardProps) 
   if (requiredRole === 'admin' && !isAdmin) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Shield className="h-16 w-16 text-red-300 mb-4" />
-        <h2 className="text-xl font-semibold text-zinc-600">Access Denied</h2>
-        <p className="text-zinc-400 mt-1">This area is restricted to Administrators</p>
+        <Shield className="h-16 w-16 text-[var(--color-danger)]/40 mb-4" />
+        <h2 className="text-xl font-semibold text-[var(--color-text-secondary)]">Access Denied</h2>
+        <p className="text-[var(--color-text-muted)] mt-1">This area is restricted to Administrators</p>
       </div>
     )
   }
@@ -45,9 +45,9 @@ export function AuthGuard({ children, requiredRole, fallback }: AuthGuardProps) 
   if (requiredRole === 'commandant' && !isCommandant) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Shield className="h-16 w-16 text-red-300 mb-4" />
-        <h2 className="text-xl font-semibold text-zinc-600">Access Denied</h2>
-        <p className="text-zinc-400 mt-1">This area is restricted to the Commandant</p>
+        <Shield className="h-16 w-16 text-[var(--color-danger)]/40 mb-4" />
+        <h2 className="text-xl font-semibold text-[var(--color-text-secondary)]">Access Denied</h2>
+        <p className="text-[var(--color-text-muted)] mt-1">This area is restricted to the Commandant</p>
       </div>
     )
   }
@@ -55,9 +55,9 @@ export function AuthGuard({ children, requiredRole, fallback }: AuthGuardProps) 
   if (requiredRole === 'admin_or_commandant' && !(isAdmin || isCommandant)) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Shield className="h-16 w-16 text-red-300 mb-4" />
-        <h2 className="text-xl font-semibold text-zinc-600">Access Denied</h2>
-        <p className="text-zinc-400 mt-1">This area is restricted to Administrators and the Commandant</p>
+        <Shield className="h-16 w-16 text-[var(--color-danger)]/40 mb-4" />
+        <h2 className="text-xl font-semibold text-[var(--color-text-secondary)]">Access Denied</h2>
+        <p className="text-[var(--color-text-muted)] mt-1">This area is restricted to Administrators and the Commandant</p>
       </div>
     )
   }
@@ -65,9 +65,9 @@ export function AuthGuard({ children, requiredRole, fallback }: AuthGuardProps) 
   if (requiredRole === 'admin_or_commandant_or_teacher' && !(isAdmin || isCommandant || user?.role === 'teacher')) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Shield className="h-16 w-16 text-red-300 mb-4" />
-        <h2 className="text-xl font-semibold text-zinc-600">Access Denied</h2>
-        <p className="text-zinc-400 mt-1">You do not have permission to access this page</p>
+        <Shield className="h-16 w-16 text-[var(--color-danger)]/40 mb-4" />
+        <h2 className="text-xl font-semibold text-[var(--color-text-secondary)]">Access Denied</h2>
+        <p className="text-[var(--color-text-muted)] mt-1">You do not have permission to access this page</p>
       </div>
     )
   }
@@ -75,9 +75,9 @@ export function AuthGuard({ children, requiredRole, fallback }: AuthGuardProps) 
   if (requiredRole === 'teacher' && user.role !== 'teacher') {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Shield className="h-16 w-16 text-red-300 mb-4" />
-        <h2 className="text-xl font-semibold text-zinc-600">Access Denied</h2>
-        <p className="text-zinc-400 mt-1">This area is restricted to Teachers</p>
+        <Shield className="h-16 w-16 text-[var(--color-danger)]/40 mb-4" />
+        <h2 className="text-xl font-semibold text-[var(--color-text-secondary)]">Access Denied</h2>
+        <p className="text-[var(--color-text-muted)] mt-1">This area is restricted to Teachers</p>
       </div>
     )
   }

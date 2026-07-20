@@ -65,49 +65,49 @@ export function ClassTeacherDashboard() {
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardContent className="p-5 flex items-center gap-4">
-            <div className="rounded-full p-3 bg-violet-100">
-              <BookOpen className="h-5 w-5 text-violet-600" />
+            <div className="rounded-full p-3 bg-[var(--color-accent)]/10">
+              <BookOpen className="h-5 w-5 text-[var(--color-accent)]/70" />
             </div>
             <div>
-              <p className="text-xs font-medium text-zinc-500 uppercase tracking-wide">My Classes</p>
-              <p className="text-2xl font-bold text-zinc-900">{classesCount}</p>
-              <p className="text-xs text-zinc-400">{data?.classes?.map((c) => `${c.name} ${c.arm}`).join(', ') || '—'}</p>
+              <p className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide">My Classes</p>
+              <p className="text-2xl font-bold text-[var(--color-text-primary)]">{classesCount}</p>
+              <p className="text-xs text-[var(--color-text-muted)]">{data?.classes?.map((c) => `${c.name} ${c.arm}`).join(', ') || '—'}</p>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-5 flex items-center gap-4">
-            <div className="rounded-full p-3 bg-blue-100">
-              <Users className="h-5 w-5 text-blue-600" />
+            <div className="rounded-full p-3 bg-[var(--color-info)]/20">
+              <Users className="h-5 w-5 text-[var(--color-info)]" />
             </div>
             <div>
-              <p className="text-xs font-medium text-zinc-500 uppercase tracking-wide">Total Students</p>
-              <p className="text-2xl font-bold text-zinc-900">{totalStudents}</p>
-              <p className="text-xs text-zinc-400">Enrolled</p>
+              <p className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide">Total Students</p>
+              <p className="text-2xl font-bold text-[var(--color-text-primary)]">{totalStudents}</p>
+              <p className="text-xs text-[var(--color-text-muted)]">Enrolled</p>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-5 flex items-center gap-4">
-            <div className="rounded-full p-3 bg-emerald-100">
-              <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+            <div className="rounded-full p-3 bg-[var(--color-success)]/20">
+              <CheckCircle2 className="h-5 w-5 text-[var(--color-success)]" />
             </div>
             <div>
-              <p className="text-xs font-medium text-zinc-500 uppercase tracking-wide">Checked In</p>
-              <p className="text-2xl font-bold text-zinc-900">{checkedIn}</p>
-              <p className="text-xs text-zinc-400">{checkedOutRate}% today</p>
+              <p className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide">Checked In</p>
+              <p className="text-2xl font-bold text-[var(--color-text-primary)]">{checkedIn}</p>
+              <p className="text-xs text-[var(--color-text-muted)]">{checkedOutRate}% today</p>
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-5 flex items-center gap-4">
-            <div className="rounded-full p-3 bg-amber-100">
-              <Clock className="h-5 w-5 text-amber-600" />
+            <div className="rounded-full p-3 bg-[var(--color-warning)]/20">
+              <Clock className="h-5 w-5 text-[var(--color-warning)]" />
             </div>
             <div>
-              <p className="text-xs font-medium text-zinc-500 uppercase tracking-wide">Remaining</p>
-              <p className="text-2xl font-bold text-zinc-900">{totalStudents - checkedIn}</p>
-              <p className="text-xs text-zinc-400">Not checked in</p>
+              <p className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide">Remaining</p>
+              <p className="text-2xl font-bold text-[var(--color-text-primary)]">{totalStudents - checkedIn}</p>
+              <p className="text-xs text-[var(--color-text-muted)]">Not checked in</p>
             </div>
           </CardContent>
         </Card>
@@ -115,13 +115,13 @@ export function ClassTeacherDashboard() {
 
       {/* Tab Switcher */}
       <div className="flex items-center justify-between">
-        <div className="flex gap-1 rounded-xl bg-blue-50 p-1 w-fit">
+        <div className="flex gap-1 rounded-xl bg-[var(--color-info)]/10 p-1 w-fit">
           <button
             onClick={() => setTab('attendance')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               tab === 'attendance'
-                ? 'bg-[#001A4D] text-white shadow-sm'
-                : 'text-blue-700 hover:text-[#001A4D]'
+                ? 'bg-[var(--color-bg-sidebar)] text-[var(--color-text-sidebar)] shadow-sm'
+                : 'text-[var(--color-info)] hover:text-[var(--color-bg-sidebar)]'
             }`}
           >
             <GraduationCap className="h-4 w-4" />
@@ -131,8 +131,8 @@ export function ClassTeacherDashboard() {
             onClick={() => setTab('report')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               tab === 'report'
-                ? 'bg-[#001A4D] text-white shadow-sm'
-                : 'text-blue-700 hover:text-[#001A4D]'
+                ? 'bg-[var(--color-bg-sidebar)] text-[var(--color-text-sidebar)] shadow-sm'
+                : 'text-[var(--color-info)] hover:text-[var(--color-bg-sidebar)]'
             }`}
           >
             <ClipboardCheck className="h-4 w-4" />

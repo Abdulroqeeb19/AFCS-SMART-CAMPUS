@@ -10,6 +10,7 @@ import { Loader2, Plus, UserPlus, Search, Users, Pencil, X, Check, Power, PowerO
 import { Skeleton } from '@/components/skeleton'
 import { QRButton } from '@/components/qr-code'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
+import { CollapsibleSection } from '@/components/collapsible-section'
 
 
 interface StaffMember {
@@ -303,13 +304,13 @@ export function StaffList() {
     <div className="space-y-4">
       <div className="flex items-center gap-3 flex-wrap">
         <div className="relative flex-1 min-w-[200px] max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-text-muted)]" />
           <input
             type="text"
             placeholder="Search by name, ID, or email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-10 pl-9 pr-3 rounded-lg border border-zinc-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+            className="w-full h-10 pl-9 pr-3 rounded-lg border border-[var(--color-border-hover)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring-focus)] focus:ring-offset-1"
           />
         </div>
         <Button onClick={() => setShowAdd(!showAdd)} className="gap-2">
@@ -319,14 +320,14 @@ export function StaffList() {
       </div>
 
       {error && (
-        <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 flex items-center gap-2">
+        <div className="rounded-lg bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 px-4 py-3 text-sm text-[var(--color-danger)] flex items-center gap-2">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {showAdd && (
-        <Card className="border-blue-200 bg-blue-50/50">
+        <Card className="border-[var(--color-info)]/30 bg-[var(--color-info)]/10">
           <CardContent className="p-4">
             <form onSubmit={handleAdd} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <Input
@@ -391,12 +392,12 @@ export function StaffList() {
               />
               {form.role === 'teacher' && deptSubjects.length > 0 && (
                 <div className="sm:col-span-2 lg:col-span-3">
-                  <label className="block text-xs font-medium text-zinc-600 mb-1.5">Assigned Subjects (from selected department)</label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5 max-h-48 overflow-y-auto p-2 border border-zinc-200 rounded-lg bg-white">
+                  <label className="block text-xs font-medium text-[var(--color-text-secondary)] mb-1.5">Assigned Subjects (from selected department)</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5 max-h-48 overflow-y-auto p-2 border border-[var(--color-border)] rounded-lg bg-[var(--color-bg-card)]">
                     {deptSubjects.map((subj) => (
                       <label
                         key={subj.id}
-                        className="flex items-center gap-2 px-2 py-1.5 rounded text-sm cursor-pointer hover:bg-blue-50 has-[:checked]:bg-blue-100 has-[:checked]:text-blue-800 transition-colors"
+                        className="flex items-center gap-2 px-2 py-1.5 rounded text-sm cursor-pointer hover:bg-[var(--color-info)]/10 has-[:checked]:bg-[var(--color-info)]/20 has-[:checked]:text-[var(--color-info)] transition-colors"
                       >
                         <input
                           type="checkbox"
@@ -411,7 +412,7 @@ export function StaffList() {
                           className="accent-blue-600"
                         />
                         <span className="font-medium">{subj.code}</span>
-                        <span className="text-zinc-500 text-xs">{subj.name}</span>
+                        <span className="text-[var(--color-text-secondary)] text-xs">{subj.name}</span>
                       </label>
                     ))}
                   </div>
@@ -432,18 +433,21 @@ export function StaffList() {
       )}
 
       {filtered.length === 0 ? (
-        <div className="text-center py-16 text-zinc-400">
+        <div className="text-center py-16 text-[var(--color-text-muted)]">
           <Users className="h-12 w-12 mx-auto mb-3 stroke-1" />
-          <p className="font-medium text-zinc-500">No staff found</p>
+          <p className="font-medium text-[var(--color-text-secondary)]">No staff found</p>
           <p className="text-xs mt-1">{search ? 'Try a different search term' : 'Click "Add Staff" to get started'}</p>
         </div>
       ) : (
         <>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-[var(--color-text-secondary)]">
             Showing {filtered.length} of {staff.length} staff member{staff.length !== 1 ? 's' : ''}
           </p>
-          <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((member) => {
+          <CollapsibleSection
+            items={filtered}
+            defaultVisible={6}
+            keyExtractor={(member) => member.id}
+            renderItem={(member) => {
               const roleInfo = roleConfig[member.role] || roleConfig.teacher
               const RoleIcon = roleInfo.icon
               return (
@@ -452,8 +456,8 @@ export function StaffList() {
                     {editId === member.id ? (
                       <div className="space-y-3">
                         <div className="flex items-center justify-between mb-2">
-                          <p className="text-xs font-semibold uppercase text-zinc-400">Editing</p>
-                          <button onClick={() => { setEditId(null); setError('') }} className="text-zinc-400 hover:text-zinc-600">
+                          <p className="text-xs font-semibold uppercase text-[var(--color-text-muted)]">Editing</p>
+                          <button onClick={() => { setEditId(null); setError('') }} className="text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]">
                             <X className="h-4 w-4" />
                           </button>
                         </div>
@@ -499,8 +503,8 @@ export function StaffList() {
                       <>
                         <div className="flex items-start justify-between">
                           <div className="min-w-0 flex-1">
-                            <p className="font-medium text-zinc-900 truncate">{member.full_name}</p>
-                            <p className="text-xs text-zinc-400 mt-0.5">{member.staff_id}</p>
+                            <p className="font-medium text-[var(--color-text-primary)] truncate">{member.full_name}</p>
+                            <p className="text-xs text-[var(--color-text-muted)] mt-0.5">{member.staff_id}</p>
                           </div>
                           <div className="flex items-center gap-1.5">
                             {member.role === 'teacher' && classTeacherIds.includes(member.id) && (
@@ -511,32 +515,32 @@ export function StaffList() {
                             </Badge>
                           </div>
                         </div>
-                        <div className="mt-3 space-y-1.5 text-sm text-zinc-500">
+                        <div className="mt-3 space-y-1.5 text-sm text-[var(--color-text-secondary)]">
                           <p className="flex items-center gap-1.5">
-                            <RoleIcon className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
+                            <RoleIcon className="h-3.5 w-3.5 text-[var(--color-text-muted)] shrink-0" />
                             <span className="capitalize">{roleInfo.label}</span>
                           </p>
                           {member.department && (
                             <p className="flex items-center gap-1.5">
-                              <span className="text-[10px] uppercase text-zinc-400 w-16">Dept:</span>
+                              <span className="text-[10px] uppercase text-[var(--color-text-muted)] w-16">Dept:</span>
                               <span>{member.department.name}</span>
                             </p>
                           )}
                           <p className="flex items-center gap-1.5">
-                            <span className="text-[10px] uppercase text-zinc-400 w-16">Email:</span>
+                            <span className="text-[10px] uppercase text-[var(--color-text-muted)] w-16">Email:</span>
                             <span className="truncate text-xs">{member.email}</span>
                           </p>
                           {member.phone && (
                             <p className="flex items-center gap-1.5">
-                              <span className="text-[10px] uppercase text-zinc-400 w-16">Phone:</span>
+                              <span className="text-[10px] uppercase text-[var(--color-text-muted)] w-16">Phone:</span>
                               <span className="text-xs">{member.phone}</span>
                             </p>
                           )}
                         </div>
-                        <div className="mt-3 flex items-center gap-2 pt-2 border-t border-zinc-100 flex-wrap">
+                        <div className="mt-3 flex items-center gap-2 pt-2 border-t border-[var(--color-border)] flex-wrap">
                           <button
                             onClick={() => startEdit(member)}
-                            className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
+                            className="flex items-center gap-1 text-xs text-[var(--color-info)] hover:text-[var(--color-info)] transition-colors"
                           >
                             <Pencil className="h-3 w-3" /> Edit
                           </button>
@@ -544,7 +548,7 @@ export function StaffList() {
                           <button
                             onClick={() => toggleActive(member)}
                             className={`flex items-center gap-1 text-xs transition-colors ${
-                              member.is_active ? 'text-amber-600 hover:text-amber-800' : 'text-emerald-600 hover:text-emerald-800'
+                              member.is_active ? 'text-[var(--color-warning)] hover:text-[var(--color-warning)]' : 'text-[var(--color-success)] hover:text-[var(--color-success)]'
                             }`}
                           >
                             {member.is_active ? <PowerOff className="h-3 w-3" /> : <Power className="h-3 w-3" />}
@@ -552,7 +556,7 @@ export function StaffList() {
                           </button>
                           <button
                             onClick={() => setConfirmDeleteMember(member)}
-                            className="flex items-center gap-1 text-xs text-red-600 hover:text-red-800 transition-colors"
+                            className="flex items-center gap-1 text-xs text-[var(--color-danger)] hover:text-[var(--color-danger)] transition-colors"
                           >
                             <Trash2 className="h-3 w-3" /> Delete
                           </button>
@@ -560,7 +564,7 @@ export function StaffList() {
                             assigning === member.id ? (
                               <div className="flex items-center gap-1">
                                 <select
-                                  className="text-[10px] border border-zinc-300 rounded px-1 py-0.5 max-w-[100px]"
+                                  className="text-[10px] border border-[var(--color-border-hover)] rounded px-1 py-0.5 max-w-[100px]"
                                   onChange={(e) => {
                                     if (e.target.value) assignClassTeacher(member.id, e.target.value)
                                   }}
@@ -575,7 +579,7 @@ export function StaffList() {
                                 </select>
                                 <button
                                   onClick={() => setAssigning(null)}
-                                  className="text-zinc-400 hover:text-zinc-600"
+                                  className="text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
                                 >
                                   <X className="h-3 w-3" />
                                 </button>
@@ -583,7 +587,7 @@ export function StaffList() {
                             ) : (
                               <button
                                 onClick={() => setAssigning(member.id)}
-                                className="flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-800 transition-colors"
+                                className="flex items-center gap-1 text-xs text-[var(--color-success)] hover:text-[var(--color-success)] transition-colors"
                               >
                                 <GraduationCap className="h-3 w-3" /> {classTeacherIds.includes(member.id) ? 'Classes' : 'Assign'}
                               </button>
@@ -591,14 +595,14 @@ export function StaffList() {
                           )}
                         </div>
                         {member.role === 'teacher' && !assigning && getTeacherClasses(member.id).length > 0 && (
-                          <div className="mt-2 pt-1.5 border-t border-zinc-100">
+                          <div className="mt-2 pt-1.5 border-t border-[var(--color-border)]">
                             <div className="flex flex-wrap gap-1">
                               {getTeacherClasses(member.id).map((c) => (
-                                <span key={c.id} className="inline-flex items-center gap-1 text-[10px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded-full">
+                                <span key={c.id} className="inline-flex items-center gap-1 text-[10px] bg-[var(--color-success)]/10 text-[var(--color-success)] px-1.5 py-0.5 rounded-full">
                                   {c.name} {c.arm}
                                   <button
                                     onClick={() => unassignClassTeacher(c.id)}
-                                    className="hover:text-red-600"
+                                    className="hover:text-[var(--color-danger)]"
                                   >
                                     <X className="h-2.5 w-2.5" />
                                   </button>
@@ -612,8 +616,11 @@ export function StaffList() {
                   </CardContent>
                 </Card>
               )
-            })}
-          </div>
+            }}
+            className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+            showMoreText={`Show ${filtered.length - 6} more`}
+            showLessText="Show less"
+          />
         </>
       )}
 

@@ -136,7 +136,14 @@ export async function DELETE(request: Request) {
   if (!id) return NextResponse.json({ error: 'Student ID required' }, { status: 400 })
 
   const adminSupabase = createAdminClient()
-  const { error } = await adminSupabase.from('students').delete().eq('id', id)
-  if (error) return NextResponse.json({ error: 'Failed to delete student' }, { status: 500 })
+
+  const { error: attendanceError } = await adminSupabase
+    .from('student_attendance')
+    .delete()
+    .eq('student_id', id)
+  if (attendanceError) return NextResponse.json({ error: attendanceError.message }, { status: 500 })
+
+  const { error: studentError } = await adminSupabase.from('students').delete().eq('id', id)
+  if (studentError) return NextResponse.json({ error: studentError.message }, { status: 500 })
   return NextResponse.json({ success: true })
 }

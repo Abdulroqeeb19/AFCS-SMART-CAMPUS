@@ -14,15 +14,15 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-[var(--color-bg-sidebar)] text-white hover:bg-blue-800 active:bg-blue-900 border border-transparent',
+    'bg-[var(--color-bg-sidebar)] text-white hover:bg-[var(--color-info)]/90 active:bg-[var(--color-info)]/80 border border-transparent',
   secondary:
-    'bg-[var(--color-bg-muted)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)] active:bg-zinc-200 border border-[var(--color-border)]',
+    'bg-[var(--color-bg-muted)] text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)] active:bg-[var(--color-bg-muted)] border border-[var(--color-border)]',
   outline:
     'bg-transparent text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)] border border-[var(--color-border)]',
   ghost:
     'bg-transparent text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)] hover:text-[var(--color-text-primary)] border border-transparent',
   danger:
-    'bg-[var(--color-danger)] text-white hover:bg-red-600 active:bg-red-700 border border-transparent',
+    'bg-[var(--color-danger)] text-white hover:bg-[var(--color-danger)]/90 active:bg-[var(--color-danger)]/80 border border-transparent',
 }
 
 const sizeStyles: Record<ButtonSize, string> = {

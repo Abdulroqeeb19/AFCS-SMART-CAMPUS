@@ -88,7 +88,7 @@ export function SearchBar({ variant = 'full' }: SearchBarProps) {
         className={cn(
           'flex items-center gap-2 transition-all text-sm',
           variant === 'full'
-            ? 'w-full px-3 py-2 rounded-lg bg-white/10 text-white/50 hover:bg-white/15 hover:text-white/70 border border-white/10'
+            ? 'w-full px-3 py-2 rounded-lg bg-[var(--color-bg-hover)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] border border-[var(--color-border)]'
             : 'px-2 py-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)]',
         )}
         title="Search features (Ctrl+K)"
@@ -97,7 +97,7 @@ export function SearchBar({ variant = 'full' }: SearchBarProps) {
         {variant === 'full' && (
           <>
             <span className="flex-1 text-left">Search features...</span>
-            <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] text-white/30 bg-white/5 rounded px-1.5 py-0.5">
+            <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] text-[var(--color-text-muted)] bg-[var(--color-bg-muted)] rounded px-1.5 py-0.5">
               <Command className="h-2.5 w-2.5" />K
             </kbd>
           </>
@@ -110,11 +110,11 @@ export function SearchBar({ variant = 'full' }: SearchBarProps) {
           onClick={() => setOpen(false)}
         >
           <div
-            className="w-full max-w-lg bg-white rounded-xl shadow-2xl border border-zinc-200 overflow-hidden"
+            className="w-full max-w-lg bg-[var(--color-bg-card)] rounded-xl shadow-2xl border border-[var(--color-border)] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center gap-3 px-4 py-3 border-b border-zinc-100">
-              <Search className="h-5 w-5 text-zinc-400 shrink-0" />
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-[var(--color-border)]">
+              <Search className="h-5 w-5 text-[var(--color-text-muted)] shrink-0" />
               <input
                 ref={inputRef}
                 type="text"
@@ -122,13 +122,13 @@ export function SearchBar({ variant = 'full' }: SearchBarProps) {
                 onChange={(e) => { setQuery(e.target.value); setSelectedIndex(0) }}
                 onKeyDown={handleKeyDown}
                 placeholder="Search pages, features, or routes..."
-                className="flex-1 text-sm text-zinc-800 placeholder-zinc-400 bg-transparent outline-none"
+                className="flex-1 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] bg-transparent outline-none"
               />
-              <kbd className="text-[10px] text-zinc-400 bg-zinc-100 rounded px-1.5 py-0.5">ESC</kbd>
+              <kbd className="text-[10px] text-[var(--color-text-muted)] bg-[var(--color-bg-muted)] rounded px-1.5 py-0.5">ESC</kbd>
             </div>
             <div className="max-h-80 overflow-y-auto py-2">
               {results.length === 0 ? (
-                <p className="px-4 py-6 text-center text-sm text-zinc-400">No results found</p>
+                <p className="px-4 py-6 text-center text-sm text-[var(--color-text-muted)]">No results found</p>
               ) : (
                 results.map((item, i) => (
                   <button
@@ -136,13 +136,13 @@ export function SearchBar({ variant = 'full' }: SearchBarProps) {
                     onClick={() => goTo(item.href)}
                     onMouseEnter={() => setSelectedIndex(i)}
                     className={`flex items-center gap-3 w-full px-4 py-2.5 text-left transition-colors ${
-                      i === selectedIndex ? 'bg-blue-50 text-blue-700' : 'text-zinc-600 hover:bg-zinc-50'
+                      i === selectedIndex ? 'bg-[var(--color-info)]/10 text-[var(--color-info)]' : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]'
                     }`}
                   >
-                    <ExternalLink className="h-3.5 w-3.5 shrink-0 text-zinc-300" />
+                    <ExternalLink className="h-3.5 w-3.5 shrink-0 text-[var(--color-text-muted)]" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{item.label}</p>
-                      <p className="text-[10px] text-zinc-400 truncate">
+                      <p className="text-[10px] text-[var(--color-text-muted)] truncate">
                         {item.section} &middot; {item.href}
                       </p>
                     </div>

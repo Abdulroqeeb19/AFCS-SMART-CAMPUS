@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   ListChecks,
   ClipboardCheck,
+  LogOut,
   Users,
   UserCheck,
   BookOpen,
@@ -22,6 +23,7 @@ import {
   Smartphone,
   CalendarDays,
   MessageSquare,
+  Bell,
   BellDot,
   type LucideIcon,
 } from 'lucide-react'
@@ -30,6 +32,7 @@ const iconMap: Record<string, LucideIcon> = {
   LayoutDashboard,
   ListChecks,
   ClipboardCheck,
+  LogOut,
   Users,
   UserCheck,
   BookOpen,
@@ -42,6 +45,7 @@ const iconMap: Record<string, LucideIcon> = {
   Smartphone,
   CalendarDays,
   MessageSquare,
+  Bell,
   BellDot,
 }
 import { cn } from '@/lib/utils'
@@ -89,7 +93,7 @@ export function Nav() {
       )}>
         {/* Logo area */}
         <Link href="/" className={cn(
-          'flex items-center border-b border-[var(--color-border-sidebar)] hover:bg-white/5 transition-colors',
+          'flex items-center border-b border-[var(--color-border-sidebar)] hover:bg-[var(--color-text-sidebar)]/5 transition-colors',
           sidebarCollapsed ? 'justify-center px-0 py-5' : 'gap-3 px-5 py-5'
         )}>
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--color-accent)] shrink-0">
@@ -123,7 +127,7 @@ export function Nav() {
                       'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-colors',
                       sectionActive
                         ? 'text-[var(--color-accent)]'
-                        : 'text-[var(--color-text-sidebar-muted)] hover:text-white hover:bg-white/10'
+                        : 'text-[var(--color-text-sidebar-muted)] hover:text-white hover:bg-[var(--color-text-sidebar)]/10'
                     )}
                   >
                     {open ? (
@@ -150,8 +154,8 @@ export function Nav() {
                               ? 'justify-center p-2.5 mx-auto w-11 h-11'
                               : 'gap-3 pl-7 pr-3 py-2',
                             active
-                              ? 'bg-white/10 text-white'
-                              : 'text-[var(--color-text-sidebar-muted)] hover:bg-white/5 hover:text-white'
+                              ? 'bg-[var(--color-text-sidebar)]/10 text-white'
+                              : 'text-[var(--color-text-sidebar-muted)] hover:bg-[var(--color-text-sidebar)]/5 hover:text-white'
                           )}
                           title={sidebarCollapsed ? item.label : undefined}
                         >
@@ -169,8 +173,8 @@ export function Nav() {
                             ? 'justify-center p-2.5 mx-auto w-11 h-11'
                             : 'gap-3 pl-7 pr-3 py-2',
                           isActive('/teacher-dashboard')
-                            ? 'bg-white/10 text-white'
-                            : 'text-[var(--color-text-sidebar-muted)] hover:bg-white/5 hover:text-white'
+                            ? 'bg-[var(--color-text-sidebar)]/10 text-white'
+                            : 'text-[var(--color-text-sidebar-muted)] hover:bg-[var(--color-text-sidebar)]/5 hover:text-white'
                         )}
                         title={sidebarCollapsed ? 'My Class' : undefined}
                       >
@@ -189,7 +193,7 @@ export function Nav() {
         <div className="p-2 border-t border-[var(--color-border-sidebar)]">
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className="flex w-full items-center justify-center gap-2 rounded-lg p-2 text-[var(--color-text-sidebar-muted)] hover:text-white hover:bg-white/10 transition-colors"
+            className="flex w-full items-center justify-center gap-2 rounded-lg p-2 text-[var(--color-text-sidebar-muted)] hover:text-white hover:bg-[var(--color-text-sidebar)]/10 transition-colors"
             title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             <Menu className="h-4 w-4 shrink-0" />
@@ -245,8 +249,8 @@ function MobileNav({
                     className={cn(
                       'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
                       pathname === item.href
-                        ? 'bg-white/10 text-white'
-                        : 'text-[var(--color-text-sidebar-muted)] hover:bg-white/5 hover:text-white'
+                        ? 'bg-[var(--color-text-sidebar)]/10 text-white'
+                        : 'text-[var(--color-text-sidebar-muted)] hover:bg-[var(--color-text-sidebar)]/5 hover:text-white'
                     )}
                   >
                     <Icon className="h-4 w-4" />
@@ -261,8 +265,8 @@ function MobileNav({
                   className={cn(
                     'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
                     pathname === '/teacher-dashboard'
-                      ? 'bg-white/10 text-white'
-                      : 'text-[var(--color-text-sidebar-muted)] hover:bg-white/5 hover:text-white'
+                      ? 'bg-[var(--color-text-sidebar)]/10 text-white'
+                      : 'text-[var(--color-text-sidebar-muted)] hover:bg-[var(--color-text-sidebar)]/5 hover:text-white'
                   )}
                 >
                   <GraduationCap className="h-4 w-4" />

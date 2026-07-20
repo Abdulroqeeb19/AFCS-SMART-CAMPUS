@@ -10,13 +10,13 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  success: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-  warning: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-  danger: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-  info: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  neutral: 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400',
+  success: 'bg-[var(--color-success)]/20 text-[var(--color-success)] dark:bg-[var(--color-success)]/20 dark:text-[var(--color-success)]',
+  warning: 'bg-[var(--color-warning)]/20 text-[var(--color-warning)] dark:bg-[var(--color-warning)]/20 dark:text-[var(--color-warning)]',
+  danger: 'bg-[var(--color-danger)]/20 text-[var(--color-danger)] dark:bg-[var(--color-danger)]/20 dark:text-[var(--color-danger)]',
+  info: 'bg-[var(--color-info)]/20 text-[var(--color-info)] dark:bg-[var(--color-info)]/20 dark:text-[var(--color-info)]',
+  neutral: 'bg-[var(--color-bg-muted)] text-[var(--color-text-secondary)] dark:bg-[var(--color-bg-muted)] dark:text-[var(--color-text-secondary)]',
   gold: 'bg-[var(--color-accent-light)] text-[var(--color-accent-hover)]',
-  default: 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400',
+  default: 'bg-[var(--color-bg-muted)] text-[var(--color-text-primary)] dark:bg-[var(--color-bg-muted)] dark:text-[var(--color-text-secondary)]',
 }
 
 export function Badge({ children, variant = 'neutral', className }: BadgeProps) {

@@ -7,15 +7,15 @@ export default function TeacherDashboardPage() {
       <div className="space-y-6 max-w-7xl mx-auto">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-[#001A4D]">Class Teacher Dashboard</h1>
-            <p className="text-zinc-500 text-sm mt-0.5">
+            <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Class Teacher Dashboard</h1>
+            <p className="text-[var(--color-text-secondary)] text-sm mt-0.5">
               Take attendance and submit activity reports for your class
             </p>
             <div className="flex items-center gap-2 mt-2">
-              <span className="h-1 w-8 rounded-full bg-[#001A4D]" />
-              <span className="h-1 w-8 rounded-full bg-[#C9A84C]" />
-              <span className="h-1 w-8 rounded-full bg-[#E03C31]" />
-              <span className="h-1 w-8 rounded-full bg-[#008751]" />
+              <span className="h-1 w-8 rounded-full bg-[var(--color-bg-sidebar)]" />
+              <span className="h-1 w-8 rounded-full bg-[var(--color-accent)]" />
+              <span className="h-1 w-8 rounded-full bg-[var(--color-danger)]" />
+              <span className="h-1 w-8 rounded-full bg-[var(--color-success)]" />
             </div>
           </div>
         </div>

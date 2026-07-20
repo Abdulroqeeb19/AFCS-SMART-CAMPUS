@@ -56,6 +56,8 @@ export function RosterContent() {
   const [editRosterId, setEditRosterId] = useState<string | null>(null)
   const [editNewStaffId, setEditNewStaffId] = useState('')
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [showAllRosters, setShowAllRosters] = useState(false)
+  const displayRosters = showAllRosters ? rosters : rosters.slice(0, 5)
 
   const weekRange = useMemo(() => getWeekDates(filterDate), [filterDate])
 
@@ -260,8 +262,8 @@ export function RosterContent() {
     return (
       <Card>
         <CardContent className="p-12 text-center">
-          <AlertCircle className="h-10 w-10 text-amber-400 mx-auto mb-3" />
-          <p className="text-zinc-500 text-sm mb-4">{error}</p>
+          <AlertCircle className="h-10 w-10 text-[var(--color-warning)] mx-auto mb-3" />
+          <p className="text-[var(--color-text-secondary)] text-sm mb-4">{error}</p>
           <Button onClick={loadData} variant="outline" className="gap-2"><RefreshCw className="h-4 w-4" /> Retry</Button>
         </CardContent>
       </Card>
@@ -280,52 +282,52 @@ export function RosterContent() {
     <div className="space-y-6">
       <div className="grid gap-4 grid-cols-3">
         <Card><CardContent className="p-4 text-center">
-          <p className="text-xs font-medium text-zinc-500 uppercase">Pending</p>
-          <p className="text-2xl font-bold text-amber-600">{pending}</p>
+          <p className="text-xs font-medium text-[var(--color-text-secondary)] uppercase">Pending</p>
+          <p className="text-2xl font-bold text-[var(--color-warning)]">{pending}</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
-          <p className="text-xs font-medium text-zinc-500 uppercase">Completed</p>
-          <p className="text-2xl font-bold text-emerald-600">{completed}</p>
+          <p className="text-xs font-medium text-[var(--color-text-secondary)] uppercase">Completed</p>
+          <p className="text-2xl font-bold text-[var(--color-success)]">{completed}</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
-          <p className="text-xs font-medium text-zinc-500 uppercase">Missed</p>
-          <p className="text-2xl font-bold text-red-600">{missed}</p>
+          <p className="text-xs font-medium text-[var(--color-text-secondary)] uppercase">Missed</p>
+          <p className="text-2xl font-bold text-[var(--color-danger)]">{missed}</p>
         </CardContent></Card>
       </div>
 
       <div className="flex items-center gap-3 flex-wrap">
         <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-zinc-400" />
+          <Filter className="h-4 w-4 text-[var(--color-text-muted)]" />
           <input
             type="date"
             value={filterDate}
             onChange={(e) => { setFilterDate(e.target.value); setLoading(true) }}
-            className="h-9 rounded-lg border border-zinc-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="h-9 rounded-lg border border-[var(--color-border-hover)] bg-[var(--color-bg-card)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring-focus)]"
           />
         </div>
         <select
           value={filterDuty}
           onChange={(e) => { setFilterDuty(e.target.value); setLoading(true) }}
-          className="h-9 rounded-lg border border-zinc-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="h-9 rounded-lg border border-[var(--color-border-hover)] bg-[var(--color-bg-card)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring-focus)]"
         >
           <option value="">All Duties</option>
           {dutyTypes.map((d) => (
             <option key={d.id} value={d.id}>{d.name}</option>
           ))}
         </select>
-        <div className="flex items-center border border-zinc-300 rounded-lg overflow-hidden">
+        <div className="flex items-center border border-[var(--color-border-hover)] rounded-lg overflow-hidden">
           <button
             onClick={() => setViewMode('table')}
-            className={`px-3 py-1.5 text-xs font-medium transition-colors ${viewMode === 'table' ? 'bg-blue-600 text-white' : 'bg-white text-zinc-600 hover:bg-zinc-50'}`}
+            className={`px-3 py-1.5 text-xs font-medium transition-colors ${viewMode === 'table' ? 'bg-[var(--color-info)] text-[var(--color-text-sidebar)]' : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]'}`}
           >Day</button>
           <button
             onClick={() => setViewMode('week')}
-            className={`px-3 py-1.5 text-xs font-medium transition-colors ${viewMode === 'week' ? 'bg-blue-600 text-white' : 'bg-white text-zinc-600 hover:bg-zinc-50'}`}
+            className={`px-3 py-1.5 text-xs font-medium transition-colors ${viewMode === 'week' ? 'bg-[var(--color-info)] text-[var(--color-text-sidebar)]' : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]'}`}
           >Week</button>
         </div>
         {isAdminOrCommandant && (
           <>
-            <Button onClick={handleAutoAssignWeek} variant="outline" size="sm" className="gap-2 border-amber-300 text-amber-700 hover:bg-amber-50">
+            <Button onClick={handleAutoAssignWeek} variant="outline" size="sm" className="gap-2 border-[var(--color-warning)]/40 text-[var(--color-warning)] hover:bg-[var(--color-warning)]/10">
               <Wand2 className="h-4 w-4" /> Assign Inspection Duty
             </Button>
             <Button onClick={handleGenerateAll} variant="outline" size="sm" className="gap-2">
@@ -338,7 +340,7 @@ export function RosterContent() {
               <List className="h-4 w-4" /> {showTypeManager ? 'Close Types' : 'Manage Types'}
             </Button>
             {rosters.length > 0 && (
-              <Button onClick={handleDeleteAll} variant="outline" size="sm" className="gap-2 border-red-300 text-red-600 hover:bg-red-50">
+              <Button onClick={handleDeleteAll} variant="outline" size="sm" className="gap-2 border-[var(--color-danger)]/40 text-[var(--color-danger)] hover:bg-[var(--color-danger)]/10">
                 <Trash2 className="h-4 w-4" /> Delete All
               </Button>
             )}
@@ -347,21 +349,21 @@ export function RosterContent() {
       </div>
 
       {showAddForm && (
-        <Card className="border-emerald-200">
+        <Card className="border-[var(--color-success)]/30">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-sm">
-              <Plus className="h-4 w-4 text-emerald-500" />
+              <Plus className="h-4 w-4 text-[var(--color-success)]" />
               New Duty Assignment
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-zinc-600">Staff</label>
+                <label className="text-xs font-medium text-[var(--color-text-secondary)]">Staff</label>
                 <select
                   value={addStaffId}
                   onChange={(e) => setAddStaffId(e.target.value)}
-                  className="h-9 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="h-9 w-full rounded-lg border border-[var(--color-border-hover)] bg-[var(--color-bg-card)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring-focus)]"
                 >
                   <option value="">Select staff...</option>
                   {allStaff.map((s) => (
@@ -370,11 +372,11 @@ export function RosterContent() {
                 </select>
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-zinc-600">Duty Type</label>
+                <label className="text-xs font-medium text-[var(--color-text-secondary)]">Duty Type</label>
                 <select
                   value={addDutyTypeId}
                   onChange={(e) => setAddDutyTypeId(e.target.value)}
-                  className="h-9 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="h-9 w-full rounded-lg border border-[var(--color-border-hover)] bg-[var(--color-bg-card)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring-focus)]"
                 >
                   <option value="">Select duty...</option>
                   {dutyTypes.map((d) => (
@@ -383,12 +385,12 @@ export function RosterContent() {
                 </select>
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-zinc-600">Date</label>
+                <label className="text-xs font-medium text-[var(--color-text-secondary)]">Date</label>
                 <input
                   type="date"
                   value={addDate}
                   onChange={(e) => setAddDate(e.target.value)}
-                  className="h-9 w-full rounded-lg border border-zinc-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="h-9 w-full rounded-lg border border-[var(--color-border-hover)] bg-[var(--color-bg-card)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring-focus)]"
                 />
               </div>
               <div className="flex items-end gap-2">
@@ -403,10 +405,10 @@ export function RosterContent() {
       )}
 
       {showTypeManager && (
-        <Card className="border-blue-200">
+        <Card className="border-[var(--color-info)]/30">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-sm">
-              <List className="h-4 w-4 text-blue-500" />
+              <List className="h-4 w-4 text-[var(--color-info)]" />
               Duty Types Management
             </CardTitle>
           </CardHeader>
@@ -417,10 +419,10 @@ export function RosterContent() {
               <Input label="Description" placeholder="Brief description" value={newTypeDesc}
                 onChange={(e) => setNewTypeDesc(e.target.value)} />
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-zinc-700">Color</label>
+                <label className="text-sm font-medium text-[var(--color-text-primary)]">Color</label>
                 <input type="color" value={newTypeColor}
                   onChange={(e) => setNewTypeColor(e.target.value)}
-                  className="h-10 w-full rounded-lg border border-zinc-300 bg-white p-1 cursor-pointer" />
+                  className="h-10 w-full rounded-lg border border-[var(--color-border-hover)] bg-[var(--color-bg-card)] p-1 cursor-pointer" />
               </div>
               <div className="flex items-end">
                 <Button onClick={handleAddType} size="sm" className="gap-1.5">
@@ -429,7 +431,7 @@ export function RosterContent() {
               </div>
             </div>
 
-            <div className="divide-y divide-zinc-100">
+            <div className="divide-y divide-[var(--color-border)]">
               {dutyTypes.map((dt) => (
                 <div key={dt.id} className="flex items-center justify-between py-2">
                   <div className="flex items-center gap-3">
@@ -438,19 +440,19 @@ export function RosterContent() {
                       <div className="flex items-center gap-2">
                         <input type="text" value={editTypeName}
                           onChange={(e) => setEditTypeName(e.target.value)}
-                          className="h-8 rounded border border-blue-300 px-2 text-sm w-40 focus:outline-none focus:ring-1 focus:ring-blue-500" />
-                        <button onClick={() => handleRenameType(dt.id)} className="text-emerald-600 hover:text-emerald-800">
+                          className="h-8 rounded border border-[var(--color-info)]/40 px-2 text-sm w-40 focus:outline-none focus:ring-1 focus:ring-[var(--color-ring-focus)]" />
+                        <button onClick={() => handleRenameType(dt.id)} className="text-[var(--color-success)] hover:text-[var(--color-success)]">
                           <Check className="h-4 w-4" />
                         </button>
-                        <button onClick={() => setEditTypeId(null)} className="text-zinc-400 hover:text-zinc-600">
+                        <button onClick={() => setEditTypeId(null)} className="text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]">
                           <X className="h-4 w-4" />
                         </button>
                       </div>
                     ) : (
                       <>
-                        <span className="text-sm font-medium text-zinc-800">{dt.name}</span>
+                        <span className="text-sm font-medium text-[var(--color-text-primary)]">{dt.name}</span>
                         {dt.description && (
-                          <span className="text-xs text-zinc-400 hidden sm:inline">{dt.description}</span>
+                          <span className="text-xs text-[var(--color-text-muted)] hidden sm:inline">{dt.description}</span>
                         )}
                       </>
                     )}
@@ -458,11 +460,11 @@ export function RosterContent() {
                   {editTypeId !== dt.id && (
                     <div className="flex items-center gap-1">
                       <button onClick={() => { setEditTypeId(dt.id); setEditTypeName(dt.name) }}
-                        className="p-1 text-zinc-400 hover:text-blue-600 transition-colors">
+                        className="p-1 text-[var(--color-text-muted)] hover:text-[var(--color-info)] transition-colors">
                         <Pencil className="h-3.5 w-3.5" />
                       </button>
                       <button onClick={() => handleDeleteType(dt.id)}
-                        className="p-1 text-zinc-400 hover:text-red-600 transition-colors">
+                        className="p-1 text-[var(--color-text-muted)] hover:text-[var(--color-danger)] transition-colors">
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>
@@ -480,12 +482,12 @@ export function RosterContent() {
             <CardTitle className="text-sm flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span>{rosterTitle}</span>
-                <span className="text-xs font-normal text-zinc-400">{rosters.length} assignment{rosters.length !== 1 ? 's' : ''}</span>
+                <span className="text-xs font-normal text-[var(--color-text-muted)]">{rosters.length} assignment{rosters.length !== 1 ? 's' : ''}</span>
               </div>
               {isAdminOrCommandant && selectedIds.size > 0 && (
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-zinc-500">{selectedIds.size} selected</span>
-                  <Button onClick={handleDeleteSelected} size="sm" variant="outline" className="gap-1.5 text-red-600 border-red-300 hover:bg-red-50 text-xs h-7">
+                  <span className="text-xs text-[var(--color-text-secondary)]">{selectedIds.size} selected</span>
+                  <Button onClick={handleDeleteSelected} size="sm" variant="outline" className="gap-1.5 text-[var(--color-danger)] border-[var(--color-danger)]/40 hover:bg-[var(--color-danger)]/10 text-xs h-7">
                     <Trash2 className="h-3 w-3" /> Delete Selected
                   </Button>
                 </div>
@@ -496,14 +498,14 @@ export function RosterContent() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-zinc-200 text-left text-sm text-zinc-500">
+                  <tr className="border-b border-[var(--color-border)] text-left text-sm text-[var(--color-text-secondary)]">
                     {isAdminOrCommandant && (
                       <th className="px-4 py-3 w-10">
                         <input
                           type="checkbox"
                           checked={rosters.length > 0 && selectedIds.size === rosters.length}
                           onChange={toggleSelectAll}
-                          className="h-4 w-4 rounded border-zinc-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                          className="h-4 w-4 rounded border-[var(--color-border-hover)] text-[var(--color-info)] focus:ring-[var(--color-ring-focus)] cursor-pointer"
                         />
                       </th>
                     )}
@@ -514,16 +516,16 @@ export function RosterContent() {
                     {isAdminOrCommandant && <th className="px-6 py-3 font-medium">Actions</th>}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-100">
-                  {rosters.map((r) => (
-                    <tr key={r.id} className={`text-sm transition-colors ${selectedIds.has(r.id) ? 'bg-blue-50' : 'hover:bg-zinc-50'}`}>
+                <tbody className="divide-y divide-[var(--color-border)]">
+                  {displayRosters.map((r) => (
+                    <tr key={r.id} className={`text-sm transition-colors ${selectedIds.has(r.id) ? 'bg-[var(--color-info)]/10' : 'hover:bg-[var(--color-bg-hover)]'}`}>
                       {isAdminOrCommandant && (
                         <td className="px-4 py-3">
                           <input
                             type="checkbox"
                             checked={selectedIds.has(r.id)}
                             onChange={() => toggleSelect(r.id)}
-                            className="h-4 w-4 rounded border-zinc-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                            className="h-4 w-4 rounded border-[var(--color-border-hover)] text-[var(--color-info)] focus:ring-[var(--color-ring-focus)] cursor-pointer"
                           />
                         </td>
                       )}
@@ -533,20 +535,20 @@ export function RosterContent() {
                             <select
                               value={editNewStaffId}
                               onChange={(e) => setEditNewStaffId(e.target.value)}
-                              className="text-xs border border-zinc-300 rounded px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              className="text-xs border border-[var(--color-border-hover)] rounded px-2 py-1 bg-[var(--color-bg-card)] focus:outline-none focus:ring-1 focus:ring-[var(--color-ring-focus)]"
                             >
                               <option value="">Select...</option>
                               {allStaff.map((s) => (
                                 <option key={s.id} value={s.id}>{s.full_name} ({s.staff_id})</option>
                               ))}
                             </select>
-                            <button onClick={() => handleEditStaff(r.id)} className="text-emerald-600 hover:text-emerald-800 text-xs font-medium">Save</button>
-                            <button onClick={() => setEditRosterId(null)} className="text-zinc-400 hover:text-zinc-600 text-xs">Cancel</button>
+                            <button onClick={() => handleEditStaff(r.id)} className="text-[var(--color-success)] hover:text-[var(--color-success)] text-xs font-medium">Save</button>
+                            <button onClick={() => setEditRosterId(null)} className="text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] text-xs">Cancel</button>
                           </div>
                         ) : (
                           <div>
-                            <span className="font-medium text-zinc-900">{r.staff?.full_name || 'Unknown'}</span>
-                            <p className="text-xs text-zinc-400">{r.staff?.staff_id}</p>
+                            <span className="font-medium text-[var(--color-text-primary)]">{r.staff?.full_name || 'Unknown'}</span>
+                            <p className="text-xs text-[var(--color-text-muted)]">{r.staff?.staff_id}</p>
                           </div>
                         )}
                       </td>
@@ -556,13 +558,13 @@ export function RosterContent() {
                           <span>DUTY: {r.duty_type?.name || 'Unknown'}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-3 text-zinc-600">{r.date}</td>
+                      <td className="px-6 py-3 text-[var(--color-text-secondary)]">{r.date}</td>
                       <td className="px-6 py-3">
                         {isAdminOrCommandant ? (
                           <select
                             value={r.status}
                             onChange={(e) => handleStatusChange(r.id, e.target.value)}
-                            className="text-xs border border-zinc-300 rounded px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="text-xs border border-[var(--color-border-hover)] rounded px-2 py-1 bg-[var(--color-bg-card)] focus:outline-none focus:ring-1 focus:ring-[var(--color-ring-focus)]"
                           >
                             <option value="pending">Pending</option>
                             <option value="completed">Completed</option>
@@ -570,9 +572,9 @@ export function RosterContent() {
                           </select>
                         ) : (
                           <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                            r.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
-                            r.status === 'missed' ? 'bg-red-100 text-red-700' :
-                            'bg-amber-100 text-amber-700'
+                            r.status === 'completed' ? 'bg-[var(--color-success)]/20 text-[var(--color-success)]' :
+                            r.status === 'missed' ? 'bg-[var(--color-danger)]/20 text-[var(--color-danger)]' :
+                            'bg-[var(--color-warning)]/20 text-[var(--color-warning)]'
                           }`}>
                             {r.status.charAt(0).toUpperCase() + r.status.slice(1)}
                           </span>
@@ -585,14 +587,14 @@ export function RosterContent() {
                               <>
                                 <button
                                   onClick={() => { setEditRosterId(r.id); setEditNewStaffId(r.staff_id) }}
-                                  className="p-1 text-zinc-400 hover:text-blue-600 transition-colors"
+                                  className="p-1 text-[var(--color-text-muted)] hover:text-[var(--color-info)] transition-colors"
                                   title="Change staff"
                                 >
                                   <Users className="h-3.5 w-3.5" />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteRoster(r.id)}
-                                  className="p-1 text-zinc-400 hover:text-red-600 transition-colors"
+                                  className="p-1 text-[var(--color-text-muted)] hover:text-[var(--color-danger)] transition-colors"
                                   title="Remove assignment"
                                 >
                                   <Trash2 className="h-3.5 w-3.5" />
@@ -605,6 +607,24 @@ export function RosterContent() {
                     </tr>
                   ))}
                 </tbody>
+                {rosters.length > 5 && (
+                  <tfoot>
+                    <tr>
+                      <td colSpan={99} className="text-center py-2">
+                        <button
+                          onClick={() => setShowAllRosters(!showAllRosters)}
+                          className="flex items-center gap-1 mx-auto py-1.5 px-3 text-xs font-medium text-[var(--color-info)] hover:text-[var(--color-info)] hover:bg-[var(--color-info)]/10 rounded-lg transition-colors"
+                        >
+                          {showAllRosters ? (
+                            <>Show less</>
+                          ) : (
+                            <>Show {rosters.length - 5} more</>
+                          )}
+                        </button>
+                      </td>
+                    </tr>
+                  </tfoot>
+                )}
               </table>
             </div>
           </CardContent>
@@ -613,9 +633,9 @@ export function RosterContent() {
         <Card>
           <CardHeader><CardTitle>{rosterTitle}</CardTitle></CardHeader>
           <CardContent>
-            <div className="flex flex-col items-center justify-center py-16 text-zinc-400">
+            <div className="flex flex-col items-center justify-center py-16 text-[var(--color-text-muted)]">
               <CalendarPlus className="h-14 w-14 mb-3 stroke-1" />
-              <p className="text-sm font-medium text-zinc-500">No duty rosters found</p>
+              <p className="text-sm font-medium text-[var(--color-text-secondary)]">No duty rosters found</p>
               <p className="text-xs mt-1">Use <strong>Assign Inspection Duty</strong> or <strong>Add Assignment</strong> to get started</p>
             </div>
           </CardContent>

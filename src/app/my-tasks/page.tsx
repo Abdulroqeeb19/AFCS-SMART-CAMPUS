@@ -1,5 +1,6 @@
 'use client'
 
+import { CollapsibleSection } from '@/components/collapsible-section'
 import { useEffect, useState, useMemo } from 'react'
 import { useAuth } from '@/contexts/auth-context'
 import { Card, CardContent } from '@/components/ui/card'
@@ -155,11 +156,11 @@ export default function DailyTodoPage() {
     const sortByDateDesc = (a: TaskItem, b: TaskItem) => new Date(b.date).getTime() - new Date(a.date).getTime()
 
     return [
-      ...(overdue.length ? [{ label: 'Overdue', color: 'text-red-600 border-red-300', items: overdue.sort(sortByPriorityThenDeadline) }] : []),
-      ...(pending.length ? [{ label: 'Pending', color: 'text-amber-600 border-amber-300', items: pending.sort(sortByPriorityThenDeadline) }] : []),
-      ...(inProgress.length ? [{ label: 'In Progress', color: 'text-blue-600 border-blue-300', items: inProgress.sort(sortByPriorityThenDeadline) }] : []),
-      ...(completed.length ? [{ label: 'Completed', color: 'text-emerald-600 border-emerald-300', items: completed.sort(sortByDateDesc) }] : []),
-      ...(cancelled.length ? [{ label: 'Cancelled', color: 'text-zinc-400 border-zinc-300', items: cancelled.sort(sortByDateDesc) }] : []),
+      ...(overdue.length ? [{ label: 'Overdue', color: 'text-[var(--color-danger)] border-[var(--color-danger)]/40', items: overdue.sort(sortByPriorityThenDeadline) }] : []),
+      ...(pending.length ? [{ label: 'Pending', color: 'text-[var(--color-warning)] border-[var(--color-warning)]/40', items: pending.sort(sortByPriorityThenDeadline) }] : []),
+      ...(inProgress.length ? [{ label: 'In Progress', color: 'text-[var(--color-info)] border-[var(--color-info)]/40', items: inProgress.sort(sortByPriorityThenDeadline) }] : []),
+      ...(completed.length ? [{ label: 'Completed', color: 'text-[var(--color-success)] border-[var(--color-success)]/40', items: completed.sort(sortByDateDesc) }] : []),
+      ...(cancelled.length ? [{ label: 'Cancelled', color: 'text-[var(--color-text-muted)] border-[var(--color-border-hover)]', items: cancelled.sort(sortByDateDesc) }] : []),
     ]
   }, [filtered])
 
@@ -179,33 +180,33 @@ export default function DailyTodoPage() {
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       <div>
-        <h1 className="text-2xl font-bold text-[#001A4D]">Daily To-Do</h1>
-        <p className="text-zinc-500 text-sm mt-0.5">Your personal daily checklist</p>
+        <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Daily To-Do</h1>
+        <p className="text-[var(--color-text-secondary)] text-sm mt-0.5">Your personal daily checklist</p>
         <div className="flex items-center gap-2 mt-2">
-          <span className="h-1 w-8 rounded-full bg-[#001A4D]" />
-          <span className="h-1 w-8 rounded-full bg-[#C9A84C]" />
-          <span className="h-1 w-8 rounded-full bg-[#E03C31]" />
-          <span className="h-1 w-8 rounded-full bg-[#008751]" />
+          <span className="h-1 w-8 rounded-full bg-[var(--color-bg-sidebar)]" />
+          <span className="h-1 w-8 rounded-full bg-[var(--color-accent)]" />
+          <span className="h-1 w-8 rounded-full bg-[var(--color-danger)]" />
+          <span className="h-1 w-8 rounded-full bg-[var(--color-success)]" />
         </div>
       </div>
 
       <div className="grid gap-4 grid-cols-3">
         <Card><CardContent className="p-4 text-center">
-          <p className="text-xs font-medium text-zinc-500 uppercase">Total</p>
-          <p className="text-2xl font-bold text-blue-600">{tasks.length}</p>
+          <p className="text-xs font-medium text-[var(--color-text-secondary)] uppercase">Total</p>
+          <p className="text-2xl font-bold text-[var(--color-info)]">{tasks.length}</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
-          <p className="text-xs font-medium text-zinc-500 uppercase">Active</p>
-          <p className="text-2xl font-bold text-amber-600">{pendingCount}</p>
+          <p className="text-xs font-medium text-[var(--color-text-secondary)] uppercase">Active</p>
+          <p className="text-2xl font-bold text-[var(--color-warning)]">{pendingCount}</p>
         </CardContent></Card>
         <Card><CardContent className="p-4 text-center">
-          <p className="text-xs font-medium text-zinc-500 uppercase">Completed</p>
-          <p className="text-2xl font-bold text-emerald-600">{completedCount}</p>
+          <p className="text-xs font-medium text-[var(--color-text-secondary)] uppercase">Completed</p>
+          <p className="text-2xl font-bold text-[var(--color-success)]">{completedCount}</p>
         </CardContent></Card>
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        <div className="flex items-center gap-2 rounded-lg bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 px-4 py-3 text-sm text-[var(--color-danger)]">
           <AlertCircle className="h-4 w-4 shrink-0" />
           {error}
           <Button onClick={loadTasks} variant="ghost" size="sm" className="ml-auto gap-1">
@@ -214,7 +215,7 @@ export default function DailyTodoPage() {
         </div>
       )}
 
-      <Card className="border-emerald-200 bg-emerald-50/50">
+      <Card className="border-[var(--color-success)]/30 bg-[var(--color-success)]/10">
         <CardContent className="p-4">
           <form onSubmit={(e) => { e.preventDefault(); handleAddTodo() }} className="flex items-center gap-2">
             <input
@@ -222,7 +223,7 @@ export default function DailyTodoPage() {
               placeholder="Add a new to-do item..."
               value={newTodo}
               onChange={(e) => setNewTodo(e.target.value)}
-              className="flex-1 h-10 rounded-lg border border-emerald-300 bg-white px-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="flex-1 h-10 rounded-lg border border-[var(--color-success)]/40 bg-[var(--color-bg-card)] px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-success)]"
             />
             <Button type="submit" size="sm" className="gap-1.5 h-10" disabled={adding || !newTodo.trim()}>
               {adding ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
@@ -233,15 +234,15 @@ export default function DailyTodoPage() {
       </Card>
 
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        <div className="flex gap-1 rounded-xl bg-zinc-100 p-1">
+        <div className="flex gap-1 rounded-xl bg-[var(--color-bg-muted)] p-1">
           {STATUS_TABS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setStatusFilter(tab.id)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 statusFilter === tab.id
-                  ? 'bg-white text-zinc-900 shadow-sm'
-                  : 'text-zinc-500 hover:text-zinc-800'
+                  ? 'bg-[var(--color-bg-card)] text-[var(--color-text-primary)] shadow-sm'
+                  : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
               }`}
             >
               {tab.label}
@@ -261,13 +262,13 @@ export default function DailyTodoPage() {
       {filtered.length === 0 && !error && (
         <Card>
           <CardContent className="p-12 text-center">
-            <ListChecks className="h-14 w-14 text-zinc-300 mx-auto mb-3 stroke-1" />
-            <p className="text-sm font-medium text-zinc-500">
+            <ListChecks className="h-14 w-14 text-[var(--color-text-muted)] mx-auto mb-3 stroke-1" />
+            <p className="text-sm font-medium text-[var(--color-text-secondary)]">
               {statusFilter !== 'all'
                 ? 'No tasks match the current filter'
                 : 'Nothing on your to-do list yet'}
             </p>
-            <p className="text-xs text-zinc-400 mt-1">
+            <p className="text-xs text-[var(--color-text-muted)] mt-1">
               {statusFilter !== 'all'
                 ? 'Try adjusting the filter above'
                 : 'Add an item using the input above'}
@@ -280,26 +281,29 @@ export default function DailyTodoPage() {
         {grouped.map((section) => (
           <div key={section.label}>
             <div className={`flex items-center gap-2 mb-3 border-l-4 ${section.color} pl-3`}>
-              <h3 className="text-sm font-semibold text-zinc-700">{section.label}</h3>
-              <span className="text-xs text-zinc-400">({section.items.length})</span>
+              <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">{section.label}</h3>
+              <span className="text-xs text-[var(--color-text-muted)]">({section.items.length})</span>
             </div>
 
-            <div className="space-y-2">
-              {section.items.map((task) => {
+            <CollapsibleSection
+              items={section.items}
+              defaultVisible={5}
+              keyExtractor={(t) => t.id}
+              renderItem={(task) => {
                 const isOverdue = task.deadline && new Date(task.deadline) < new Date() && task.status !== 'completed' && task.status !== 'cancelled'
 
                 return (
-                  <Card key={`${task.type}-${task.id}`} className={`${isOverdue ? 'border-red-300 bg-red-50/40' : ''}`}>
+                  <Card className={`${isOverdue ? 'border-[var(--color-danger)]/40 bg-[var(--color-danger)]/10/40' : ''}`}>
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
                         <button
                           onClick={() => updateTaskStatus(task, task.status === 'completed' ? 'pending' : 'completed')}
                           className={`mt-0.5 rounded-full p-1 transition-colors ${
                             task.status === 'completed'
-                              ? 'text-emerald-500'
+                              ? 'text-[var(--color-success)]'
                               : task.status === 'cancelled'
-                                ? 'text-zinc-300 cursor-not-allowed'
-                                : 'text-zinc-300 hover:text-emerald-400'
+                                ? 'text-[var(--color-text-muted)] cursor-not-allowed'
+                                : 'text-[var(--color-text-muted)] hover:text-[var(--color-success)]'
                           }`}
                           disabled={task.status === 'cancelled'}
                         >
@@ -310,8 +314,8 @@ export default function DailyTodoPage() {
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className={`text-sm font-medium ${
                               task.status === 'completed' || task.status === 'cancelled'
-                                ? 'line-through text-zinc-400'
-                                : 'text-zinc-900'
+                                ? 'line-through text-[var(--color-text-muted)]'
+                                : 'text-[var(--color-text-primary)]'
                             }`}>
                               {task.description}
                             </span>
@@ -325,18 +329,18 @@ export default function DailyTodoPage() {
                             </Badge>
                           </div>
 
-                          <div className="flex items-center gap-3 mt-1.5 text-xs text-zinc-400">
+                          <div className="flex items-center gap-3 mt-1.5 text-xs text-[var(--color-text-muted)]">
                             <span className="flex items-center gap-1">
                               {task.type === 'parade_task'
-                                ? <Shield className="h-3 w-3 text-blue-400" />
-                                : <Calendar className="h-3 w-3 text-amber-400" />}
+                                ? <Shield className="h-3 w-3 text-[var(--color-info)]" />
+                                : <Calendar className="h-3 w-3 text-[var(--color-warning)]" />}
                               {task.source}
                             </span>
                             <span className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" /> {task.date || '—'}
                             </span>
                             {task.deadline && (
-                              <span className={`flex items-center gap-1 ${isOverdue ? 'text-red-500 font-medium' : ''}`}>
+                              <span className={`flex items-center gap-1 ${isOverdue ? 'text-[var(--color-danger)] font-medium' : ''}`}>
                                 <Clock className="h-3 w-3" /> Due: {format(new Date(task.deadline), 'MMM d')}
                                 {isOverdue && ' (Overdue)'}
                               </span>
@@ -356,7 +360,7 @@ export default function DailyTodoPage() {
                           {task.status === 'in_progress' && (
                             <Button
                               onClick={() => updateTaskStatus(task, 'completed')}
-                              size="sm" variant="ghost" className="text-xs h-7 text-emerald-600"
+                              size="sm" variant="ghost" className="text-xs h-7 text-[var(--color-success)]"
                             >
                               Done
                             </Button>
@@ -364,7 +368,7 @@ export default function DailyTodoPage() {
                           {task.type === 'parade_task' && (
                             <Button
                               onClick={() => handleDeleteTodo(task)}
-                              size="sm" variant="ghost" className="text-xs h-7 text-red-400 hover:text-red-600"
+                              size="sm" variant="ghost" className="text-xs h-7 text-[var(--color-danger)] hover:text-[var(--color-danger)]"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </Button>
@@ -374,8 +378,8 @@ export default function DailyTodoPage() {
                     </CardContent>
                   </Card>
                 )
-              })}
-            </div>
+              }}
+            />
           </div>
         ))}
       </div>

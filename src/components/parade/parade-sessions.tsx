@@ -37,7 +37,7 @@ export function ParadeSessions({ sessions, loading, onStart, onComplete, onCance
     return (
       <div className="space-y-3">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-24 animate-pulse rounded-xl bg-zinc-100" />
+          <div key={i} className="h-24 animate-pulse rounded-xl bg-[var(--color-bg-muted)]" />
         ))}
       </div>
     )
@@ -47,9 +47,9 @@ export function ParadeSessions({ sessions, loading, onStart, onComplete, onCance
     return (
       <Card>
         <CardContent className="p-12 text-center">
-          <Shield className="h-14 w-14 text-zinc-300 mx-auto mb-3 stroke-1" />
-          <p className="text-sm font-medium text-zinc-500">No parade sessions</p>
-          <p className="text-xs text-zinc-400 mt-1">Create a new parade session to get started</p>
+          <Shield className="h-14 w-14 text-[var(--color-text-muted)] mx-auto mb-3 stroke-1" />
+          <p className="text-sm font-medium text-[var(--color-text-secondary)]">No parade sessions</p>
+          <p className="text-xs text-[var(--color-text-muted)] mt-1">Create a new parade session to get started</p>
           {isAdminOrCommandant && onCreate && (
             <Button onClick={onCreate} className="mt-4 gap-2">
               <Shield className="h-4 w-4" /> New Parade
@@ -79,12 +79,12 @@ export function ParadeSessions({ sessions, loading, onStart, onComplete, onCance
               <CardContent className="p-4">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-3">
-                    <div className="rounded-full p-2.5 bg-blue-100 mt-0.5">
-                      <Shield className="h-5 w-5 text-blue-600" />
+                    <div className="rounded-full p-2.5 bg-[var(--color-info)]/20 mt-0.5">
+                      <Shield className="h-5 w-5 text-[var(--color-info)]" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-semibold text-zinc-900 text-sm">
+                        <h3 className="font-semibold text-[var(--color-text-primary)] text-sm">
                           {typeConfig[session.type as keyof typeof typeConfig]}
                         </h3>
                         <Badge variant={statusConfig[session.status as keyof typeof statusConfig].variant}>
@@ -92,13 +92,13 @@ export function ParadeSessions({ sessions, loading, onStart, onComplete, onCance
                           {statusConfig[session.status as keyof typeof statusConfig].label}
                         </Badge>
                       </div>
-                      <p className="text-xs text-zinc-500 mt-1">
+                      <p className="text-xs text-[var(--color-text-secondary)] mt-1">
                         {session.date} &middot; {session.conductor ? `Conducted by ${session.conductor.full_name}` : 'No conductor assigned'}
                       </p>
                       {session.notes && (
-                        <p className="text-xs text-zinc-400 mt-2 line-clamp-2">{session.notes}</p>
+                        <p className="text-xs text-[var(--color-text-muted)] mt-2 line-clamp-2">{session.notes}</p>
                       )}
-                      <div className="flex items-center gap-4 mt-3 text-xs text-zinc-400">
+                      <div className="flex items-center gap-4 mt-3 text-xs text-[var(--color-text-muted)]">
                         <span className="flex items-center gap-1">
                           <Users className="h-3 w-3" /> {ackCount} acknowledged
                         </span>
@@ -119,7 +119,7 @@ export function ParadeSessions({ sessions, loading, onStart, onComplete, onCance
                         </Button>
                       )}
                       {onCancel && (
-                        <Button onClick={() => onCancel(session.id)} size="sm" variant="outline" className="gap-1.5 text-red-600">
+                        <Button onClick={() => onCancel(session.id)} size="sm" variant="outline" className="gap-1.5 text-[var(--color-danger)]">
                           <XCircle className="h-3.5 w-3.5" /> Cancel
                         </Button>
                       )}

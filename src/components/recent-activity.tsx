@@ -7,9 +7,9 @@ import { formatTime } from '@/lib/utils'
 import type { StaffAttendance } from '@/lib/database.types'
 
 const statusColor = {
-  present: 'text-emerald-600',
-  late: 'text-amber-600',
-  absent: 'text-red-600',
+  present: 'text-[var(--color-success)]',
+  late: 'text-[var(--color-warning)]',
+  absent: 'text-[var(--color-danger)]',
 }
 
 interface RecentActivityProps {
@@ -27,12 +27,12 @@ export function RecentActivity({ records }: RecentActivityProps) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Activity className="h-4 w-4 text-blue-500" />
+            <Activity className="h-4 w-4 text-[var(--color-info)]" />
             Recent Activity
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-center justify-center py-8 text-zinc-400">
+          <div className="flex flex-col items-center justify-center py-8 text-[var(--color-text-muted)]">
             <Activity className="h-10 w-10 mb-2" />
             <p className="text-sm">No recent activity</p>
           </div>
@@ -45,7 +45,7 @@ export function RecentActivity({ records }: RecentActivityProps) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Activity className="h-4 w-4 text-blue-500" />
+          <Activity className="h-4 w-4 text-[var(--color-info)]" />
           Recent Activity
         </CardTitle>
       </CardHeader>
@@ -55,7 +55,7 @@ export function RecentActivity({ records }: RecentActivityProps) {
             <div key={record.id} className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2 min-w-0">
                 <Clock className={`h-3.5 w-3.5 shrink-0 ${statusColor[record.status as keyof typeof statusColor]}`} />
-                <span className="text-zinc-700 truncate">
+                <span className="text-[var(--color-text-primary)] truncate">
                   {record.staff?.full_name || 'Unknown'}
                 </span>
                 <Badge
@@ -65,7 +65,7 @@ export function RecentActivity({ records }: RecentActivityProps) {
                   {record.status}
                 </Badge>
               </div>
-              <span className="text-zinc-400 text-xs whitespace-nowrap ml-2">
+              <span className="text-[var(--color-text-muted)] text-xs whitespace-nowrap ml-2">
                 {record.check_in ? formatTime(record.check_in) : ''}
               </span>
             </div>

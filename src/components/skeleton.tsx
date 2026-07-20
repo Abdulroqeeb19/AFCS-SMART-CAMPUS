@@ -4,7 +4,7 @@ export function Skeleton({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'animate-pulse rounded-md bg-zinc-200',
+        'animate-pulse rounded-md bg-[var(--color-bg-muted)]',
         className
       )}
     />
@@ -15,7 +15,7 @@ export function StatsSkeleton() {
   return (
     <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="rounded-xl border border-zinc-200 bg-white p-6">
+        <div key={i} className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)] p-6">
           <Skeleton className="h-4 w-20 mb-2" />
           <Skeleton className="h-8 w-12" />
         </div>
@@ -26,7 +26,7 @@ export function StatsSkeleton() {
 
 export function TableSkeleton({ rows = 5 }: { rows?: number }) {
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white">
+    <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)]">
       <div className="p-6 pb-3">
         <Skeleton className="h-5 w-40" />
       </div>
@@ -55,7 +55,7 @@ export function TimetableSkeleton() {
         </div>
         <Skeleton className="h-10 w-24 rounded-lg" />
       </div>
-      <div className="bg-white rounded-xl border border-zinc-200 p-4">
+      <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-4">
         <div className="flex flex-wrap gap-3">
           <Skeleton className="h-10 w-48 rounded-lg" />
           <Skeleton className="h-10 w-36 rounded-lg" />
@@ -64,7 +64,7 @@ export function TimetableSkeleton() {
           <Skeleton className="h-10 w-40 rounded-lg ml-auto" />
         </div>
       </div>
-      <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white">
+      <div className="overflow-x-auto rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-card)]">
         <div className="p-8 space-y-4">
           {Array.from({ length: 10 }).map((_, i) => (
             <div key={i} className="flex gap-4">

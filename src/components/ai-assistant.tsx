@@ -14,8 +14,8 @@ function renderMarkdown(text: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
   html = html
-    .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre class="bg-zinc-900 text-zinc-100 text-xs rounded-lg p-3 my-2 overflow-x-auto"><code>$2</code></pre>')
-    .replace(/`([^`]+)`/g, '<code class="bg-zinc-100 text-zinc-800 px-1.5 py-0.5 rounded text-xs">$1</code>')
+    .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre class="bg-[var(--color-bg-sidebar)] text-[var(--color-text-sidebar)] text-xs rounded-lg p-3 my-2 overflow-x-auto"><code>$2</code></pre>')
+    .replace(/`([^`]+)`/g, '<code class="bg-[var(--color-bg-muted)] text-[var(--color-text-primary)] px-1.5 py-0.5 rounded text-xs">$1</code>')
     .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
@@ -112,7 +112,7 @@ export function AiAssistant() {
       {/* Floating button */}
       <button
         onClick={() => setOpen(true)}
-        className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-[#001A4D] text-white shadow-lg hover:bg-[#002266] transition-all px-5 py-3 ${open ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}`}
+        className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-[var(--color-bg-sidebar)] text-[var(--color-text-sidebar)] shadow-lg hover:bg-[var(--color-blue-700)] transition-all px-5 py-3 ${open ? 'scale-0 opacity-0' : 'scale-100 opacity-100'}`}
         title="Open AI Assistant"
       >
         <Sparkles className="h-5 w-5" />
@@ -121,17 +121,17 @@ export function AiAssistant() {
 
       {/* Slide-in panel */}
       <div
-        className={`fixed top-0 right-0 z-50 h-full w-full sm:w-[420px] bg-white shadow-2xl border-l border-zinc-200 flex flex-col transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed top-0 right-0 z-50 h-full w-full sm:w-[420px] bg-[var(--color-bg-card)] shadow-2xl border-l border-[var(--color-border)] flex flex-col transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'}`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-200 bg-[#001A4D] text-white shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border)] bg-[var(--color-bg-sidebar)] text-[var(--color-text-sidebar)] shrink-0">
           <div className="flex items-center gap-3">
-            <div className="rounded-full bg-[#C9A84C]/20 p-2">
-              <Bot className="h-5 w-5 text-[#C9A84C]" />
+            <div className="rounded-full bg-[var(--color-accent)]/20 p-2">
+              <Bot className="h-5 w-5 text-[var(--color-accent)]" />
             </div>
             <div>
               <h2 className="text-sm font-semibold">AFCS AI Assistant</h2>
-              <p className="text-xs text-white/60">Powered by
+              <p className="text-xs text-[var(--color-text-sidebar)]">Powered by
                 <button
                   onClick={() => setProvider(provider === 'openai' ? 'gemini' : provider === 'gemini' ? 'ollama' : 'openai')}
                   className="ml-1 underline decoration-dotted hover:text-white transition-colors"
@@ -145,17 +145,17 @@ export function AiAssistant() {
             <button
               onClick={() => setProvider(provider === 'openai' ? 'gemini' : provider === 'gemini' ? 'ollama' : 'openai')}
               className={`text-[10px] px-2 py-0.5 rounded-full font-medium transition-colors ${
-                provider === 'openai'
-                  ? 'bg-green-600/20 text-green-300'
+                  provider === 'openai'
+                  ? 'bg-[var(--color-success)]/20 text-[var(--color-success)]'
                   : provider === 'gemini'
-                  ? 'bg-blue-600/20 text-blue-300'
-                  : 'bg-purple-600/20 text-purple-300'
+                  ? 'bg-[var(--color-info)]/20 text-[var(--color-info)]'
+                  : 'bg-[var(--color-accent)]/20 text-[var(--color-accent)]/70'
               }`}
               title="Switch AI provider"
             >
               {provider === 'openai' ? 'GPT' : provider === 'gemini' ? 'Gem' : 'Qwen'}
             </button>
-            <button onClick={() => setOpen(false)} className="rounded-full p-1.5 hover:bg-white/10 transition-colors">
+            <button onClick={() => setOpen(false)} className="rounded-full p-1.5 hover:bg-[var(--color-bg-card)]/10 transition-colors">
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -164,9 +164,9 @@ export function AiAssistant() {
         {/* Messages */}
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
           {messages.length === 0 && !error && (
-            <div className="flex flex-col items-center justify-center h-full text-center py-12 text-zinc-400">
-              <Bot className="h-12 w-12 mb-3 text-zinc-300" />
-              <p className="text-sm font-medium text-zinc-600">How can I help you today?</p>
+            <div className="flex flex-col items-center justify-center h-full text-center py-12 text-[var(--color-text-muted)]">
+              <Bot className="h-12 w-12 mb-3 text-[var(--color-text-muted)]" />
+              <p className="text-sm font-medium text-[var(--color-text-secondary)]">How can I help you today?</p>
               <p className="text-xs mt-1">Ask about attendance, students, staff, timetable, or parade</p>
             </div>
           )}
@@ -176,8 +176,8 @@ export function AiAssistant() {
               <div
                 className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
                   msg.role === 'user'
-                    ? 'bg-[#001A4D] text-white rounded-br-md'
-                    : 'bg-zinc-100 text-zinc-800 rounded-bl-md'
+                    ? 'bg-[var(--color-bg-sidebar)] text-[var(--color-text-sidebar)] rounded-br-md'
+                    : 'bg-[var(--color-bg-muted)] text-[var(--color-text-primary)] rounded-bl-md'
                 }`}
               >
                 {msg.role === 'assistant' ? (
@@ -191,14 +191,14 @@ export function AiAssistant() {
 
           {loading && (
             <div className="flex justify-start">
-              <div className="bg-zinc-100 rounded-2xl rounded-bl-md px-4 py-3">
-                <Loader2 className="h-5 w-5 animate-spin text-zinc-400" />
+              <div className="bg-[var(--color-bg-muted)] rounded-2xl rounded-bl-md px-4 py-3">
+                <Loader2 className="h-5 w-5 animate-spin text-[var(--color-text-muted)]" />
               </div>
             </div>
           )}
 
           {error && (
-            <div className="flex items-center gap-2 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+            <div className="flex items-center gap-2 rounded-lg bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 px-4 py-3 text-sm text-[var(--color-danger)]">
               <AlertCircle className="h-4 w-4 shrink-0" />
               <span className="flex-1">{error}</span>
             </div>
@@ -210,7 +210,7 @@ export function AiAssistant() {
         {/* Suggestions */}
         {showSuggestions && messages.length === 0 && !error && (
           <div className="px-5 pb-3">
-            <div className="flex items-center gap-1.5 text-xs text-zinc-400 mb-2">
+            <div className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)] mb-2">
               <ChevronDown className="h-3 w-3" />
               <span>Try asking</span>
             </div>
@@ -219,7 +219,7 @@ export function AiAssistant() {
                 <button
                   key={s}
                   onClick={() => send(s)}
-                  className="text-xs bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 rounded-full px-3 py-1.5 text-zinc-600 transition-colors"
+                  className="text-xs bg-[var(--color-bg-secondary)] hover:bg-[var(--color-bg-muted)] border border-[var(--color-border)] rounded-full px-3 py-1.5 text-[var(--color-text-secondary)] transition-colors"
                 >
                   {s}
                 </button>
@@ -229,8 +229,8 @@ export function AiAssistant() {
         )}
 
         {/* Input */}
-        <div className="border-t border-zinc-200 px-5 py-4 shrink-0">
-          <div className="flex items-center gap-2 bg-zinc-50 rounded-xl border border-zinc-200 px-4 py-2 focus-within:border-[#001A4D] focus-within:ring-1 focus-within:ring-[#001A4D]/20 transition-all">
+        <div className="border-t border-[var(--color-border)] px-5 py-4 shrink-0">
+          <div className="flex items-center gap-2 bg-[var(--color-bg-secondary)] rounded-xl border border-[var(--color-border)] px-4 py-2 focus-within:border-[var(--color-accent)] focus-within:ring-1 focus-within:ring-[var(--color-accent)]/20 transition-all">
             <input
               ref={inputRef}
               type="text"
@@ -238,18 +238,18 @@ export function AiAssistant() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && send(input)}
               placeholder="Ask anything about the school..."
-              className="flex-1 bg-transparent text-sm text-zinc-800 placeholder-zinc-400 outline-none"
+              className="flex-1 bg-transparent text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] outline-none"
               disabled={loading}
             />
             <button
               onClick={() => send(input)}
               disabled={!input.trim() || loading}
-              className="rounded-lg p-1.5 text-[#001A4D] hover:bg-[#001A4D]/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              className="rounded-lg p-1.5 text-[var(--color-bg-sidebar)] hover:bg-[var(--color-bg-sidebar)]/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <Send className="h-4 w-4" />
             </button>
           </div>
-          <p className="text-[10px] text-zinc-400 mt-2 text-center">
+          <p className="text-[10px] text-[var(--color-text-muted)] mt-2 text-center">
             Data is queried from the live school database in real-time
           </p>
         </div>

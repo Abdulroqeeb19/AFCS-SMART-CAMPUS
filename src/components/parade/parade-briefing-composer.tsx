@@ -49,8 +49,8 @@ export function ParadeBriefingComposer({ briefings, onAdd }: Props) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-zinc-700 flex items-center gap-2">
-          <MessageSquare className="h-4 w-4 text-blue-500" />
+        <h3 className="text-sm font-semibold text-[var(--color-text-primary)] flex items-center gap-2">
+          <MessageSquare className="h-4 w-4 text-[var(--color-info)]" />
           Briefing Items ({briefings.length})
         </h3>
         <Button onClick={() => setShowForm(!showForm)} size="sm" variant="outline" className="gap-1.5">
@@ -59,7 +59,7 @@ export function ParadeBriefingComposer({ briefings, onAdd }: Props) {
       </div>
 
       {showForm && (
-        <Card className="border-blue-200 bg-blue-50/50">
+        <Card className="border-[var(--color-info)]/30 bg-[var(--color-info)]/10">
           <CardContent className="p-4">
             <form onSubmit={handleSubmit} className="space-y-3">
               <input
@@ -67,21 +67,21 @@ export function ParadeBriefingComposer({ briefings, onAdd }: Props) {
                 placeholder="Briefing title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full h-9 rounded-lg border border-blue-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full h-9 rounded-lg border border-[var(--color-info)]/40 bg-[var(--color-bg-card)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring-focus)]"
                 required
               />
               <textarea
                 placeholder="Briefing content / instructions"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="w-full min-h-[80px] rounded-lg border border-blue-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+                className="w-full min-h-[80px] rounded-lg border border-[var(--color-info)]/40 bg-[var(--color-bg-card)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring-focus)] resize-y"
                 required
               />
               <div className="flex items-center gap-3 flex-wrap">
                 <select
                   value={priority}
                   onChange={(e) => setPriority(e.target.value)}
-                  className="h-9 rounded-lg border border-blue-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="h-9 rounded-lg border border-[var(--color-info)]/40 bg-[var(--color-bg-card)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring-focus)]"
                 >
                   <option value="low">Low Priority</option>
                   <option value="normal">Normal Priority</option>
@@ -91,7 +91,7 @@ export function ParadeBriefingComposer({ briefings, onAdd }: Props) {
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="h-9 rounded-lg border border-blue-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="h-9 rounded-lg border border-[var(--color-info)]/40 bg-[var(--color-bg-card)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring-focus)]"
                 >
                   <option value="general">General</option>
                   <option value="academic">Academic</option>
@@ -109,7 +109,7 @@ export function ParadeBriefingComposer({ briefings, onAdd }: Props) {
       )}
 
       {briefings.length === 0 && !showForm && (
-        <p className="text-xs text-zinc-400 text-center py-4">No briefing items for this parade.</p>
+        <p className="text-xs text-[var(--color-text-muted)] text-center py-4">No briefing items for this parade.</p>
       )}
 
       {briefings.map((b) => (
@@ -120,15 +120,15 @@ export function ParadeBriefingComposer({ briefings, onAdd }: Props) {
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h4 className="text-sm font-semibold text-zinc-900">{b.title}</h4>
+                  <h4 className="text-sm font-semibold text-[var(--color-text-primary)]">{b.title}</h4>
                   <Badge variant={priorityConfig[b.priority as keyof typeof priorityConfig]?.variant || 'default'}>
                     {priorityConfig[b.priority as keyof typeof priorityConfig]?.label}
                   </Badge>
                   <Badge variant="default">{categoryConfig[b.category as keyof typeof categoryConfig]}</Badge>
                 </div>
-                <p className="text-xs text-zinc-600 mt-1.5 whitespace-pre-wrap">{b.content}</p>
+                <p className="text-xs text-[var(--color-text-secondary)] mt-1.5 whitespace-pre-wrap">{b.content}</p>
                 {b.author && (
-                  <p className="text-[10px] text-zinc-400 mt-2">Posted by {b.author.full_name}</p>
+                  <p className="text-[10px] text-[var(--color-text-muted)] mt-2">Posted by {b.author.full_name}</p>
                 )}
               </div>
             </div>

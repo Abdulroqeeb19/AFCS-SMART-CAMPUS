@@ -10,6 +10,7 @@ import { Loader2, Plus, Search, GraduationCap, UserPlus, Pencil, X, Check, Power
 import { Skeleton } from '@/components/skeleton'
 import { QRButton } from '@/components/qr-code'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
+import { CollapsibleSection } from '@/components/collapsible-section'
 
 
 interface PrefectRole {
@@ -208,16 +209,16 @@ export function StudentsList() {
     <div className="space-y-4">
       <div className="flex items-center gap-3 flex-wrap">
         <div className="relative flex-1 min-w-[200px] max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-text-muted)]" />
           <input
             type="text" placeholder="Search by name, ID, or parent..."
             value={search} onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-10 pl-9 pr-3 rounded-lg border border-zinc-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+            className="w-full h-10 pl-9 pr-3 rounded-lg border border-[var(--color-border-hover)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring-focus)] focus:ring-offset-1"
           />
         </div>
         <select
           value={classFilter} onChange={(e) => setClassFilter(e.target.value)}
-          className="h-10 rounded-lg border border-zinc-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="h-10 rounded-lg border border-[var(--color-border-hover)] bg-[var(--color-bg-card)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring-focus)]"
         >
           <option value="">All Classes</option>
           {classes.map((c) => (
@@ -226,7 +227,7 @@ export function StudentsList() {
         </select>
         <select
           value={prefectFilter} onChange={(e) => setPrefectFilter(e.target.value)}
-          className="h-10 rounded-lg border border-zinc-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="h-10 rounded-lg border border-[var(--color-border-hover)] bg-[var(--color-bg-card)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring-focus)]"
         >
           <option value="">All Roles</option>
           <option value="none">No Prefect Role</option>
@@ -243,14 +244,14 @@ export function StudentsList() {
       </div>
 
       {error && (
-        <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 flex items-center gap-2">
+        <div className="rounded-lg bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 px-4 py-3 text-sm text-[var(--color-danger)] flex items-center gap-2">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {showAdd && (
-        <Card className="border-violet-200 bg-violet-50/50">
+        <Card className="border-[var(--color-accent)]/20 bg-[var(--color-accent)]/10">
           <CardContent className="p-4">
             <form onSubmit={handleAdd} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <Input id="ns-id" label="Student ID" placeholder="e.g. STU-0021" value={form.student_id}
@@ -280,11 +281,11 @@ export function StudentsList() {
       )}
 
       {showClasses && (
-        <Card className="border-violet-200">
+        <Card className="border-[var(--color-accent)]/20">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
-              <BookOpen className="h-4 w-4 text-violet-500" />
-              <p className="text-sm font-semibold text-zinc-700">Classes Management</p>
+              <BookOpen className="h-4 w-4 text-[var(--color-accent)]/70" />
+              <p className="text-sm font-semibold text-[var(--color-text-primary)]">Classes Management</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-4">
               <Input placeholder="e.g. JS1" value={newClassName}
@@ -317,11 +318,11 @@ export function StudentsList() {
                 </Button>
               </div>
             </div>
-            <div className="divide-y divide-zinc-100">
+            <div className="divide-y divide-[var(--color-border)]">
               {classes.map((c) => (
                 <div key={c.id} className="flex items-center justify-between py-2">
-                  <span className="text-sm text-zinc-700">{c.name} {c.arm}</span>
-                  <button onClick={() => setConfirmDeleteClassId(c.id)} className="p-1 text-zinc-400 hover:text-red-600 transition-colors">
+                  <span className="text-sm text-[var(--color-text-primary)]">{c.name} {c.arm}</span>
+                  <button onClick={() => setConfirmDeleteClassId(c.id)} className="p-1 text-[var(--color-text-muted)] hover:text-[var(--color-danger)] transition-colors">
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
@@ -332,25 +333,28 @@ export function StudentsList() {
       )}
 
       {filtered.length === 0 ? (
-        <div className="text-center py-16 text-zinc-400">
+        <div className="text-center py-16 text-[var(--color-text-muted)]">
           <GraduationCap className="h-12 w-12 mx-auto mb-3 stroke-1" />
-          <p className="font-medium text-zinc-500">No students found</p>
+          <p className="font-medium text-[var(--color-text-secondary)]">No students found</p>
           <p className="text-xs mt-1">{search || classFilter ? 'Try different filters' : 'Click "Add Student" to get started'}</p>
         </div>
       ) : (
         <>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-[var(--color-text-secondary)]">
             Showing {filtered.length} of {students.length} student{students.length !== 1 ? 's' : ''}
           </p>
-          <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((s) => (
-              <Card key={s.id} className="hover:shadow-md transition-shadow">
+          <CollapsibleSection
+            items={filtered}
+            defaultVisible={6}
+            keyExtractor={(s) => s.id}
+            renderItem={(s) => (
+              <Card className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   {editId === s.id ? (
                     <div className="space-y-3">
                       <div className="flex items-center justify-between mb-2">
-                        <p className="text-xs font-semibold uppercase text-zinc-400">Editing</p>
-                        <button onClick={() => { setEditId(null); setError('') }} className="text-zinc-400 hover:text-zinc-600">
+                        <p className="text-xs font-semibold uppercase text-[var(--color-text-muted)]">Editing</p>
+                        <button onClick={() => { setEditId(null); setError('') }} className="text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]">
                           <X className="h-4 w-4" />
                         </button>
                       </div>
@@ -381,50 +385,50 @@ export function StudentsList() {
                     <>
                       <div className="flex items-start justify-between">
                         <div className="min-w-0 flex-1">
-                          <p className="font-medium text-zinc-900 truncate">{s.full_name}</p>
-                          <p className="text-xs text-zinc-400 mt-0.5">{s.student_id}</p>
+                          <p className="font-medium text-[var(--color-text-primary)] truncate">{s.full_name}</p>
+                          <p className="text-xs text-[var(--color-text-muted)] mt-0.5">{s.student_id}</p>
                         </div>
                         <Badge variant={s.is_active ? 'success' : 'danger'}>
                           {s.is_active ? 'Active' : 'Inactive'}
                         </Badge>
                       </div>
-                      <div className="mt-3 space-y-1 text-sm text-zinc-500">
+                      <div className="mt-3 space-y-1 text-sm text-[var(--color-text-secondary)]">
                         <p className="flex items-center gap-1.5">
-                          <span className="text-[10px] uppercase text-zinc-400 w-16">Class:</span>
+                          <span className="text-[10px] uppercase text-[var(--color-text-muted)] w-16">Class:</span>
                           <span>{s.class ? `${s.class.name} ${s.class.arm}` : '-'}</span>
                         </p>
                         {s.parent_name && (
                           <p className="flex items-center gap-1.5">
-                            <span className="text-[10px] uppercase text-zinc-400 w-16">Parent:</span>
+                            <span className="text-[10px] uppercase text-[var(--color-text-muted)] w-16">Parent:</span>
                             <span>{s.parent_name}</span>
                           </p>
                         )}
                         {s.parent_phone && (
                           <p className="text-xs flex items-center gap-1.5">
-                            <span className="text-[10px] uppercase text-zinc-400 w-16">Phone:</span>
+                            <span className="text-[10px] uppercase text-[var(--color-text-muted)] w-16">Phone:</span>
                             <span>{s.parent_phone}</span>
                           </p>
                         )}
                         {s.parent_email && (
                           <p className="text-xs flex items-center gap-1.5">
-                            <span className="text-[10px] uppercase text-zinc-400 w-16">Email:</span>
+                            <span className="text-[10px] uppercase text-[var(--color-text-muted)] w-16">Email:</span>
                             <span className="truncate">{s.parent_email}</span>
                           </p>
                         )}
                         {s.prefect_role && (
                           <p className="flex items-center gap-1.5 mt-1">
-                            <span className="text-[10px] uppercase text-zinc-400 w-16">Prefect:</span>
-                            <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium bg-yellow-100 text-yellow-800">{s.prefect_role.name}</span>
+                            <span className="text-[10px] uppercase text-[var(--color-text-muted)] w-16">Prefect:</span>
+                            <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium bg-[var(--color-warning)]/10 text-[var(--color-warning)]">{s.prefect_role.name}</span>
                           </p>
                         )}
                         <p className="flex items-center gap-1.5 mt-1">
-                          <span className="text-[10px] uppercase text-zinc-400 w-16">Role:</span>
+                          <span className="text-[10px] uppercase text-[var(--color-text-muted)] w-16">Role:</span>
                           <select
                             value={s.prefect_role_id || ''}
                             onChange={async (e) => {
                               await handleUpdate(s.id, { prefect_role_id: e.target.value })
                             }}
-                            className="text-xs border border-zinc-300 rounded px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-yellow-500 max-w-[180px]"
+                            className="text-xs border border-[var(--color-border-hover)] rounded px-2 py-1 bg-[var(--color-bg-card)] focus:outline-none focus:ring-2 focus:ring-[var(--color-warning)] max-w-[180px]"
                           >
                             <option value="">No role</option>
                             {prefectRoles.map((r) => (
@@ -433,10 +437,10 @@ export function StudentsList() {
                           </select>
                         </p>
                       </div>
-                      <div className="mt-3 flex items-center gap-2 pt-2 border-t border-zinc-100 flex-wrap">
+                      <div className="mt-3 flex items-center gap-2 pt-2 border-t border-[var(--color-border)] flex-wrap">
                         <button
                           onClick={() => startEdit(s)}
-                          className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
+                          className="flex items-center gap-1 text-xs text-[var(--color-info)] hover:text-[var(--color-info)] transition-colors"
                         >
                           <Pencil className="h-3 w-3" /> Edit
                         </button>
@@ -444,7 +448,7 @@ export function StudentsList() {
                         <button
                           onClick={() => toggleActive(s)}
                           className={`flex items-center gap-1 text-xs transition-colors ${
-                            s.is_active ? 'text-amber-600 hover:text-amber-800' : 'text-emerald-600 hover:text-emerald-800'
+                            s.is_active ? 'text-[var(--color-warning)] hover:text-[var(--color-warning)]' : 'text-[var(--color-success)] hover:text-[var(--color-success)]'
                           }`}
                         >
                           {s.is_active ? <PowerOff className="h-3 w-3" /> : <Power className="h-3 w-3" />}
@@ -452,7 +456,7 @@ export function StudentsList() {
                         </button>
                         <button
                           onClick={() => setConfirmDeleteStudent(s)}
-                          className="flex items-center gap-1 text-xs text-red-600 hover:text-red-800 transition-colors"
+                          className="flex items-center gap-1 text-xs text-[var(--color-danger)] hover:text-[var(--color-danger)] transition-colors"
                         >
                           <Trash2 className="h-3 w-3" /> Delete
                         </button>
@@ -461,8 +465,11 @@ export function StudentsList() {
                   )}
                 </CardContent>
               </Card>
-            ))}
-          </div>
+            )}
+            className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+            showMoreText={`Show ${filtered.length - 6} more`}
+            showLessText="Show less"
+          />
         </>
       )}
 
@@ -483,8 +490,13 @@ export function StudentsList() {
         onConfirm={async () => {
           const id = confirmDeleteClassId
           setConfirmDeleteClassId(null)
-          if (id) {
-            await fetch(`/api/classes?id=${id}`, { method: 'DELETE' })
+            if (id) {
+            const res = await fetch(`/api/classes?id=${id}`, { method: 'DELETE' })
+            if (!res.ok) {
+              const data = await res.json()
+              setError(data.error || 'Failed to delete class')
+              return
+            }
             loadData()
           }
         }}

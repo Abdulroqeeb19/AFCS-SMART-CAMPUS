@@ -39,8 +39,8 @@ export function TopNav() {
           <SearchBar />
         </div>
 
-        {/* Right actions */}
-        <div className="flex items-center gap-1">
+        {/* Right actions — pushed to the far right */}
+        <div className="ml-auto flex items-center gap-1">
           <ThemeToggle />
 
           {/* Notifications */}
@@ -64,6 +64,9 @@ export function TopNav() {
                 </div>
                 <span className="hidden sm:block text-sm font-medium text-[var(--color-text-primary)]">
                   {user.full_name}
+                </span>
+                <span className="hidden sm:block text-xs text-[var(--color-text-muted)] capitalize">
+                  {user.role}
                 </span>
               </button>
 

@@ -1,5 +1,6 @@
 'use client'
 
+import { CollapsibleSection } from '@/components/collapsible-section'
 import { useEffect, useState, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -191,9 +192,9 @@ export function TeacherAttendanceForm() {
     return (
       <Card>
         <CardContent className="p-12 text-center">
-          <GraduationCap className="h-14 w-14 text-zinc-300 mx-auto mb-3" />
-          <p className="text-zinc-600 font-medium">No class assigned</p>
-          <p className="text-zinc-400 text-sm mt-1">
+          <GraduationCap className="h-14 w-14 text-[var(--color-text-muted)] mx-auto mb-3" />
+          <p className="text-[var(--color-text-secondary)] font-medium">No class assigned</p>
+          <p className="text-[var(--color-text-muted)] text-sm mt-1">
             {error || 'You have not been assigned as a class teacher yet.'}
           </p>
           <Button onClick={loadData} variant="outline" size="sm" className="mt-4 gap-2">
@@ -208,14 +209,14 @@ export function TeacherAttendanceForm() {
     <div className="space-y-4">
       {classes.map((cls) => (
         <div key={cls.id} className="flex items-center gap-3">
-          <div className="rounded-full p-2 bg-violet-100">
-            <BookOpen className="h-5 w-5 text-violet-600" />
+          <div className="rounded-full p-2 bg-[var(--color-accent)]/10">
+            <BookOpen className="h-5 w-5 text-[var(--color-accent)]/70" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-zinc-900">
+            <h2 className="text-lg font-bold text-[var(--color-text-primary)]">
               {cls.name} {cls.arm}
             </h2>
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-[var(--color-text-secondary)]">
               {checkedInCount}/{totalCount} checked in today
             </p>
           </div>
@@ -223,25 +224,25 @@ export function TeacherAttendanceForm() {
       ))}
 
       {error && (
-        <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 flex items-center gap-2">
+        <div className="rounded-lg bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 px-4 py-3 text-sm text-[var(--color-danger)] flex items-center gap-2">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {successMsg && (
-        <div className="rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-700 flex items-center gap-2">
+        <div className="rounded-lg bg-[var(--color-success)]/10 border border-[var(--color-success)]/30 px-4 py-3 text-sm text-[var(--color-success)] flex items-center gap-2">
           <CheckCircle2 className="h-4 w-4 shrink-0" />
           <span>{successMsg}</span>
         </div>
       )}
 
       {/* Mode Switcher */}
-      <div className="flex gap-1 rounded-xl bg-zinc-100 p-1">
+      <div className="flex gap-1 rounded-xl bg-[var(--color-bg-muted)] p-1">
         <button
           onClick={() => setMode('grid')}
           className={`flex items-center gap-2 flex-1 justify-center px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-            mode === 'grid' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'
+            mode === 'grid' ? 'bg-[var(--color-bg-card)] text-[var(--color-text-primary)] shadow-sm' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
           }`}
         >
           <Users className="h-4 w-4" />
@@ -250,7 +251,7 @@ export function TeacherAttendanceForm() {
         <button
           onClick={() => setMode('qr')}
           className={`flex items-center gap-2 flex-1 justify-center px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-            mode === 'qr' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'
+            mode === 'qr' ? 'bg-[var(--color-bg-card)] text-[var(--color-text-primary)] shadow-sm' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
           }`}
         >
           <QrCode className="h-4 w-4" />
@@ -259,7 +260,7 @@ export function TeacherAttendanceForm() {
         <button
           onClick={() => setMode('manual')}
           className={`flex items-center gap-2 flex-1 justify-center px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-            mode === 'manual' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'
+            mode === 'manual' ? 'bg-[var(--color-bg-card)] text-[var(--color-text-primary)] shadow-sm' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
           }`}
         >
           <Search className="h-4 w-4" />
@@ -271,7 +272,7 @@ export function TeacherAttendanceForm() {
       {mode === 'qr' && (
         <Card>
           <CardContent className="p-4">
-            <p className="text-sm font-medium text-zinc-700 mb-3 text-center">
+            <p className="text-sm font-medium text-[var(--color-text-primary)] mb-3 text-center">
               Scan student QR code or barcode to mark attendance
             </p>
             <QRScanner onScan={handleQRScan} onError={(msg) => setError(msg)} />
@@ -300,18 +301,18 @@ export function TeacherAttendanceForm() {
       {mode === 'grid' && (
         <>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--color-text-muted)]" />
             <input
               type="text"
               placeholder="Search students in your class..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 pl-9 pr-3 rounded-lg border border-zinc-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+              className="w-full h-10 pl-9 pr-3 rounded-lg border border-[var(--color-border-hover)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring-focus)] focus:ring-offset-1"
             />
           </div>
 
           <div className="flex items-center justify-between">
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-[var(--color-text-secondary)]">
               {allStudents.length} student{allStudents.length !== 1 ? 's' : ''}
               {searchQuery && ` (${filtered.length} matching)`}
             </p>
@@ -327,27 +328,29 @@ export function TeacherAttendanceForm() {
             </Button>
           </div>
 
-          <div className="grid gap-2 sm:grid-cols-2">
-            {filtered.map((student) => {
+          <CollapsibleSection
+            items={filtered}
+            defaultVisible={6}
+            keyExtractor={(s) => s.student_id || s.id}
+            renderItem={(student) => {
               const isCheckedIn = !!student.today_attendance
               const isChecking = checkingId === student.id
               const status = student.today_attendance?.status
               const period = student.today_attendance?.period
               return (
                 <div
-                  key={student.id}
                   className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
                     isCheckedIn
-                      ? 'bg-emerald-50/50 border-emerald-200'
-                      : 'bg-white border-zinc-200 hover:border-blue-300'
+                      ? 'bg-[var(--color-success)]/10 border-[var(--color-success)]/30'
+                      : 'bg-[var(--color-bg-card)] border-[var(--color-border)] hover:border-[var(--color-info)]/40'
                   }`}
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-zinc-900 truncate">
-                      {isCheckedIn && <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 inline mr-1.5 -mt-0.5" />}
+                    <p className="text-sm font-medium text-[var(--color-text-primary)] truncate">
+                      {isCheckedIn && <CheckCircle2 className="h-3.5 w-3.5 text-[var(--color-success)] inline mr-1.5 -mt-0.5" />}
                       {student.full_name}
                     </p>
-                    <p className="text-xs text-zinc-400">{student.student_id}</p>
+                    <p className="text-xs text-[var(--color-text-muted)]">{student.student_id}</p>
                     {isCheckedIn && (
                       <div className="flex items-center gap-1.5 mt-1">
                         <Badge
@@ -360,7 +363,7 @@ export function TeacherAttendanceForm() {
                           {period}
                         </Badge>
                         {student.today_attendance?.check_out && (
-                          <span className="text-[10px] text-zinc-400 flex items-center gap-0.5">
+                          <span className="text-[10px] text-[var(--color-text-muted)] flex items-center gap-0.5">
                             <LogOut className="h-2.5 w-2.5" /> Done
                           </span>
                         )}
@@ -384,11 +387,12 @@ export function TeacherAttendanceForm() {
                   )}
                 </div>
               )
-            })}
-          </div>
+            }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          />
 
           {filtered.length === 0 && (
-            <div className="text-center py-12 text-zinc-400">
+            <div className="text-center py-12 text-[var(--color-text-muted)]">
               <Users className="h-10 w-10 mx-auto mb-2 stroke-1" />
               <p className="text-sm">No students match your search</p>
             </div>

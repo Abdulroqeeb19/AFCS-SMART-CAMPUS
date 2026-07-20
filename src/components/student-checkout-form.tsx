@@ -200,15 +200,15 @@ export function StudentCheckoutForm() {
     return (
       <Card>
         <CardContent className="p-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
-            <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-success)]/20">
+            <CheckCircle2 className="h-8 w-8 text-[var(--color-success)]" />
           </div>
-          <h2 className="text-xl font-semibold text-zinc-900 mb-1">{result.message}</h2>
+          <h2 className="text-xl font-semibold text-[var(--color-text-primary)] mb-1">{result.message}</h2>
           {result.studentName && (
-            <p className="text-sm text-zinc-500">{result.studentName}</p>
+            <p className="text-sm text-[var(--color-text-secondary)]">{result.studentName}</p>
           )}
           {result.class && (
-            <p className="text-sm text-zinc-400 mb-2">
+            <p className="text-sm text-[var(--color-text-muted)] mb-2">
               Class {result.class.name} {result.class.arm}
             </p>
           )}
@@ -216,28 +216,28 @@ export function StudentCheckoutForm() {
           <div className="flex items-center justify-center gap-6 mt-4">
             {result.checkIn && (
               <div className="text-center">
-                <p className="text-xs text-zinc-400 uppercase tracking-wide flex items-center gap-1 justify-center">
+                <p className="text-xs text-[var(--color-text-muted)] uppercase tracking-wide flex items-center gap-1 justify-center">
                   <Calendar className="h-3 w-3" /> Check In
                 </p>
-                <p className="text-lg font-semibold text-zinc-700 mt-0.5">{formatTime(result.checkIn)}</p>
+                <p className="text-lg font-semibold text-[var(--color-text-secondary)] mt-0.5">{formatTime(result.checkIn)}</p>
               </div>
             )}
             {result.checkOut && (
               <div className="text-center">
-                <p className="text-xs text-zinc-400 uppercase tracking-wide flex items-center gap-1 justify-center">
+                <p className="text-xs text-[var(--color-text-muted)] uppercase tracking-wide flex items-center gap-1 justify-center">
                   <Calendar className="h-3 w-3" /> Check Out
                 </p>
-                <p className="text-lg font-semibold text-zinc-700 mt-0.5">{formatTime(result.checkOut)}</p>
+                <p className="text-lg font-semibold text-[var(--color-text-secondary)] mt-0.5">{formatTime(result.checkOut)}</p>
               </div>
             )}
           </div>
 
           {result.period && (
-            <p className="text-xs text-zinc-400 mt-2 capitalize">{result.period} session</p>
+            <p className="text-xs text-[var(--color-text-muted)] mt-2 capitalize">{result.period} session</p>
           )}
 
           {duration && (
-            <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm text-emerald-700">
+            <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-[var(--color-success)]/10 border border-[var(--color-success)]/30 px-4 py-2 text-sm text-[var(--color-success)]">
               <Clock className="h-4 w-4" />
               Session duration: {duration}
             </div>
@@ -254,8 +254,8 @@ export function StudentCheckoutForm() {
   return (
     <Card>
       <CardHeader className="text-center">
-        <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-amber-100">
-          <LogOut className="h-7 w-7 text-amber-600" />
+        <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-warning)]/20">
+          <LogOut className="h-7 w-7 text-[var(--color-warning)]" />
         </div>
         <CardTitle>Student Check-Out</CardTitle>
         <CardDescription>
@@ -263,11 +263,11 @@ export function StudentCheckoutForm() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex gap-1 rounded-xl bg-zinc-100 p-1">
+        <div className="flex gap-1 rounded-xl bg-[var(--color-bg-muted)] p-1">
           <button
             onClick={() => { setMode('manual'); setPerson(null); setError(''); setScanId((c) => c + 1) }}
             className={`flex items-center gap-2 flex-1 justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              mode === 'manual' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'
+              mode === 'manual' ? 'bg-[var(--color-bg-card)] text-[var(--color-text-primary)] shadow-sm' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)]'
             }`}
           >
             <LogOut className="h-4 w-4" />
@@ -276,7 +276,7 @@ export function StudentCheckoutForm() {
           <button
             onClick={() => { setMode('qr'); setPerson(null); setError(''); setScanId((c) => c + 1) }}
             className={`flex items-center gap-2 flex-1 justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              mode === 'qr' ? 'bg-white text-zinc-900 shadow-sm' : 'text-zinc-500 hover:text-zinc-800'
+              mode === 'qr' ? 'bg-[var(--color-bg-card)] text-[var(--color-text-primary)] shadow-sm' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)]'
             }`}
           >
             <QrCode className="h-4 w-4" />
@@ -313,22 +313,22 @@ export function StudentCheckoutForm() {
         )}
 
         {lookupLoading && (
-          <div className="flex items-center justify-center gap-2 py-4 text-sm text-zinc-400">
+          <div className="flex items-center justify-center gap-2 py-4 text-sm text-[var(--color-text-muted)]">
             <Loader2 className="h-4 w-4 animate-spin" />
             Looking up student...
           </div>
         )}
 
         {person && !lookupLoading && (
-          <Card className="border-2 border-amber-200 bg-amber-50/30">
+          <Card className="border-2 border-[var(--color-warning)]/30 bg-[var(--color-warning)]/10">
             <CardContent className="p-4">
               <div className="flex items-center gap-4">
-                <div className="h-16 w-16 rounded-full bg-amber-200 flex items-center justify-center overflow-hidden shrink-0">
-                  <User className="h-8 w-8 text-amber-600" />
+                <div className="h-16 w-16 rounded-full bg-[var(--color-warning)]/20 flex items-center justify-center overflow-hidden shrink-0">
+                  <User className="h-8 w-8 text-[var(--color-warning)]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-zinc-900 text-lg">{person.full_name}</p>
-                  <p className="text-sm text-zinc-500">{person.student_id}</p>
+                  <p className="font-semibold text-[var(--color-text-primary)] text-lg">{person.full_name}</p>
+                  <p className="text-sm text-[var(--color-text-secondary)]">{person.student_id}</p>
                   <div className="flex items-center gap-2 mt-1 flex-wrap">
                     {person.class && (
                       <Badge variant="info" className="text-[10px]">
@@ -366,12 +366,12 @@ export function StudentCheckoutForm() {
                     Confirm Check-Out
                   </Button>
                 ) : person.today_attendance?.check_out ? (
-                  <div className="flex-1 text-center py-2 text-sm text-zinc-400">
+                  <div className="flex-1 text-center py-2 text-sm text-[var(--color-text-muted)]">
                     Already checked out ({person.today_attendance.period})
                   </div>
                 ) : (
                   <div className="flex-1">
-                    <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm text-amber-700">
+                    <div className="rounded-lg bg-[var(--color-warning)]/10 border border-[var(--color-warning)]/30 p-3 text-sm text-[var(--color-warning)]">
                       No check-in record for today. Please check in first.
                     </div>
                   </div>
@@ -385,9 +385,9 @@ export function StudentCheckoutForm() {
         )}
 
         {error && (
-          <div className="flex items-start gap-2 rounded-lg bg-red-50 border border-red-200 p-3 text-sm">
-            <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
-            <span className="text-red-700">{error}</span>
+          <div className="flex items-start gap-2 rounded-lg bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 p-3 text-sm">
+            <AlertCircle className="h-4 w-4 text-[var(--color-danger)] mt-0.5 shrink-0" />
+            <span className="text-[var(--color-danger)]">{error}</span>
           </div>
         )}
       </CardContent>

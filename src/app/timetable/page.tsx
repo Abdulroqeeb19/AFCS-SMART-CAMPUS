@@ -1,5 +1,6 @@
 'use client'
 
+import { CollapsibleSection } from '@/components/collapsible-section'
 import { useEffect, useState, useMemo, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -15,7 +16,7 @@ import { Hint } from '@/components/hint'
 import { TimetableSkeleton } from '@/components/skeleton'
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-const DAY_COLORS = ['bg-blue-50', 'bg-green-50', 'bg-amber-50', 'bg-purple-50', 'bg-rose-50']
+const DAY_COLORS = ['bg-[var(--color-info)]/10', 'bg-[var(--color-success)]/10', 'bg-[var(--color-warning)]/10', 'bg-[var(--color-accent)]/10', 'bg-[var(--color-danger)]/10']
 
 interface QualityReport {
   name: string
@@ -52,11 +53,11 @@ interface GenHistoryItem {
 }
 
 const DIFFICULTY_COLORS: Record<number, string> = {
-  1: 'bg-red-100 border-red-300 text-red-700',
-  2: 'bg-orange-100 border-orange-300 text-orange-700',
-  3: 'bg-blue-100 border-blue-300 text-blue-700',
-  4: 'bg-green-100 border-green-300 text-green-700',
-  5: 'bg-zinc-100 border-zinc-300 text-zinc-600',
+  1: 'bg-[var(--color-danger)]/20 border-[var(--color-danger)]/40 text-[var(--color-danger)]',
+  2: 'bg-[var(--color-warning)]/20 border-[var(--color-warning)]/30 text-[var(--color-warning)]/70',
+  3: 'bg-[var(--color-info)]/20 border-[var(--color-info)]/40 text-[var(--color-info)]',
+  4: 'bg-[var(--color-success)]/20 border-[var(--color-success)]/40 text-[var(--color-success)]',
+  5: 'bg-[var(--color-bg-muted)] border-[var(--color-border-hover)] text-[var(--color-text-secondary)]',
 }
 
 function getSlotLabel(slots: TimeSlot[], day: number, period: number): string {
@@ -72,17 +73,17 @@ function getSlotTime(slots: TimeSlot[], day: number, period: number): string {
 }
 
 function qualityColor(score: number): string {
-  if (score >= 90) return 'text-green-600'
-  if (score >= 70) return 'text-blue-600'
-  if (score >= 50) return 'text-amber-600'
-  return 'text-red-600'
+  if (score >= 90) return 'text-[var(--color-success)]'
+  if (score >= 70) return 'text-[var(--color-info)]'
+  if (score >= 50) return 'text-[var(--color-warning)]'
+  return 'text-[var(--color-danger)]'
 }
 
 function qualityBg(score: number): string {
-  if (score >= 90) return 'bg-green-50 border-green-200'
-  if (score >= 70) return 'bg-blue-50 border-blue-200'
-  if (score >= 50) return 'bg-amber-50 border-amber-200'
-  return 'bg-red-50 border-red-200'
+  if (score >= 90) return 'bg-[var(--color-success)]/10 border-[var(--color-success)]/30'
+  if (score >= 70) return 'bg-[var(--color-info)]/10 border-[var(--color-info)]/30'
+  if (score >= 50) return 'bg-[var(--color-warning)]/10 border-[var(--color-warning)]/30'
+  return 'bg-[var(--color-danger)]/10 border-[var(--color-danger)]/30'
 }
 
 export default function TimetablePage() {
@@ -231,45 +232,45 @@ export default function TimetablePage() {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-[#001A4D]">
-              <Sparkles className="h-6 w-6 inline mr-2 text-[#C9A84C]" />
+            <h1 className="text-2xl font-bold text-[var(--color-bg-sidebar)]">
+              <Sparkles className="h-6 w-6 inline mr-2 text-[var(--color-accent)]" />
               AI Timetable Generator
             </h1>
             <Hint text="Select a term, filter by class/teacher, then click Generate. The AI optimises subject distribution, schedules hard subjects (Maths/English) in morning periods, and handles double-periods for practical subjects automatically." side="right" />
             {latestGen?.status === 'published' && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--color-success)]/20 text-[var(--color-success)]">
                 <CheckCircle2 className="h-3 w-3" /> Published
               </span>
             )}
           </div>
-          <p className="text-sm text-zinc-500 mt-0.5">
+          <p className="text-sm text-[var(--color-text-secondary)] mt-0.5">
             Nigerian standard schedule &mdash; 8 periods/day &middot; Assembly &middot; Mon&ndash;Thu 40min &middot; Fri 30min (closes 13:00) &middot; Quality optimisation
           </p>
         </div>
         <div className="flex items-center gap-2">
           {latestGen && latestGen.quality?.overall_score && (
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border bg-white text-sm">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border bg-[var(--color-bg-card)] text-sm">
               <Trophy className={`h-4 w-4 ${qualityColor(latestGen.quality.overall_score)}`} />
               <span className="font-medium">Quality: <span className={qualityColor(latestGen.quality.overall_score)}>{latestGen.quality.overall_score}%</span></span>
             </div>
           )}
-          <Link href="/timetable/setup" className="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium hover:bg-zinc-50 transition-colors">
+          <Link href="/timetable/setup" className="inline-flex items-center gap-2 rounded-lg border border-[var(--color-border-hover)] bg-[var(--color-bg-card)] px-4 py-2 text-sm font-medium hover:bg-[var(--color-bg-secondary)] transition-colors">
             <Settings className="h-4 w-4" /> Setup
           </Link>
         </div>
       </div>
 
       {/* Controls */}
-      <div className="bg-white rounded-xl border border-zinc-200 p-4 space-y-3">
+      <div className="bg-[var(--color-bg-card)] rounded-xl border border-[var(--color-border)] p-4 space-y-3">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-zinc-400" />
-            <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Filters</span>
+            <Filter className="h-4 w-4 text-[var(--color-text-muted)]" />
+            <span className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wider">Filters</span>
           </div>
           <select
             value={selectedTermId}
             onChange={(e) => setSelectedTermId(e.target.value)}
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm bg-white min-w-[180px]"
+            className="rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm bg-[var(--color-bg-card)] min-w-[180px]"
             aria-label="Select academic term"
           >
             <option value="">Select Term</option>
@@ -283,7 +284,7 @@ export default function TimetablePage() {
           <select
             value={selectedClassId}
             onChange={(e) => setSelectedClassId(e.target.value)}
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm bg-white min-w-[140px]"
+            className="rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm bg-[var(--color-bg-card)] min-w-[140px]"
             aria-label="Filter by class"
           >
             <option value="">All Classes</option>
@@ -295,7 +296,7 @@ export default function TimetablePage() {
           <select
             value={selectedTeacherFilter}
             onChange={(e) => setSelectedTeacherFilter(e.target.value)}
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm bg-white min-w-[160px]"
+            className="rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm bg-[var(--color-bg-card)] min-w-[160px]"
             aria-label="Filter by teacher"
           >
             <option value="">All Teachers</option>
@@ -309,7 +310,7 @@ export default function TimetablePage() {
             placeholder="Filter subject..."
             value={subjectFilter}
             onChange={(e) => setSubjectFilter(e.target.value)}
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm bg-white w-36"
+            className="rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm bg-[var(--color-bg-card)] w-36"
             aria-label="Filter by subject name"
           />
 
@@ -318,7 +319,7 @@ export default function TimetablePage() {
           <button
             onClick={handleGenerate}
             disabled={generating || !selectedTermId}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#001A4D] text-white px-5 py-2 text-sm font-medium hover:bg-blue-900 disabled:opacity-50 transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-[var(--color-bg-sidebar)] text-[var(--color-text-sidebar)] px-5 py-2 text-sm font-medium hover:bg-[var(--color-bg-sidebar)] disabled:opacity-50 transition-colors"
             aria-label={generating ? 'Generating timetable...' : 'Generate timetable'}
           >
             {generating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
@@ -329,11 +330,11 @@ export default function TimetablePage() {
 
       {/* Quality Score Cards (shown on view tab when gen result present) */}
       {genResult?.quality && tab === 'view' && (
-        <div className="bg-gradient-to-r from-[#001A4D]/5 to-[#C9A84C]/5 rounded-xl border border-zinc-200 p-4">
+        <div className="bg-gradient-to-r from-[#001A4D]/5 to-[#C9A84C]/5 rounded-xl border border-[var(--color-border)] p-4">
           <div className="flex items-center gap-2 mb-3">
-            <BarChart3 className="h-4 w-4 text-[#001A4D]" />
-            <span className="text-sm font-semibold text-[#001A4D]">Generation Quality Report</span>
-            <span className="text-xs text-zinc-400 ml-auto">
+            <BarChart3 className="h-4 w-4 text-[var(--color-bg-sidebar)]" />
+            <span className="text-sm font-semibold text-[var(--color-bg-sidebar)]">Generation Quality Report</span>
+            <span className="text-xs text-[var(--color-text-muted)] ml-auto">
               v2 algorithm &middot; {genResult.classes_generated} classes
             </span>
           </div>
@@ -341,10 +342,10 @@ export default function TimetablePage() {
             {genResult.quality.reports.map((r: QualityReport, i: number) => (
               <div key={i} className={`rounded-lg border p-3 ${qualityBg(r.score)}`}>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-zinc-600 truncate">{r.name}</span>
+                  <span className="text-xs font-medium text-[var(--color-text-secondary)] truncate">{r.name}</span>
                   <span className={`text-lg font-bold ${qualityColor(r.score)}`}>{r.score}%</span>
                 </div>
-                <p className="text-[10px] text-zinc-500 mt-1 leading-tight">{r.details}</p>
+                <p className="text-[10px] text-[var(--color-text-secondary)] mt-1 leading-tight">{r.details}</p>
               </div>
             ))}
           </div>
@@ -355,7 +356,7 @@ export default function TimetablePage() {
       {genResult && (
         <div>
           <div className={`rounded-lg border px-4 py-3 text-sm flex items-center gap-3 ${
-            genResult.success ? (genResult.conflict_count === 0 ? 'bg-green-50 border-green-200 text-green-800' : 'bg-amber-50 border-amber-200 text-amber-800') : 'bg-red-50 border-red-200 text-red-800'
+            genResult.success ? (genResult.conflict_count === 0 ? 'bg-[var(--color-success)]/10 border-[var(--color-success)]/30 text-[var(--color-success)]' : 'bg-[var(--color-warning)]/10 border-[var(--color-warning)]/30 text-[var(--color-warning)]') : 'bg-[var(--color-danger)]/10 border-[var(--color-danger)]/30 text-[var(--color-danger)]'
           }`}>
             {genResult.success && genResult.conflict_count === 0 ? <CheckCircle2 className="h-5 w-5 shrink-0" /> :
              genResult.success ? <AlertTriangle className="h-5 w-5 shrink-0" /> : <XCircle className="h-5 w-5 shrink-0" />}
@@ -366,11 +367,11 @@ export default function TimetablePage() {
               {genResult.conflict_count > 0 && ` — ${genResult.conflict_count} conflict(s)`}
               {genResult.quality && ` · Overall quality: ${genResult.quality.overall_score}%`}
             </span>
-            <button onClick={() => setGenResult(null)} className="text-zinc-400 hover:text-zinc-600">&times;</button>
+            <button onClick={() => setGenResult(null)} className="text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]">&times;</button>
           </div>
           {/* Diagnostics: show skipped classes/subjects */}
           {genResult.diagnostics && genResult.diagnostics.length > 0 && (
-            <details className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-xs text-amber-800">
+            <details className="mt-2 rounded-lg border border-[var(--color-warning)]/30 bg-[var(--color-warning)]/10 px-4 py-2 text-xs text-[var(--color-warning)]">
               <summary className="cursor-pointer font-medium">
                 {genResult.diagnostics.length} class(es)/subject(s) skipped — click for details
               </summary>
@@ -383,7 +384,7 @@ export default function TimetablePage() {
                 ))}
               </div>
               {genResult.hints && (
-                <div className="mt-2 border-t border-amber-200 pt-2 text-amber-700">
+                <div className="mt-2 border-t border-[var(--color-warning)]/30 pt-2 text-[var(--color-warning)]">
                   <p className="font-medium mb-1">To fix:</p>
                   <ul className="list-disc list-inside space-y-0.5">
                     {genResult.hints.map((h: string, i: number) => <li key={i}>{h}</li>)}
@@ -396,14 +397,14 @@ export default function TimetablePage() {
       )}
 
       {/* Tabs */}
-      <div className="flex gap-1 rounded-lg bg-zinc-100 p-1 w-fit">
-        <button onClick={() => setTab('view')} className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-all ${tab === 'view' ? 'bg-white shadow-sm text-[#001A4D]' : 'text-zinc-500 hover:text-zinc-700'}`}>
+      <div className="flex gap-1 rounded-lg bg-[var(--color-bg-muted)] p-1 w-fit">
+        <button onClick={() => setTab('view')} className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-all ${tab === 'view' ? 'bg-[var(--color-bg-card)] shadow-sm text-[var(--color-bg-sidebar)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}>
           <Calendar className="h-4 w-4" /> Timetable
         </button>
-        <button onClick={() => setTab('quality')} className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-all ${tab === 'quality' ? 'bg-white shadow-sm text-[#001A4D]' : 'text-zinc-500 hover:text-zinc-700'}`}>
+        <button onClick={() => setTab('quality')} className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-all ${tab === 'quality' ? 'bg-[var(--color-bg-card)] shadow-sm text-[var(--color-bg-sidebar)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}>
           <BarChart3 className="h-4 w-4" /> Quality
         </button>
-        <button onClick={() => setTab('history')} className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-all ${tab === 'history' ? 'bg-white shadow-sm text-[#001A4D]' : 'text-zinc-500 hover:text-zinc-700'}`}>
+        <button onClick={() => setTab('history')} className={`flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-all ${tab === 'history' ? 'bg-[var(--color-bg-card)] shadow-sm text-[var(--color-bg-sidebar)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}>
           <Clock className="h-4 w-4" /> History
         </button>
       </div>
@@ -412,7 +413,7 @@ export default function TimetablePage() {
       {tab === 'view' && (
         <div className="overflow-x-auto">
           {entries.length === 0 && !loading ? (
-            <div className="text-center py-16 text-zinc-400">
+            <div className="text-center py-16 text-[var(--color-text-muted)]">
               {terms.length === 0 ? (
                 <>
                   <Calendar className="h-12 w-12 mx-auto mb-3 opacity-50" />
@@ -426,8 +427,8 @@ export default function TimetablePage() {
                   <Sparkles className="h-12 w-12 mx-auto mb-3 opacity-50" />
                   <p className="text-lg font-medium">No timetable generated yet</p>
                   <p className="text-sm mt-1">Select a term above and click <strong>&ldquo;Generate Timetable&rdquo;</strong></p>
-                  <div className="mt-5 max-w-md mx-auto text-left bg-zinc-50 rounded-lg border border-zinc-200 p-4 text-xs text-zinc-600">
-                    <p className="font-medium text-zinc-800 mb-2">Setup checklist (go to Setup):</p>
+                  <div className="mt-5 max-w-md mx-auto text-left bg-[var(--color-bg-secondary)] rounded-lg border border-[var(--color-border)] p-4 text-xs text-[var(--color-text-secondary)]">
+                    <p className="font-medium text-[var(--color-text-primary)] mb-2">Setup checklist (go to Setup):</p>
                     <ol className="space-y-1.5 list-decimal list-inside">
                       <li><strong>Subjects</strong> &mdash; Add subjects with codes, difficulty tiers</li>
                       <li><strong>Teacher Assignments</strong> &mdash; Assign at least one teacher to each subject</li>
@@ -442,10 +443,10 @@ export default function TimetablePage() {
             <table className="w-full border-collapse text-xs min-w-[900px]">
               <thead>
                 <tr>
-                  <th className="bg-[#001A4D] text-white px-3 py-2.5 text-left sticky left-0 z-10 min-w-[100px]">Period</th>
+                  <th className="bg-[var(--color-bg-sidebar)] text-[var(--color-text-sidebar)] px-3 py-2.5 text-left sticky left-0 z-10 min-w-[100px]">Period</th>
                   {DAYS.map((day, i) => (
                     <th key={day} className={`${DAY_COLORS[i]} px-2 py-2.5 text-center min-w-[160px]`}>
-                      <span className="font-semibold text-zinc-800 text-sm">{day}</span>
+                      <span className="font-semibold text-[var(--color-text-primary)] text-sm">{day}</span>
                     </th>
                   ))}
                 </tr>
@@ -458,16 +459,16 @@ export default function TimetablePage() {
                     return { day, cellEntries }
                   })
                   return (
-                    <tr key={pn} className="border-t border-zinc-200">
-                      <td className="bg-zinc-50 px-3 py-2 font-medium text-zinc-700 sticky left-0 z-10 border-r border-zinc-200">
+                    <tr key={pn} className="border-t border-[var(--color-border)]">
+                      <td className="bg-[var(--color-bg-secondary)] px-3 py-2 font-medium text-[var(--color-text-primary)] sticky left-0 z-10 border-r border-[var(--color-border)]">
                         <span className="block text-sm">
                           {getSlotLabel(slots, 1, pn)}
                         </span>
-                        <span className="text-[10px] text-zinc-400 block">
+                        <span className="text-[10px] text-[var(--color-text-muted)] block">
                           {getSlotTime(slots, 1, pn)}
                         </span>
                         {getSlotTime(slots, 5, pn) && getSlotTime(slots, 5, pn) !== getSlotTime(slots, 1, pn) && (
-                          <span className="text-[8px] text-rose-400 block">
+                          <span className="text-[8px] text-[var(--color-danger)]/70 block">
                             Fri: {getSlotTime(slots, 5, pn)}
                           </span>
                         )}
@@ -475,29 +476,29 @@ export default function TimetablePage() {
                       {teachingSlots.map(({ day, cellEntries }) => {
                         const slotExists = teachingPeriodExists(day, pn)
                         return (
-                        <td key={`${day}-${pn}`} className={`${DAY_COLORS[day - 1]} px-1.5 py-1 border-r border-zinc-100 align-top`}>
+                        <td key={`${day}-${pn}`} className={`${DAY_COLORS[day - 1]} px-1.5 py-1 border-r border-[var(--color-border)] align-top`}>
                           {!slotExists ? (
-                            <span className="text-[8px] text-zinc-100 block text-center py-2 italic">N/A</span>
+                            <span className="text-[8px] text-[var(--color-text-sidebar)] block text-center py-2 italic">N/A</span>
                           ) : cellEntries.length === 0 ? (
-                            <span className="text-[9px] text-zinc-200 block text-center py-2">&mdash;</span>
+                            <span className="text-[9px] text-[var(--color-text-sidebar-muted)] block text-center py-2">&mdash;</span>
                           ) : (
                             <div className="space-y-1">
                               {cellEntries.map((e) => (
                                 <div key={e.id} className={`rounded border-l-2 px-1.5 py-1 shadow-sm ${
                                   e.subject?.difficulty_tier
-                                    ? DIFFICULTY_COLORS[e.subject.difficulty_tier] || 'bg-white border-zinc-200'
-                                    : 'bg-white border-zinc-200'
+                                    ? DIFFICULTY_COLORS[e.subject.difficulty_tier] || 'bg-[var(--color-bg-card)] border-[var(--color-border)]'
+                                    : 'bg-[var(--color-bg-card)] border-[var(--color-border)]'
                                 }`}>
-                                  <p className="font-semibold text-[10px] text-[#001A4D] leading-tight truncate flex items-center gap-1">
+                                  <p className="font-semibold text-[10px] text-[var(--color-bg-sidebar)] leading-tight truncate flex items-center gap-1">
                                     {e.subject?.code || e.subject?.name || '?'}
                                     {e.subject?.needs_double_period && (
-                                      <span className="text-[7px] text-purple-500 font-normal">[2x]</span>
+                                      <span className="text-[7px] text-[var(--color-accent)]/70 font-normal">[2x]</span>
                                     )}
                                   </p>
-                                  <p className="text-[8px] text-zinc-500 truncate">
+                                  <p className="text-[8px] text-[var(--color-text-secondary)] truncate">
                                     {e.teacher?.full_name?.split(' ').slice(0, 2).join(' ') || '?'}
                                   </p>
-                                  <p className="text-[7px] text-zinc-400">
+                                  <p className="text-[7px] text-[var(--color-text-muted)]">
                                     {e.class?.name} {e.class?.arm || ''}
                                   </p>
                                 </div>
@@ -512,20 +513,20 @@ export default function TimetablePage() {
                 })}
                 {/* Non-teaching periods row */}
                 {nonTeachingPeriods.length > 0 && (
-                  <tr className="border-t border-zinc-200">
-                    <td className="bg-zinc-100 px-3 py-2 font-medium text-zinc-500 sticky left-0 z-10 border-r border-zinc-200 text-xs italic">
+                  <tr className="border-t border-[var(--color-border)]">
+                    <td className="bg-[var(--color-bg-muted)] px-3 py-2 font-medium text-[var(--color-text-secondary)] sticky left-0 z-10 border-r border-[var(--color-border)] text-xs italic">
                       Non-teaching periods
                     </td>
                     {DAYS.map((_, di) => {
                       const dayOfWeek = di + 1
                       const dayNonTeaching = slots.filter((s) => s.day_of_week === dayOfWeek && (s.is_break || s.is_assembly)).sort((a, b) => a.period_number - b.period_number)
                       return (
-                        <td key={`non-${di}`} className="bg-zinc-50 px-2 py-2 border-r border-zinc-100">
+                        <td key={`non-${di}`} className="bg-[var(--color-bg-secondary)] px-2 py-2 border-r border-[var(--color-border)]">
                           {dayNonTeaching.length > 0 ? (
                             <div className="flex flex-wrap gap-1">
                               {dayNonTeaching.map((nt) => (
                                 <span key={nt.period_number} className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-medium ${
-                                  nt.is_assembly ? 'bg-amber-100 text-amber-700' : 'bg-zinc-100 text-zinc-500'
+                                  nt.is_assembly ? 'bg-[var(--color-warning)]/20 text-[var(--color-warning)]' : 'bg-[var(--color-bg-muted)] text-[var(--color-text-secondary)]'
                                 }`}>
                                   {nt.period_label || `P${nt.period_number}`}
                                   <span className="opacity-60">{getSlotTime(slots, dayOfWeek, nt.period_number)}</span>
@@ -533,7 +534,7 @@ export default function TimetablePage() {
                               ))}
                             </div>
                           ) : (
-                            <span className="text-[9px] text-zinc-200">&mdash;</span>
+                            <span className="text-[9px] text-[var(--color-text-sidebar-muted)]">&mdash;</span>
                           )}
                         </td>
                       )
@@ -551,7 +552,7 @@ export default function TimetablePage() {
         <div className="space-y-4">
           {latestGen?.quality ? (
             <>
-              <div className="bg-gradient-to-br from-[#001A4D] to-blue-900 rounded-xl p-6 text-white">
+              <div className="bg-gradient-to-br from-[#001A4D] to-blue-900 rounded-xl p-6 text-[var(--color-text-sidebar)]">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm opacity-80">Overall Quality Score</p>
@@ -562,9 +563,9 @@ export default function TimetablePage() {
                     <p className="text-xs opacity-60 mt-1">constraint-sat-v2</p>
                   </div>
                 </div>
-                <div className="mt-4 w-full bg-white/20 rounded-full h-2">
+                <div className="mt-4 w-full bg-[var(--color-bg-card)]/20 rounded-full h-2">
                   <div
-                    className="bg-[#C9A84C] h-2 rounded-full transition-all"
+                    className="bg-[var(--color-accent)] h-2 rounded-full transition-all"
                     style={{ width: `${latestGen.quality.overall_score}%` }}
                   />
                 </div>
@@ -574,37 +575,37 @@ export default function TimetablePage() {
                 {latestGen.quality.reports.map((r: QualityReport, i: number) => (
                   <div key={i} className={`rounded-xl border p-4 ${qualityBg(r.score)}`}>
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-medium text-sm text-zinc-800">{r.name}</h3>
+                      <h3 className="font-medium text-sm text-[var(--color-text-primary)]">{r.name}</h3>
                       <span className={`text-2xl font-bold ${qualityColor(r.score)}`}>{r.score}%</span>
                     </div>
-                    <div className="w-full bg-zinc-200 rounded-full h-1.5">
+                    <div className="w-full bg-[var(--color-bg-muted)] rounded-full h-1.5">
                       <div
                         className={`h-1.5 rounded-full transition-all ${
-                          r.score >= 90 ? 'bg-green-500' : r.score >= 70 ? 'bg-blue-500' : r.score >= 50 ? 'bg-amber-500' : 'bg-red-500'
+                          r.score >= 90 ? 'bg-[var(--color-success)]/100' : r.score >= 70 ? 'bg-[var(--color-info)]/100' : r.score >= 50 ? 'bg-[var(--color-warning)]/100' : 'bg-[var(--color-danger)]/100'
                         }`}
                         style={{ width: `${r.score}%` }}
                       />
                     </div>
-                    <p className="text-xs text-zinc-500 mt-2">{r.details}</p>
+                    <p className="text-xs text-[var(--color-text-secondary)] mt-2">{r.details}</p>
                   </div>
                 ))}
               </div>
 
-              <details className="text-xs text-zinc-400">
-                <summary className="cursor-pointer hover:text-zinc-600 font-medium">
+              <details className="text-xs text-[var(--color-text-muted)]">
+                <summary className="cursor-pointer hover:text-[var(--color-text-secondary)] font-medium">
                   How quality is measured
                 </summary>
-                <div className="mt-2 space-y-1 bg-zinc-50 rounded-lg p-3">
+                <div className="mt-2 space-y-1 bg-[var(--color-bg-secondary)] rounded-lg p-3">
                   <p><strong>Subject Distribution:</strong> Subjects should be spread across different days, not clumped. E.g., if a subject needs 3 periods/week, it should ideally be on 3 different days.</p>
                   <p><strong>Hard Subjects in Morning:</strong> Mathematics, English, Sciences (difficulty tier 1-2) are best taught before lunch when students are more alert. This score reflects what percentage land in morning slots.</p>
                   <p><strong>Teacher Load Balance:</strong> A teacher&apos;s periods should be roughly equal across the 5 days. Large variance means a teacher is overloaded some days and underloaded others.</p>
                   <p><strong>Conflict-Free Rate:</strong> Percentage of required periods successfully scheduled without teacher/class/room clashes.</p>
-                  <p className="text-[10px] text-zinc-400 mt-2">Overall score = average of all four metrics.</p>
+                  <p className="text-[10px] text-[var(--color-text-muted)] mt-2">Overall score = average of all four metrics.</p>
                 </div>
               </details>
             </>
           ) : (
-            <div className="text-center py-16 text-zinc-400">
+            <div className="text-center py-16 text-[var(--color-text-muted)]">
               <BarChart3 className="h-12 w-12 mx-auto mb-3 opacity-50" />
               <p className="text-sm">Generate a timetable to see quality metrics</p>
             </div>
@@ -616,73 +617,79 @@ export default function TimetablePage() {
       {tab === 'history' && (
         <div className="space-y-3">
           {genHistory.length === 0 ? (
-            <div className="text-center py-12 text-zinc-400">
+            <div className="text-center py-12 text-[var(--color-text-muted)]">
               <p className="text-sm">No generations yet</p>
             </div>
           ) : (
-            genHistory.map((gen) => (
-              <div key={gen.id} className="bg-white rounded-lg border p-4 flex items-start gap-4">
-                <div className={`rounded-full p-2 ${
-                  gen.status === 'published' ? 'bg-green-100' : gen.status === 'draft' ? 'bg-amber-100' : 'bg-zinc-100'
-                }`}>
-                  {gen.status === 'published' ? <CheckCircle2 className="h-5 w-5 text-green-600" /> :
-                   gen.status === 'draft' ? <AlertTriangle className="h-5 w-5 text-amber-600" /> :
-                   <RefreshCw className="h-5 w-5 text-zinc-400" />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-medium text-sm capitalize">{gen.status}</span>
-                    {gen.quality?.overall_score && (
-                      <span className={`text-xs font-semibold ${qualityColor(gen.quality.overall_score)}`}>
-                        Quality: {gen.quality.overall_score}%
-                      </span>
-                    )}
-                    <span className="text-xs text-zinc-400">
-                      {new Date(gen.generated_at).toLocaleString()}
-                    </span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${
-                      gen.conflict_count === 0 ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'
-                    }`}>
-                      {gen.conflict_count === 0 ? 'No conflicts' : `${gen.conflict_count} conflicts`}
-                    </span>
-                    <span className="text-xs bg-zinc-100 text-zinc-500 px-2 py-0.5 rounded-full">
-                      {gen.algorithm_used}
-                    </span>
+            <CollapsibleSection
+              items={genHistory}
+              keyExtractor={(gen) => gen.id}
+              defaultVisible={5}
+              className="space-y-3"
+              renderItem={(gen) => (
+                <div className="bg-[var(--color-bg-card)] rounded-lg border p-4 flex items-start gap-4">
+                  <div className={`rounded-full p-2 ${
+                    gen.status === 'published' ? 'bg-[var(--color-success)]/20' : gen.status === 'draft' ? 'bg-[var(--color-warning)]/20' : 'bg-[var(--color-bg-muted)]'
+                  }`}>
+                    {gen.status === 'published' ? <CheckCircle2 className="h-5 w-5 text-[var(--color-success)]" /> :
+                     gen.status === 'draft' ? <AlertTriangle className="h-5 w-5 text-[var(--color-warning)]" /> :
+                     <RefreshCw className="h-5 w-5 text-[var(--color-text-muted)]" />}
                   </div>
-                  <p className="text-sm text-zinc-600 mt-1">
-                    {gen.assigned_periods}/{gen.total_periods} periods assigned
-                    {gen.term?.name && ` — ${gen.term.name}`}
-                  </p>
-                  {gen.conflicts && Array.isArray(gen.conflicts) && gen.conflicts.length > 0 && (
-                    <details className="mt-2">
-                      <summary className="text-xs text-amber-600 cursor-pointer hover:text-amber-800">
-                        View {gen.conflicts.length} conflict(s)
-                      </summary>
-                      <div className="mt-2 space-y-1 max-h-40 overflow-y-auto">
-                        {gen.conflicts.slice(0, 20).map((c, i) => (
-                          <p key={i} className="text-xs text-zinc-500">&bull; {c.class} &mdash; {c.subject}: {c.issue}</p>
-                        ))}
-                      </div>
-                    </details>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-medium text-sm capitalize">{gen.status}</span>
+                      {gen.quality?.overall_score && (
+                        <span className={`text-xs font-semibold ${qualityColor(gen.quality.overall_score)}`}>
+                          Quality: {gen.quality.overall_score}%
+                        </span>
+                      )}
+                      <span className="text-xs text-[var(--color-text-muted)]">
+                        {new Date(gen.generated_at).toLocaleString()}
+                      </span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${
+                        gen.conflict_count === 0 ? 'bg-[var(--color-success)]/10 text-[var(--color-success)]' : 'bg-[var(--color-warning)]/10 text-[var(--color-warning)]'
+                      }`}>
+                        {gen.conflict_count === 0 ? 'No conflicts' : `${gen.conflict_count} conflicts`}
+                      </span>
+                      <span className="text-xs bg-[var(--color-bg-muted)] text-[var(--color-text-secondary)] px-2 py-0.5 rounded-full">
+                        {gen.algorithm_used}
+                      </span>
+                    </div>
+                    <p className="text-sm text-[var(--color-text-secondary)] mt-1">
+                      {gen.assigned_periods}/{gen.total_periods} periods assigned
+                      {gen.term?.name && ` — ${gen.term.name}`}
+                    </p>
+                    {gen.conflicts && Array.isArray(gen.conflicts) && gen.conflicts.length > 0 && (
+                      <details className="mt-2">
+                        <summary className="text-xs text-[var(--color-warning)] cursor-pointer hover:text-[var(--color-warning)]">
+                          View {gen.conflicts.length} conflict(s)
+                        </summary>
+                        <div className="mt-2 space-y-1 max-h-40 overflow-y-auto">
+                          {gen.conflicts.slice(0, 20).map((c, i) => (
+                            <p key={i} className="text-xs text-[var(--color-text-secondary)]">&bull; {c.class} &mdash; {c.subject}: {c.issue}</p>
+                          ))}
+                        </div>
+                      </details>
+                    )}
+                  </div>
+                  {gen.status === 'draft' && (
+                    <button
+                      onClick={() => handlePublish(gen.id)}
+                      className="shrink-0 rounded-lg bg-[var(--color-success)] text-[var(--color-text-sidebar)] px-3 py-1.5 text-xs font-medium hover:bg-[var(--color-success)]/90 transition-colors"
+                    >
+                      Publish
+                    </button>
                   )}
                 </div>
-                {gen.status === 'draft' && (
-                  <button
-                    onClick={() => handlePublish(gen.id)}
-                    className="shrink-0 rounded-lg bg-[#008751] text-white px-3 py-1.5 text-xs font-medium hover:bg-green-800 transition-colors"
-                  >
-                    Publish
-                  </button>
-                )}
-              </div>
-            ))
+              )}
+            />
           )}
         </div>
       )}
 
       {/* Count summary */}
       {entries.length > 0 && (
-        <p className="text-xs text-zinc-400 text-right">
+        <p className="text-xs text-[var(--color-text-muted)] text-right">
           {filteredEntries.length} timetable entr{filteredEntries.length === 1 ? 'y' : 'ies'}
           {selectedClassId && ` for ${classes.find((c) => c.id === selectedClassId)?.name}`}
         </p>

@@ -28,14 +28,14 @@ export function QRCode({ id, label }: QRCodeProps) {
   }, [id])
 
   if (loading) {
-    return <div className="w-48 h-48 mx-auto bg-zinc-100 rounded-lg animate-pulse" />
+    return <div className="w-48 h-48 mx-auto bg-[var(--color-bg-muted)] rounded-lg animate-pulse" />
   }
 
   return (
     <div className="text-center">
-      <div className="bg-white p-3 rounded-lg border border-zinc-200 inline-block" dangerouslySetInnerHTML={{ __html: svg }} />
-      {label && <p className="mt-2 text-sm font-medium text-zinc-700">{label}</p>}
-      <p className="text-xs text-zinc-400 font-mono">{id}</p>
+      <div className="bg-[var(--color-bg-card)] p-3 rounded-lg border border-[var(--color-border)] inline-block" dangerouslySetInnerHTML={{ __html: svg }} />
+      {label && <p className="mt-2 text-sm font-medium text-[var(--color-text-primary)]">{label}</p>}
+      <p className="text-xs text-[var(--color-text-muted)] font-mono">{id}</p>
     </div>
   )
 }
@@ -48,7 +48,7 @@ export function QRButton({ id, name, title }: { id: string; name: string; title:
     <>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1 text-xs text-violet-600 hover:text-violet-800 transition-colors"
+        className="flex items-center gap-1 text-xs text-[var(--color-accent)]/70 hover:text-[var(--color-accent)] transition-colors"
       >
         <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <rect x="3" y="3" width="5" height="5" />
@@ -63,12 +63,12 @@ export function QRButton({ id, name, title }: { id: string; name: string; title:
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setOpen(false)}>
           <div
-            className="bg-white rounded-xl shadow-2xl p-6 max-w-sm mx-4 text-center"
+            className="bg-[var(--color-bg-card)] rounded-xl shadow-2xl p-6 max-w-sm mx-4 text-center"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-zinc-800">{title}</h3>
-              <button onClick={() => setOpen(false)} className="text-zinc-400 hover:text-zinc-600">
+              <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">{title}</h3>
+              <button onClick={() => setOpen(false)} className="text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]">
                 <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M18 6 6 18" /><path d="m6 6 12 12" />
                 </svg>
@@ -92,7 +92,7 @@ export function QRButton({ id, name, title }: { id: string; name: string; title:
                     }
                   }
                 }}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-border-hover)] px-3 py-1.5 text-xs font-medium text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)] transition-colors"
               >
                 <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />

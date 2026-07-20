@@ -92,7 +92,7 @@ export function SettingsForm() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-blue-500" />
+            <Building2 className="h-4 w-4 text-[var(--color-info)]" />
             <CardTitle>School Information</CardTitle>
           </div>
           <CardDescription>Configure your school name and operating hours</CardDescription>
@@ -130,7 +130,7 @@ export function SettingsForm() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-blue-500" />
+            <Clock className="h-4 w-4 text-[var(--color-info)]" />
             <CardTitle>Attendance Rules</CardTitle>
           </div>
           <CardDescription>
@@ -158,7 +158,7 @@ export function SettingsForm() {
               onChange={(e) => setSettings({ ...settings, cutoff_minute: parseInt(e.target.value) || 0 })}
             />
           </div>
-          <p className="text-sm text-zinc-500 bg-zinc-50 rounded-lg px-3 py-2">
+          <p className="text-sm text-[var(--color-text-secondary)] bg-[var(--color-bg-secondary)] rounded-lg px-3 py-2">
             Staff checking in after{' '}
             <strong>
               {String(settings.cutoff_hour).padStart(2, '0')}:
@@ -177,29 +177,29 @@ export function SettingsForm() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <QrCode className="h-4 w-4 text-blue-500" />
+            <QrCode className="h-4 w-4 text-[var(--color-info)]" />
             <CardTitle>Check-In Methods</CardTitle>
           </div>
           <CardDescription>Enable or disable attendance capture methods</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          <label className="flex items-center justify-between rounded-lg border border-zinc-200 p-3 hover:bg-zinc-50 cursor-pointer">
+          <label className="flex items-center justify-between rounded-lg border border-[var(--color-border)] p-3 hover:bg-[var(--color-bg-hover)] cursor-pointer">
             <div>
-              <p className="text-sm font-medium text-zinc-700">Manual Staff ID Entry</p>
-              <p className="text-xs text-zinc-400">Staff type their ID to check in</p>
+              <p className="text-sm font-medium text-[var(--color-text-primary)]">Manual Staff ID Entry</p>
+              <p className="text-xs text-[var(--color-text-muted)]">Staff type their ID to check in</p>
             </div>
-            <input type="checkbox" checked className="h-4 w-4 text-blue-600 rounded border-zinc-300" disabled />
+            <input type="checkbox" checked className="h-4 w-4 text-[var(--color-info)] rounded border-[var(--color-border-hover)]" disabled />
           </label>
-          <label className="flex items-center justify-between rounded-lg border border-zinc-200 p-3 hover:bg-zinc-50 cursor-pointer">
+          <label className="flex items-center justify-between rounded-lg border border-[var(--color-border)] p-3 hover:bg-[var(--color-bg-hover)] cursor-pointer">
             <div>
-              <p className="text-sm font-medium text-zinc-700">QR Code Scanning</p>
-              <p className="text-xs text-zinc-400">Staff scan their QR badge to check in</p>
+              <p className="text-sm font-medium text-[var(--color-text-primary)]">QR Code Scanning</p>
+              <p className="text-xs text-[var(--color-text-muted)]">Staff scan their QR badge to check in</p>
             </div>
             <input
               type="checkbox"
               checked={settings.enable_qr_checkin}
               onChange={(e) => setSettings({ ...settings, enable_qr_checkin: e.target.checked })}
-              className="h-4 w-4 text-blue-600 rounded border-zinc-300"
+              className="h-4 w-4 text-[var(--color-info)] rounded border-[var(--color-border-hover)]"
             />
           </label>
         </CardContent>
@@ -208,25 +208,25 @@ export function SettingsForm() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Bell className="h-4 w-4 text-blue-500" />
+            <Bell className="h-4 w-4 text-[var(--color-info)]" />
             <CardTitle>Notifications</CardTitle>
           </div>
           <CardDescription>Configure automated alerts and reminders</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          <label className="flex items-center justify-between rounded-lg border border-zinc-200 p-3 hover:bg-zinc-50 cursor-pointer">
+          <label className="flex items-center justify-between rounded-lg border border-[var(--color-border)] p-3 hover:bg-[var(--color-bg-hover)] cursor-pointer">
             <div>
-              <p className="text-sm font-medium text-zinc-700">WhatsApp Notifications</p>
-              <p className="text-xs text-zinc-400">Send attendance alerts via WhatsApp Cloud API</p>
+              <p className="text-sm font-medium text-[var(--color-text-primary)]">WhatsApp Notifications</p>
+              <p className="text-xs text-[var(--color-text-muted)]">Send attendance alerts via WhatsApp Cloud API</p>
             </div>
             <input
               type="checkbox"
               checked={settings.enable_whatsapp_notifications}
               onChange={(e) => setSettings({ ...settings, enable_whatsapp_notifications: e.target.checked })}
-              className="h-4 w-4 text-blue-600 rounded border-zinc-300"
+              className="h-4 w-4 text-[var(--color-info)] rounded border-[var(--color-border-hover)]"
             />
           </label>
-          <p className="text-xs text-zinc-400 italic">
+          <p className="text-xs text-[var(--color-text-muted)] italic">
             WhatsApp integration requires Make.com webhook setup. See documentation.
           </p>
         </CardContent>
@@ -235,16 +235,16 @@ export function SettingsForm() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <RefreshCw className="h-4 w-4 text-blue-500" />
+            <RefreshCw className="h-4 w-4 text-[var(--color-info)]" />
             <CardTitle>Seed Data</CardTitle>
           </div>
           <CardDescription>Populate the database with sample staff records for testing</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-zinc-500 mb-3">
-            Run the migration SQL in <code className="text-xs bg-zinc-100 px-1 py-0.5 rounded">src/db/migrations/001_staff_schema.sql</code>{' '}
+          <p className="text-sm text-[var(--color-text-secondary)] mb-3">
+            Run the migration SQL in <code className="text-xs bg-[var(--color-bg-muted)] px-1 py-0.5 rounded">src/db/migrations/001_staff_schema.sql</code>{' '}
             in your Supabase SQL editor to create the schema and departments.
-            Then run <code className="text-xs bg-zinc-100 px-1 py-0.5 rounded">src/db/migrations/002_seed_data.sql</code> for sample staff.
+            Then run <code className="text-xs bg-[var(--color-bg-muted)] px-1 py-0.5 rounded">src/db/migrations/002_seed_data.sql</code> for sample staff.
           </p>
         </CardContent>
       </Card>

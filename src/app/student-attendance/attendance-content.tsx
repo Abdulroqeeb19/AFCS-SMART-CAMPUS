@@ -75,8 +75,8 @@ export function StudentAttendanceContent() {
     return (
       <Card>
         <CardContent className="p-12 text-center">
-          <AlertCircle className="h-12 w-12 text-amber-400 mx-auto mb-3" />
-          <p className="text-zinc-500 text-sm mb-4">{error}</p>
+          <AlertCircle className="h-12 w-12 text-[var(--color-warning)] mx-auto mb-3" />
+          <p className="text-[var(--color-text-secondary)] text-sm mb-4">{error}</p>
           <Button onClick={loadData} variant="outline" className="gap-2">
             <RefreshCw className="h-4 w-4" /> Retry
           </Button>
@@ -97,11 +97,11 @@ export function StudentAttendanceContent() {
       )}
 
       <div className="flex items-center gap-3">
-        <Filter className="h-4 w-4 text-zinc-400" />
+        <Filter className="h-4 w-4 text-[var(--color-text-muted)]" />
         <select
           value={selectedClass}
           onChange={(e) => { setSelectedClass(e.target.value); setLoading(true) }}
-          className="h-9 rounded-lg border border-zinc-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="h-9 rounded-lg border border-[var(--color-border-hover)] bg-[var(--color-bg-card)] px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">All Classes</option>
           {classes.map((c) => (

@@ -1,5 +1,6 @@
 'use client'
 
+import { CollapsibleSection } from '@/components/collapsible-section'
 import { useState, useEffect, type ComponentType } from 'react'
 import { Hint } from '@/components/hint'
 import {
@@ -138,7 +139,7 @@ export default function AutomationPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#001A4D]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[var(--color-text-primary)]" />
       </div>
     )
   }
@@ -146,9 +147,9 @@ export default function AutomationPage() {
   if (error) {
     return (
       <div className="max-w-4xl mx-auto">
-        <div className="rounded-lg bg-red-50 border border-red-200 p-6 text-center">
-          <p className="text-red-700">{error}</p>
-          <button onClick={fetchRules} className="mt-3 text-sm text-red-600 underline">Retry</button>
+        <div className="rounded-lg bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 p-6 text-center">
+          <p className="text-[var(--color-danger)]">{error}</p>
+          <button onClick={fetchRules} className="mt-3 text-sm text-[var(--color-danger)] underline">Retry</button>
         </div>
       </div>
     )
@@ -158,8 +159,8 @@ export default function AutomationPage() {
     <div className="space-y-6 max-w-4xl mx-auto">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#001A4D]">Automation Hub</h1>
-          <p className="text-sm text-zinc-500 mt-0.5 flex items-center gap-1">
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Automation Hub</h1>
+          <p className="text-sm text-[var(--color-text-secondary)] mt-0.5 flex items-center gap-1">
             All automations run on a schedule. Toggle rules on/off, test them, or run all due now.
             <Hint text="The automation engine runs every 5 minutes via Vercel Cron. Each rule checks if it's the right time/day before executing." side="right" />
           </p>
@@ -168,7 +169,7 @@ export default function AutomationPage() {
           <button
             onClick={runAllActive}
             disabled={running}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#001A4D] text-white px-4 py-2 text-sm font-medium hover:bg-blue-900 disabled:opacity-50 transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-[var(--color-bg-sidebar)] text-[var(--color-text-sidebar)] px-4 py-2 text-sm font-medium hover:bg-[var(--color-bg-sidebar)] disabled:opacity-50 transition-colors"
           >
             {running ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
             Run All Due
@@ -178,35 +179,39 @@ export default function AutomationPage() {
 
       {/* Status bar */}
       {runStatus && (
-        <div className="rounded-lg bg-blue-50 border border-blue-200 px-4 py-3 text-sm text-blue-700 whitespace-pre-line">
+        <div className="rounded-lg bg-[var(--color-info)]/10 border border-[var(--color-info)]/30 px-4 py-3 text-sm text-[var(--color-info)] whitespace-pre-line">
           {runStatus}
         </div>
       )}
 
       {/* Automation Rules */}
-      <div className="space-y-3">
-        {rules.map((rule) => {
+      <CollapsibleSection
+        items={rules}
+        keyExtractor={(rule) => rule.key}
+        defaultVisible={5}
+        className="space-y-3"
+        renderItem={(rule) => {
           const Icon = CHANNEL_ICONS[rule.channel] || Bell
           return (
-            <div key={rule.key} className="bg-white rounded-lg border p-4">
+            <div className="bg-[var(--color-bg-card)] rounded-lg border p-4">
               <div className="flex items-start gap-4">
                 <button
                   onClick={() => toggleRule(rule.key, rule.is_active)}
-                  className={`shrink-0 mt-0.5 transition-colors ${rule.is_active ? 'text-[#008751]' : 'text-zinc-300'}`}
+                  className={`shrink-0 mt-0.5 transition-colors ${rule.is_active ? 'text-[var(--color-success)]' : 'text-[var(--color-text-muted)]'}`}
                 >
                   {rule.is_active ? <ToggleRight className="h-7 w-7" /> : <ToggleLeft className="h-7 w-7" />}
                 </button>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-medium text-sm text-zinc-900">{rule.label}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${rule.is_active ? 'bg-green-100 text-green-700' : 'bg-zinc-100 text-zinc-500'}`}>
+                    <span className="font-medium text-sm text-[var(--color-text-primary)]">{rule.label}</span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${rule.is_active ? 'bg-[var(--color-success)]/20 text-[var(--color-success)]' : 'bg-[var(--color-bg-muted)] text-[var(--color-text-secondary)]'}`}>
                       {rule.is_active ? 'Active' : 'Inactive'}
                     </span>
                     {rule.description && <Hint text={rule.description} side="top" />}
                   </div>
-                  <p className="text-xs text-zinc-500 mt-1">{rule.description}</p>
-                  <div className="flex items-center gap-3 mt-2 text-xs text-zinc-400">
+                  <p className="text-xs text-[var(--color-text-secondary)] mt-1">{rule.description}</p>
+                  <div className="flex items-center gap-3 mt-2 text-xs text-[var(--color-text-muted)]">
                     <span className="flex items-center gap-1">
                       <Icon className="h-3 w-3" />
                       {rule.channel}
@@ -216,7 +221,7 @@ export default function AutomationPage() {
                       {scheduleLabels[rule.key] || rule.cron_schedule || 'on demand'}
                     </span>
                     {rule.last_run_at && (
-                      <span className="text-zinc-300">
+                      <span className="text-[var(--color-text-muted)]">
                         Last run: {new Date(rule.last_run_at).toLocaleTimeString()}
                       </span>
                     )}
@@ -226,36 +231,36 @@ export default function AutomationPage() {
                 <button
                   onClick={() => testRule(rule.key)}
                   disabled={running || !rule.is_active}
-                  className="shrink-0 rounded-lg border border-zinc-300 px-3 py-1.5 text-xs font-medium hover:bg-zinc-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="shrink-0 rounded-lg border border-[var(--color-border-hover)] px-3 py-1.5 text-xs font-medium hover:bg-[var(--color-bg-hover)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Run Test
                 </button>
               </div>
             </div>
           )
-        })}
-      </div>
+        }}
+      />
 
       {/* Telegram automation commands */}
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4 space-y-3">
-        <h3 className="font-medium text-sm text-green-800 flex items-center gap-2">
+      <div className="bg-[var(--color-success)]/10 border border-[var(--color-success)]/30 rounded-lg p-4 space-y-3">
+        <h3 className="font-medium text-sm text-[var(--color-success)] flex items-center gap-2">
           <MessageCircle className="h-4 w-4" /> Control Automations via Telegram
         </h3>
-        <div className="text-sm text-green-700 space-y-1">
+        <div className="text-sm text-[var(--color-success)] space-y-1">
           <p>Admins can manage automations from Telegram:</p>
           <ul className="list-disc list-inside text-xs space-y-0.5 mt-1">
-            <li><code className="bg-green-100 px-1 rounded">/automate</code> — Run all due automations now</li>
-            <li><code className="bg-green-100 px-1 rounded">/automate rule_key</code> — Run a specific rule</li>
-            <li><code className="bg-green-100 px-1 rounded">/automation list</code> — List all rules & status</li>
-            <li><code className="bg-green-100 px-1 rounded">/automation toggle rule_key</code> — Enable/disable a rule</li>
-            <li><code className="bg-green-100 px-1 rounded">/schedule YYYY-MM-DD HH:MM message</code> — Schedule a broadcast</li>
+            <li><code className="bg-[var(--color-success)]/20 px-1 rounded">/automate</code> — Run all due automations now</li>
+            <li><code className="bg-[var(--color-success)]/20 px-1 rounded">/automate rule_key</code> — Run a specific rule</li>
+            <li><code className="bg-[var(--color-success)]/20 px-1 rounded">/automation list</code> — List all rules & status</li>
+            <li><code className="bg-[var(--color-success)]/20 px-1 rounded">/automation toggle rule_key</code> — Enable/disable a rule</li>
+            <li><code className="bg-[var(--color-success)]/20 px-1 rounded">/schedule YYYY-MM-DD HH:MM message</code> — Schedule a broadcast</li>
           </ul>
         </div>
       </div>
 
       {/* Scheduled broadcasts section */}
-      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-        <h3 className="font-medium text-sm text-purple-800 mb-2">📅 Scheduled Broadcasts</h3>
+      <div className="bg-[var(--color-accent)]/10 border-[var(--color-accent)]/20 rounded-lg p-4">
+        <h3 className="font-medium text-sm text-[var(--color-accent)]/70 mb-2">📅 Scheduled Broadcasts</h3>
         <ScheduledBroadcastsList />
       </div>
     </div>
@@ -274,25 +279,29 @@ function ScheduledBroadcastsList() {
       .finally(() => setLoading(false))
   }, [])
 
-  if (loading) return <p className="text-xs text-purple-600">Loading...</p>
-  if (!broadcasts.length) return <p className="text-xs text-purple-600">No scheduled broadcasts.</p>
+  if (loading) return <p className="text-xs text-[var(--color-accent)]/70">Loading...</p>
+  if (!broadcasts.length) return <p className="text-xs text-[var(--color-accent)]/70">No scheduled broadcasts.</p>
 
   return (
-    <div className="space-y-2">
-      {broadcasts.map((b: any) => (
-        <div key={b.id} className="bg-white rounded border border-purple-100 p-2.5 flex items-center justify-between">
-          <div className="text-xs text-zinc-700">
+    <CollapsibleSection
+      items={broadcasts}
+      keyExtractor={(b: any) => b.id}
+      defaultVisible={5}
+      className="space-y-2"
+      renderItem={(b: any) => (
+        <div className="bg-[var(--color-bg-card)] rounded border border-purple-100 p-2.5 flex items-center justify-between">
+          <div className="text-xs text-[var(--color-text-primary)]">
             <span className="font-medium">{b.title || 'Broadcast'}</span>
             {' — '}{b.content?.substring(0, 80)}{b.content?.length > 80 ? '…' : ''}
           </div>
-          <div className="text-xs text-zinc-400 shrink-0 ml-2">
+          <div className="text-xs text-[var(--color-text-muted)] shrink-0 ml-2">
             {new Date(b.scheduled_for).toLocaleDateString()} {new Date(b.scheduled_for).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            <span className={`ml-2 px-1.5 py-0.5 rounded ${b.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}`}>
+            <span className={`ml-2 px-1.5 py-0.5 rounded ${b.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-[var(--color-success)]/20 text-[var(--color-success)]'}`}>
               {b.status}
             </span>
           </div>
         </div>
-      ))}
-    </div>
+      )}
+    />
   )
 }

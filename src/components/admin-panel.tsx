@@ -33,7 +33,7 @@ export function AdminEditable({
         <span>{currentValue}</span>
         <button
           onClick={() => setEditing(true)}
-          className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded hover:bg-blue-100 text-blue-600"
+          className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded hover:bg-[var(--color-info)]/20 text-[var(--color-info)]"
         >
           <Pencil className="h-3 w-3" />
         </button>
@@ -57,7 +57,7 @@ export function AdminEditable({
         <select
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          className="text-sm border border-blue-300 rounded px-1 py-0.5 bg-blue-50"
+          className="text-sm border border-[var(--color-info)]/40 rounded px-1 py-0.5 bg-[var(--color-info)]/10"
           disabled={saving}
         >
           {options.map((o) => (
@@ -69,14 +69,14 @@ export function AdminEditable({
           type={type}
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          className="text-sm border border-blue-300 rounded px-1 py-0.5 bg-blue-50 w-32"
+          className="text-sm border border-[var(--color-info)]/40 rounded px-1 py-0.5 bg-[var(--color-info)]/10 w-32"
           disabled={saving}
         />
       )}
-      <button onClick={handleSave} className="p-0.5 rounded hover:bg-emerald-100 text-emerald-600" disabled={saving}>
+      <button onClick={handleSave} className="p-0.5 rounded hover:bg-[var(--color-success)]/20 text-[var(--color-success)]" disabled={saving}>
         {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
       </button>
-      <button onClick={() => { setEditing(false); setValue(currentValue) }} className="p-0.5 rounded hover:bg-red-100 text-red-600">
+      <button onClick={() => { setEditing(false); setValue(currentValue) }} className="p-0.5 rounded hover:bg-[var(--color-danger)]/20 text-[var(--color-danger)]">
         <X className="h-3 w-3" />
       </button>
     </div>

@@ -12,6 +12,7 @@ import { StudentAttendanceTable } from '@/components/student-attendance-table'
 import { StudentActivityReportsView } from '@/components/student-activity-reports-view'
 import { StatsSkeleton, TableSkeleton } from '@/components/skeleton'
 import { ErrorBoundary } from '@/components/error-boundary'
+import { CollapsibleSection } from '@/components/collapsible-section'
 import {
   AlertCircle, RefreshCw, Users, ChevronRight, Database,
 } from 'lucide-react'
@@ -50,7 +51,7 @@ export default function AdminDashboard() {
   if (loading || !user) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-300 border-t-[#001A4D]" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--color-border-hover)] border-t-[var(--color-bg-sidebar)]" />
       </div>
     )
   }
@@ -109,7 +110,7 @@ function AdminDashboardContent() {
     return (
       <div className="space-y-6 max-w-7xl mx-auto">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-zinc-900">Admin Dashboard</h1>
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Admin Dashboard</h1>
         </div>
         <StatsSkeleton />
         <TableSkeleton />
@@ -124,33 +125,33 @@ function AdminDashboardContent() {
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold text-zinc-900">Admin Dashboard</h1>
+                <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Admin Dashboard</h1>
                 <Badge variant="info" className="text-xs">Admin</Badge>
               </div>
-              <p className="text-zinc-500 text-sm mt-0.5">Staff & student attendance overview</p>
+              <p className="text-[var(--color-text-secondary)] text-sm mt-0.5">Staff & student attendance overview</p>
             </div>
             <div className="flex items-center gap-2">
-              <p className="text-xs text-zinc-400 hidden sm:block">Updated {lastUpdated.toLocaleTimeString()}</p>
+              <p className="text-xs text-[var(--color-text-muted)] hidden sm:block">Updated {lastUpdated.toLocaleTimeString()}</p>
               <button onClick={() => { setLoading(true); loadData() }} disabled={loading}
-                className="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium hover:bg-zinc-50 transition-colors">
+                className="inline-flex items-center gap-2 rounded-lg border border-[var(--color-border-hover)] bg-[var(--color-bg-card)] px-4 py-2 text-sm font-medium hover:bg-[var(--color-bg-muted)] transition-colors">
                 <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} /> Refresh
               </button>
             </div>
           </div>
 
           {error && (
-            <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 flex items-center gap-2">
+            <div className="rounded-lg bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 px-4 py-3 text-sm text-[var(--color-danger)] flex items-center gap-2">
               <AlertCircle className="h-4 w-4 shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
           <div className="flex items-center gap-2">
-            <div className="flex gap-1 rounded-xl bg-blue-50 p-1 w-fit">
+            <div className="flex gap-1 rounded-xl bg-[var(--color-info)]/10 p-1 w-fit">
               {tabs.map((t) => (
                 <button key={t.id} onClick={() => setTab(t.id)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                    tab === t.id ? 'bg-[#001A4D] text-white shadow-sm' : 'text-blue-700 hover:text-[#001A4D]'
+                    tab === t.id ? 'bg-[var(--color-bg-sidebar)] text-[var(--color-text-sidebar)] shadow-sm' : 'text-[var(--color-info)] hover:text-[var(--color-bg-sidebar)]'
                   }`}>
                   {t.id === 'overview' && <Users className="h-4 w-4" />}
                   {t.label}
@@ -187,18 +188,21 @@ function AdminDashboardContent() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-2">
-                      {staffReport.department_breakdown.map((dept) => (
-                        <Link key={dept.department} href={`/staff?department=${encodeURIComponent(dept.department)}`}
-                          className="flex items-center justify-between p-2 rounded-lg hover:bg-zinc-50 transition-colors group">
-                          <span className="text-sm font-medium text-zinc-700">{dept.department}</span>
+                    <CollapsibleSection
+                      items={staffReport.department_breakdown}
+                      keyExtractor={(dept: any) => dept.department}
+                      renderItem={(dept: any) => (
+                        <Link href={`/staff?department=${encodeURIComponent(dept.department)}`}
+                          className="flex items-center justify-between p-2 rounded-lg hover:bg-[var(--color-bg-muted)] transition-colors group">
+                          <span className="text-sm font-medium text-[var(--color-text-secondary)]">{dept.department}</span>
                           <div className="flex items-center gap-3">
-                            <span className="text-xs text-zinc-400">{dept.present}/{dept.total} present</span>
-                            <ChevronRight className="h-4 w-4 text-zinc-300 group-hover:text-zinc-500 transition-colors" />
+                            <span className="text-xs text-[var(--color-text-muted)]">{dept.present}/{dept.total} present</span>
+                            <ChevronRight className="h-4 w-4 text-[var(--color-text-muted)] group-hover:text-[var(--color-text-secondary)] transition-colors" />
                           </div>
                         </Link>
-                      ))}
-                    </div>
+                      )}
+                      defaultVisible={5}
+                    />
                   </CardContent>
                 </Card>
               )}

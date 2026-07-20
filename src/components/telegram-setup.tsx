@@ -87,12 +87,12 @@ export function TelegramSetup() {
   }
 
   return (
-    <Card className="border-zinc-200">
+    <Card className="border-[var(--color-border)]">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <MessageCircle className="h-5 w-5 text-blue-500" />
-            <CardTitle className="text-base text-[#001A4D]">Telegram Bot</CardTitle>
+            <MessageCircle className="h-5 w-5 text-[var(--color-info)]" />
+            <CardTitle className="text-base text-[var(--color-text-primary)]">Telegram Bot</CardTitle>
           </div>
           <Badge variant={status === 'connected' ? 'success' : status === 'error' ? 'danger' : 'default'} className="text-[10px]">
             {status === 'connected' ? (mode === 'webhook' ? 'Webhook' : 'Polling') : status === 'error' ? 'Error' : 'Off'}
@@ -105,25 +105,25 @@ export function TelegramSetup() {
       <CardContent className="space-y-4">
         {status === 'connected' && botInfo?.configured ? (
           <div className="space-y-3">
-            <div className="flex items-start gap-3 rounded-lg bg-green-50 border border-green-200 p-4">
-              <CheckCircle2 className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
+            <div className="flex items-start gap-3 rounded-lg bg-[var(--color-success)]/10 border border-[var(--color-success)]/30 p-4">
+              <CheckCircle2 className="h-5 w-5 text-[var(--color-success)] shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-green-800">Telegram Bot Active</p>
-                <p className="text-xs text-green-600 mt-0.5">
+                <p className="text-sm font-medium text-[var(--color-success)]">Telegram Bot Active</p>
+                <p className="text-xs text-[var(--color-success)] mt-0.5">
                   Mode: {mode === 'webhook' ? 'Webhook (instant)' : 'Polling (checks every 10s)'}
                 </p>
                 {pollCount > 0 && (
-                  <p className="text-xs text-green-500 mt-0.5">{pollCount} messages processed</p>
+                  <p className="text-xs text-[var(--color-success)] mt-0.5">{pollCount} messages processed</p>
                 )}
               </div>
             </div>
-            <div className="rounded-lg bg-blue-50 border border-blue-200 p-4 space-y-2">
-              <p className="text-sm font-medium text-blue-800">Staff Setup Instructions</p>
-              <ol className="text-xs text-blue-700 space-y-1 list-decimal ml-4">
+            <div className="rounded-lg bg-[var(--color-info)]/10 border border-[var(--color-info)]/30 p-4 space-y-2">
+              <p className="text-sm font-medium text-[var(--color-info)]">Staff Setup Instructions</p>
+              <ol className="text-xs text-[var(--color-info)] space-y-1 list-decimal ml-4">
                 <li>Search for your bot on Telegram and start a chat</li>
-                <li>Send: <code className="bg-blue-100 px-1 rounded">/link YOUR_STAFF_ID YOUR_EMAIL</code></li>
-                <li><strong>Your correct staff ID is <code className="bg-blue-100 px-1 rounded">AFC-0016</code> (for dewaleprotocols@gmail.com)</strong></li>
-                <li>Full example: <code className="bg-blue-100 px-1 rounded">/link AFC-0016 dewaleprotocols@gmail.com</code></li>
+                <li>Send: <code className="bg-[var(--color-info)]/20 px-1 rounded">/link YOUR_STAFF_ID YOUR_EMAIL</code></li>
+                <li><strong>Your correct staff ID is <code className="bg-[var(--color-info)]/20 px-1 rounded">AFC-0016</code> (for dewaleprotocols@gmail.com)</strong></li>
+                <li>Full example: <code className="bg-[var(--color-info)]/20 px-1 rounded">/link AFC-0016 dewaleprotocols@gmail.com</code></li>
                 <li>The bot will confirm: <em>✅ Linked! You'll now receive notifications here...</em></li>
               </ol>
             </div>
@@ -146,16 +146,16 @@ export function TelegramSetup() {
               Send Test Notification
             </Button>
             {testResult === 'sent' && (
-              <p className="text-xs text-emerald-600">✅ Test sent! Check your Telegram.</p>
+              <p className="text-xs text-[var(--color-success)]">✅ Test sent! Check your Telegram.</p>
             )}
             {testResult && testResult !== 'sent' && (
-              <p className="text-xs text-red-600">❌ {testResult}</p>
+              <p className="text-xs text-[var(--color-danger)]">❌ {testResult}</p>
             )}
           </div>
         ) : (
           <div className="space-y-3">
             <div>
-              <label className="text-xs font-medium text-zinc-600 mb-1 block">
+              <label className="text-xs font-medium text-[var(--color-text-secondary)] mb-1 block">
                 Bot Token (from @BotFather)
               </label>
               <Input
@@ -165,21 +165,21 @@ export function TelegramSetup() {
                 onChange={(e) => setToken(e.target.value)}
               />
             </div>
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-[var(--color-text-secondary)]">
               Don&apos;t have a bot?{' '}
               <a
                 href="https://t.me/botfather"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:underline inline-flex items-center gap-0.5"
+                className="text-[var(--color-info)] hover:underline inline-flex items-center gap-0.5"
               >
                 Create one on Telegram <ExternalLink className="h-3 w-3" />
               </a>
             </p>
 
             {!isHttps && (
-              <div className="rounded-lg bg-amber-50 border border-amber-200 p-3">
-                <p className="text-xs text-amber-800">
+              <div className="rounded-lg bg-[var(--color-warning)]/10 border border-[var(--color-warning)]/30 p-3">
+                <p className="text-xs text-[var(--color-warning)]">
                   <strong>Localhost detected.</strong> Using polling mode (checks for messages every 10s).
                   For instant delivery in production, deploy to an HTTPS URL.
                 </p>
@@ -187,7 +187,7 @@ export function TelegramSetup() {
             )}
 
             {saveError && (
-              <div className="flex items-center gap-2 rounded-lg bg-red-50 border border-red-200 p-3 text-xs text-red-700">
+              <div className="flex items-center gap-2 rounded-lg bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 p-3 text-xs text-[var(--color-danger)]">
                 <AlertCircle className="h-4 w-4 shrink-0" />
                 {saveError}
               </div>

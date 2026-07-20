@@ -100,19 +100,19 @@ export function SignupForm() {
     return (
       <Card className="w-full max-w-md border-emerald-200 shadow-lg">
         <CardHeader className="text-center pb-4">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
-            <Shield className="h-8 w-8 text-emerald-600" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-success)]/20">
+            <Shield className="h-8 w-8 text-[var(--color-success)]" />
           </div>
-          <CardTitle className="text-xl text-emerald-700">Account Created</CardTitle>
+          <CardTitle className="text-xl text-[var(--color-success)]">Account Created</CardTitle>
           <CardDescription>
             Your {role === 'teacher' ? 'Class Teacher' : role === 'commandant' ? 'Commandant' : 'Admin'} account has been registered. Check your email to confirm your account before signing in.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          <p className="text-sm text-zinc-600 text-center">
+          <p className="text-sm text-[var(--color-text-secondary)] text-center">
             <strong>{fullName}</strong><br />
-            <span className="text-zinc-400">{staffId} · {role === 'teacher' ? 'Class Teacher' : role === 'commandant' ? 'Commandant' : 'Admin'}</span><br />
-            <span className="text-zinc-400">{email}</span>
+            <span className="text-[var(--color-text-muted)]">{staffId} · {role === 'teacher' ? 'Class Teacher' : role === 'commandant' ? 'Commandant' : 'Admin'}</span><br />
+            <span className="text-[var(--color-text-muted)]">{email}</span>
           </p>
           <Button onClick={() => router.push('/login')} className="w-full">
             Go to Login
@@ -124,16 +124,16 @@ export function SignupForm() {
 
   return (
     <div className="w-full max-w-md space-y-4">
-      <Link href="/login" className="inline-flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 transition-colors">
+      <Link href="/login" className="inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
         <ChevronLeft className="h-4 w-4" /> Back to login
       </Link>
 
-      <Card className="border-[#C5D1E8] shadow-lg shadow-blue-900/10">
+      <Card className="border-[var(--color-border-light)] shadow-lg shadow-black/5">
         <CardHeader className="text-center pb-4">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#001A4D] shadow-lg shadow-blue-900/20">
-            <UserPlus className="h-8 w-8 text-naf-gold" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--color-bg-sidebar)] shadow-lg shadow-black/10">
+            <UserPlus className="h-8 w-8 text-[var(--color-accent)]" />
           </div>
-          <CardTitle className="text-xl text-[#001A4D]">
+          <CardTitle className="text-xl text-[var(--color-text-primary)]">
             Create Account
           </CardTitle>
           <CardDescription>
@@ -176,7 +176,7 @@ export function SignupForm() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-[38px] text-zinc-400 hover:text-zinc-600"
+                className="absolute right-3 top-[38px] text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -190,7 +190,7 @@ export function SignupForm() {
             />
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-zinc-700">Role</label>
+              <label className="text-sm font-medium text-[var(--color-text-primary)]">Role</label>
               <div className="flex gap-2">
                 <button
                   type="button"
@@ -198,10 +198,10 @@ export function SignupForm() {
                   disabled={commandantTaken || checkingCommandant}
                   className={`flex-1 rounded-lg border-2 px-4 py-2.5 text-sm font-medium transition-all ${
                     commandantTaken && role !== 'commandant'
-                      ? 'border-zinc-100 bg-zinc-50 text-zinc-300 cursor-not-allowed line-through'
+                      ? 'border-[var(--color-border)] bg-[var(--color-bg-secondary)] text-[var(--color-text-muted)] cursor-not-allowed line-through'
                       : role === 'commandant'
-                      ? 'border-[#C9A84C] bg-amber-50 text-[#001A4D]'
-                      : 'border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300'
+                      ? 'border-[var(--color-accent)] bg-[var(--color-warning)]/10 text-[var(--color-text-primary)]'
+                      : 'border-[var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-hover)]'
                   }`}
                   title={commandantTaken ? 'A commandant already exists' : ''}
                 >
@@ -215,8 +215,8 @@ export function SignupForm() {
                   onClick={() => setRole('admin')}
                   className={`flex-1 rounded-lg border-2 px-4 py-2.5 text-sm font-medium transition-all ${
                     role === 'admin'
-                      ? 'border-[#C9A84C] bg-amber-50 text-[#001A4D]'
-                      : 'border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300'
+                      ? 'border-[var(--color-accent)] bg-[var(--color-warning)]/10 text-[var(--color-text-primary)]'
+                      : 'border-[var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-hover)]'
                   }`}
                 >
                   Admin
@@ -226,26 +226,26 @@ export function SignupForm() {
                   onClick={() => setRole('teacher')}
                   className={`flex-1 rounded-lg border-2 px-4 py-2.5 text-sm font-medium transition-all ${
                     role === 'teacher'
-                      ? 'border-violet-500 bg-violet-50 text-violet-900'
-                      : 'border-zinc-200 bg-white text-zinc-500 hover:border-zinc-300'
+                      ? 'border-[var(--color-accent)] bg-[var(--color-accent)]/10 text-[var(--color-accent)]'
+                      : 'border-[var(--color-border)] bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-hover)]'
                   }`}
                 >
                   Class Teacher
                 </button>
               </div>
               {commandantTaken && (
-                <p className="text-xs text-amber-600 flex items-center gap-1 mt-1">
+                <p className="text-xs text-[var(--color-warning)] flex items-center gap-1 mt-1">
                   <Crown className="h-3 w-3" /> Commandant already registered — role is no longer available
                 </p>
               )}
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-zinc-700">Department</label>
+              <label className="text-sm font-medium text-[var(--color-text-primary)]">Department</label>
               <select
                 value={departmentId}
                 onChange={(e) => { setDepartmentId(e.target.value); setSelectedSubjects([]) }}
-                className="flex h-10 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-50"
+                className="flex h-10 w-full rounded-lg border border-[var(--color-border-hover)] bg-[var(--color-bg-card)] px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-ring-focus)] disabled:opacity-50"
                 disabled={loading}
               >
                 <option value="">Select department</option>
@@ -257,10 +257,10 @@ export function SignupForm() {
 
             {role === 'teacher' && departmentId && deptSubjects.length > 0 && (
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-zinc-700">Assigned Subjects</label>
-                <div className="grid grid-cols-2 gap-1.5 max-h-40 overflow-y-auto p-2 border border-zinc-200 rounded-lg bg-white">
+                <label className="text-sm font-medium text-[var(--color-text-primary)]">Assigned Subjects</label>
+                <div className="grid grid-cols-2 gap-1.5 max-h-40 overflow-y-auto p-2 border border-[var(--color-border)] rounded-lg bg-[var(--color-bg-card)]">
                   {deptSubjects.map((subj) => (
-                    <label key={subj.id} className="flex items-center gap-2 px-2 py-1.5 rounded text-sm cursor-pointer hover:bg-blue-50 has-[:checked]:bg-blue-100 transition-colors">
+                    <label key={subj.id} className="flex items-center gap-2 px-2 py-1.5 rounded text-sm cursor-pointer hover:bg-[var(--color-info)]/10 has-[:checked]:bg-[var(--color-info)]/20 transition-colors">
                       <input type="checkbox" checked={selectedSubjects.includes(subj.id)}
                         onChange={(e) => setSelectedSubjects(e.target.checked ? [...selectedSubjects, subj.id] : selectedSubjects.filter((id) => id !== subj.id))}
                         className="accent-blue-600" disabled={loading} />
@@ -272,12 +272,12 @@ export function SignupForm() {
             )}
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-zinc-700 flex items-center gap-1.5">
-                <Calculator className="h-4 w-4 text-zinc-400" />
+              <label className="text-sm font-medium text-[var(--color-text-primary)] flex items-center gap-1.5">
+                <Calculator className="h-4 w-4 text-[var(--color-text-muted)]" />
                 Security Check
               </label>
               <div className="flex gap-2">
-                <div className="flex-1 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2.5 text-sm text-zinc-600 font-mono select-none">
+                <div className="flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-3 py-2.5 text-sm text-[var(--color-text-secondary)] font-mono select-none">
                   {captchaQuestion || 'Loading...'}
                 </div>
                 <Input
@@ -290,7 +290,7 @@ export function SignupForm() {
                   type="button"
                   onClick={fetchCaptcha}
                   disabled={loading}
-                  className="rounded-lg border border-zinc-200 px-2.5 text-zinc-400 hover:text-zinc-600 hover:border-zinc-300 transition-colors disabled:opacity-50"
+                  className="rounded-lg border border-[var(--color-border)] px-2.5 text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] hover:border-[var(--color-border-hover)] transition-colors disabled:opacity-50"
                   title="New question"
                 >
                   ↻
@@ -299,9 +299,9 @@ export function SignupForm() {
             </div>
 
             {error && (
-              <div className="flex items-start gap-2 rounded-lg bg-red-50 border border-red-200 p-3 text-sm">
-                <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
-                <span className="text-red-700">{error}</span>
+              <div className="flex items-start gap-2 rounded-lg bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 p-3 text-sm">
+                <AlertCircle className="h-4 w-4 text-[var(--color-danger)] mt-0.5 shrink-0" />
+                <span className="text-[var(--color-danger)]">{error}</span>
               </div>
             )}
 

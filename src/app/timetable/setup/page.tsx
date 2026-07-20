@@ -5,6 +5,7 @@ import {
   ChevronLeft, Plus, BookOpen, Users, GraduationCap, Clock, Save, Trash2, Loader2, AlertCircle,
 } from 'lucide-react'
 import Link from 'next/link'
+import { CollapsibleSection } from '@/components/collapsible-section'
 
 type SetupTab = 'subjects' | 'teachers' | 'classes' | 'slots' | 'rooms'
 
@@ -188,35 +189,35 @@ export default function TimetableSetupPage() {
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-[60vh]">
-      <Loader2 className="h-8 w-8 animate-spin text-zinc-400" />
+      <Loader2 className="h-8 w-8 animate-spin text-[var(--color-text-muted)]" />
     </div>
   )
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       <div className="flex items-center gap-3">
-        <Link href="/timetable" className="text-zinc-400 hover:text-zinc-600">
+        <Link href="/timetable" className="text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]">
           <ChevronLeft className="h-5 w-5" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-[#001A4D]">Timetable Setup</h1>
-          <p className="text-sm text-zinc-500 mt-0.5">Configure subjects, teacher assignments, and class schedules</p>
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Timetable Setup</h1>
+          <p className="text-sm text-[var(--color-text-secondary)] mt-0.5">Configure subjects, teacher assignments, and class schedules</p>
         </div>
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        <div className="flex items-center gap-2 rounded-lg bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 px-4 py-3 text-sm text-[var(--color-danger)]">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex gap-1 rounded-lg bg-zinc-100 p-1 flex-wrap">
+      <div className="flex gap-1 rounded-lg bg-[var(--color-bg-muted)] p-1 flex-wrap">
         {tabs.map((t) => (
           <button key={t.id} onClick={() => setTab(t.id)}
             className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-              tab === t.id ? 'bg-white shadow-sm text-[#001A4D]' : 'text-zinc-500 hover:text-zinc-700'
+              tab === t.id ? 'bg-[var(--color-bg-card)] shadow-sm text-[var(--color-text-primary)]' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-secondary)]'
             }`}
           >
             <t.icon className="h-4 w-4" /> {t.label}
@@ -227,111 +228,127 @@ export default function TimetableSetupPage() {
       {/* Subjects Tab */}
       {tab === 'subjects' && (
         <div className="space-y-4">
-          <div className="bg-white rounded-lg border p-4 space-y-3">
-            <h3 className="font-medium text-sm text-[#001A4D]">Add Subject</h3>
+          <div className="bg-[var(--color-bg-card)] rounded-lg border p-4 space-y-3">
+            <h3 className="font-medium text-sm text-[var(--color-text-primary)]">Add Subject</h3>
             <div className="flex flex-wrap gap-2">
               <input placeholder="Name" value={newSubject.name} onChange={(e) => setNewSubject({ ...newSubject, name: e.target.value })}
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm w-48" />
+                className="rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm w-48" />
               <input placeholder="Code (e.g. MTH)" value={newSubject.code} onChange={(e) => setNewSubject({ ...newSubject, code: e.target.value.toUpperCase() })}
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm w-24" />
+                className="rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm w-24" />
               <select value={newSubject.department_id} onChange={(e) => setNewSubject({ ...newSubject, department_id: e.target.value })}
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm bg-white">
+                className="rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm bg-[var(--color-bg-card)]">
                 <option value="">No dept</option>
                 {departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
               </select>
               <select value={newSubject.class_level} onChange={(e) => setNewSubject({ ...newSubject, class_level: e.target.value })}
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm bg-white">
+                className="rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm bg-[var(--color-bg-card)]">
                 <option value="">All levels</option>
                 {['JS1','JS2','JS3','SS1','SS2','SS3'].map((l) => <option key={l} value={l}>{l}</option>)}
               </select>
               <input type="number" placeholder="Periods/wk" value={newSubject.periods_per_week} onChange={(e) => setNewSubject({ ...newSubject, periods_per_week: Number(e.target.value) })}
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm w-20" />
+                className="rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm w-20" />
               <select value={newSubject.difficulty_tier} onChange={(e) => setNewSubject({ ...newSubject, difficulty_tier: Number(e.target.value) })}
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm bg-white">
+                className="rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm bg-[var(--color-bg-card)]">
                 <option value={1}>Tier 1 (Hardest)</option>
                 <option value={2}>Tier 2 (Hard)</option>
                 <option value={3}>Tier 3 (Medium)</option>
                 <option value={4}>Tier 4 (Easy)</option>
                 <option value={5}>Tier 5 (Easiest)</option>
               </select>
-              <label className="flex items-center gap-1.5 text-sm text-zinc-600 cursor-pointer">
+              <label className="flex items-center gap-1.5 text-sm text-[var(--color-text-secondary)] cursor-pointer">
                 <input type="checkbox" checked={newSubject.needs_double_period} onChange={(e) => setNewSubject({ ...newSubject, needs_double_period: e.target.checked })}
                   className="rounded" />
                 <span className="text-xs">2x period</span>
               </label>
               <button onClick={addSubject}
-                className="inline-flex items-center gap-1 rounded-lg bg-[#001A4D] text-white px-3 py-2 text-sm font-medium hover:bg-blue-900 transition-colors">
+                className="inline-flex items-center gap-1 rounded-lg bg-[var(--color-bg-sidebar)] text-[var(--color-text-sidebar)] px-3 py-2 text-sm font-medium hover:bg-blue-900 transition-colors">
                 <Plus className="h-4 w-4" /> Add
               </button>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg border divide-y">
+          <div className="bg-[var(--color-bg-card)] rounded-lg border divide-y">
             {subjects.length === 0 ? (
-              <p className="text-sm text-zinc-400 text-center py-8">No subjects defined. Add your first subject above.</p>
-            ) : subjects.map((s) => (
-              <div key={s.id} className="flex items-center gap-3 px-4 py-3 text-sm">
-                <BookOpen className="h-4 w-4 text-blue-500 shrink-0" />
-                <span className="font-medium text-zinc-800 w-36">{s.name}</span>
-                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">{s.code}</span>
-                <span className="text-xs text-zinc-400 w-16">{s.class_level || 'All'}</span>
-                <span className="text-xs text-zinc-500 w-14">{s.periods_per_week}/wk</span>
-                {s.needs_double_period && <span className="text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded">2x</span>}
-                <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                  s.difficulty_tier === 1 ? 'bg-red-100 text-red-700' :
-                  s.difficulty_tier === 2 ? 'bg-orange-100 text-orange-700' :
-                  s.difficulty_tier === 3 ? 'bg-blue-100 text-blue-700' :
-                  s.difficulty_tier === 4 ? 'bg-green-100 text-green-700' :
-                  'bg-zinc-100 text-zinc-600'
-                }`}>T{s.difficulty_tier}</span>
-                <span className="text-xs text-zinc-400 flex-1">{s.department?.name || ''}</span>
-                <button onClick={() => deleteSubject(s.id)} className="text-red-400 hover:text-red-600"><Trash2 className="h-4 w-4" /></button>
-              </div>
-            ))}
+              <p className="text-sm text-[var(--color-text-muted)] text-center py-8">No subjects defined. Add your first subject above.</p>
+            ) : (
+              <CollapsibleSection
+                items={subjects}
+                keyExtractor={(s: Subject) => s.id}
+                renderItem={(s: Subject) => (
+                  <div className="flex items-center gap-3 px-4 py-3 text-sm">
+                    <BookOpen className="h-4 w-4 text-[var(--color-info)] shrink-0" />
+                    <span className="font-medium text-[var(--color-text-primary)] w-36">{s.name}</span>
+                    <span className="text-xs bg-[var(--color-info)]/20 text-[var(--color-info)] px-2 py-0.5 rounded">{s.code}</span>
+                    <span className="text-xs text-[var(--color-text-muted)] w-16">{s.class_level || 'All'}</span>
+                    <span className="text-xs text-[var(--color-text-secondary)] w-14">{s.periods_per_week}/wk</span>
+                    {s.needs_double_period && <span className="text-xs bg-[var(--color-accent)]/20 text-[var(--color-accent)] px-1.5 py-0.5 rounded">2x</span>}
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                      s.difficulty_tier === 1 ? 'bg-[var(--color-danger)]/20 text-[var(--color-danger)]' :
+                      s.difficulty_tier === 2 ? 'bg-[var(--color-warning)]/20 text-[var(--color-warning)]' :
+                      s.difficulty_tier === 3 ? 'bg-[var(--color-info)]/20 text-[var(--color-info)]' :
+                      s.difficulty_tier === 4 ? 'bg-[var(--color-success)]/20 text-[var(--color-success)]' :
+                      'bg-[var(--color-bg-muted)] text-[var(--color-text-secondary)]'
+                    }`}>T{s.difficulty_tier}</span>
+                    <span className="text-xs text-[var(--color-text-muted)] flex-1">{s.department?.name || ''}</span>
+                    <button onClick={() => deleteSubject(s.id)} className="text-[var(--color-danger)] hover:text-[var(--color-danger)]"><Trash2 className="h-4 w-4" /></button>
+                  </div>
+                )}
+                defaultVisible={5}
+                className="divide-y"
+              />
+            )}
           </div>
-          <p className="text-xs text-zinc-400">{subjects.length} subject{subjects.length !== 1 ? 's' : ''}</p>
+          <p className="text-xs text-[var(--color-text-muted)]">{subjects.length} subject{subjects.length !== 1 ? 's' : ''}</p>
         </div>
       )}
 
       {/* Teacher Assignments Tab */}
       {tab === 'teachers' && (
         <div className="space-y-4">
-          <div className="bg-white rounded-lg border p-4 space-y-3">
-            <h3 className="font-medium text-sm text-[#001A4D]">Assign Teacher to Subject</h3>
+          <div className="bg-[var(--color-bg-card)] rounded-lg border p-4 space-y-3">
+            <h3 className="font-medium text-sm text-[var(--color-text-primary)]">Assign Teacher to Subject</h3>
             <div className="flex flex-wrap gap-2">
               <select value={newTeacherSubj.teacher_id} onChange={(e) => setNewTeacherSubj({ ...newTeacherSubj, teacher_id: e.target.value })}
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm bg-white w-48">
+                className="rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm bg-[var(--color-bg-card)] w-48">
                 <option value="">Select Teacher</option>
                 {staff.map((s) => <option key={s.id} value={s.id}>{s.full_name}</option>)}
               </select>
               <select value={newTeacherSubj.subject_id} onChange={(e) => setNewTeacherSubj({ ...newTeacherSubj, subject_id: e.target.value })}
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm bg-white w-40">
+                className="rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm bg-[var(--color-bg-card)] w-40">
                 <option value="">Select Subject</option>
                 {subjects.map((s) => <option key={s.id} value={s.id}>{s.name} ({s.code})</option>)}
               </select>
-              <label className="flex items-center gap-2 text-sm text-zinc-600">
+              <label className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
                 <input type="checkbox" checked={newTeacherSubj.is_primary} onChange={(e) => setNewTeacherSubj({ ...newTeacherSubj, is_primary: e.target.checked })} />
                 Primary
               </label>
-              <button onClick={addTeacherSubject} className="inline-flex items-center gap-1 rounded-lg bg-[#001A4D] text-white px-3 py-2 text-sm font-medium hover:bg-blue-900 transition-colors">
+              <button onClick={addTeacherSubject} className="inline-flex items-center gap-1 rounded-lg bg-[var(--color-bg-sidebar)] text-[var(--color-text-sidebar)] px-3 py-2 text-sm font-medium hover:bg-blue-900 transition-colors">
                 <Plus className="h-4 w-4" /> Assign
               </button>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg border divide-y">
+          <div className="bg-[var(--color-bg-card)] rounded-lg border divide-y">
             {teacherSubjects.length === 0 ? (
-              <p className="text-sm text-zinc-400 text-center py-8">No teacher-subject assignments yet.</p>
-            ) : teacherSubjects.map((ts) => (
-              <div key={ts.id} className="flex items-center gap-3 px-4 py-3 text-sm">
-                <Users className="h-4 w-4 text-violet-500 shrink-0" />
-                <span className="font-medium w-40 truncate">{ts.teacher?.full_name || '?'}</span>
-                <span className="text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded">{ts.subject?.name || '?'}</span>
-                {ts.is_primary && <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">Primary</span>}
-                <span className="text-xs text-zinc-400">Max {ts.max_periods_per_day}/day</span>
-                <button onClick={() => deleteTeacherSubject(ts.id)} className="ml-auto text-red-400 hover:text-red-600"><Trash2 className="h-4 w-4" /></button>
-              </div>
-            ))}
+              <p className="text-sm text-[var(--color-text-muted)] text-center py-8">No teacher-subject assignments yet.</p>
+            ) : (
+              <CollapsibleSection
+                items={teacherSubjects}
+                keyExtractor={(ts: TeacherSubject) => ts.id}
+                renderItem={(ts: TeacherSubject) => (
+                  <div className="flex items-center gap-3 px-4 py-3 text-sm">
+                    <Users className="h-4 w-4 text-[var(--color-accent)]/70 shrink-0" />
+                    <span className="font-medium w-40 truncate">{ts.teacher?.full_name || '?'}</span>
+                    <span className="text-xs bg-[var(--color-accent)]/10 text-[var(--color-accent)]/70 px-2 py-0.5 rounded">{ts.subject?.name || '?'}</span>
+                    {ts.is_primary && <span className="text-[10px] bg-[var(--color-warning)]/20 text-[var(--color-warning)] px-1.5 py-0.5 rounded">Primary</span>}
+                    <span className="text-xs text-[var(--color-text-muted)]">Max {ts.max_periods_per_day}/day</span>
+                    <button onClick={() => deleteTeacherSubject(ts.id)} className="ml-auto text-[var(--color-danger)] hover:text-[var(--color-danger)]"><Trash2 className="h-4 w-4" /></button>
+                  </div>
+                )}
+                defaultVisible={5}
+                className="divide-y"
+              />
+            )}
           </div>
         </div>
       )}
@@ -339,44 +356,44 @@ export default function TimetableSetupPage() {
       {/* Class Subjects Tab */}
       {tab === 'classes' && (
         <div className="space-y-4">
-          <div className="bg-white rounded-lg border p-4 space-y-3">
-            <h3 className="font-medium text-sm text-[#001A4D]">Assign Subject to Class</h3>
+          <div className="bg-[var(--color-bg-card)] rounded-lg border p-4 space-y-3">
+            <h3 className="font-medium text-sm text-[var(--color-text-primary)]">Assign Subject to Class</h3>
             <div className="flex flex-wrap gap-2">
               <select value={newClassSubj.class_id} onChange={(e) => setNewClassSubj({ ...newClassSubj, class_id: e.target.value })}
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm bg-white w-40">
+                className="rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm bg-[var(--color-bg-card)] w-40">
                 <option value="">Select Class</option>
                 {classes.map((c) => <option key={c.id} value={c.id}>{c.name} {c.arm}</option>)}
               </select>
               <select value={newClassSubj.subject_id} onChange={(e) => setNewClassSubj({ ...newClassSubj, subject_id: e.target.value })}
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm bg-white w-40">
+                className="rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm bg-[var(--color-bg-card)] w-40">
                 <option value="">Select Subject</option>
                 {subjects.map((s) => <option key={s.id} value={s.id}>{s.name} ({s.code})</option>)}
               </select>
               <input type="number" placeholder="Periods/wk" value={newClassSubj.periods_per_week}
                 onChange={(e) => setNewClassSubj({ ...newClassSubj, periods_per_week: e.target.value })}
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm w-20" />
-              <button onClick={addClassSubject} className="inline-flex items-center gap-1 rounded-lg bg-[#001A4D] text-white px-3 py-2 text-sm font-medium hover:bg-blue-900 transition-colors">
+                className="rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm w-20" />
+              <button onClick={addClassSubject} className="inline-flex items-center gap-1 rounded-lg bg-[var(--color-bg-sidebar)] text-[var(--color-text-sidebar)] px-3 py-2 text-sm font-medium hover:bg-blue-900 transition-colors">
                 <Plus className="h-4 w-4" /> Assign
               </button>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg border divide-y">
+          <div className="bg-[var(--color-bg-card)] rounded-lg border divide-y">
             {classSubjects.length === 0 ? (
-              <p className="text-sm text-zinc-400 text-center py-8">No subjects assigned to classes yet.</p>
+              <p className="text-sm text-[var(--color-text-muted)] text-center py-8">No subjects assigned to classes yet.</p>
             ) : (
               <>
                 {classes.filter((c) => classSubjects.some((cs) => cs.class_id === c.id)).map((cls) => {
                   const csForClass = classSubjects.filter((cs) => cs.class_id === cls.id)
                   return (
                     <div key={cls.id} className="px-4 py-3">
-                      <p className="text-sm font-semibold text-[#001A4D] mb-2">{cls.name} {cls.arm}</p>
+                      <p className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">{cls.name} {cls.arm}</p>
                       <div className="flex flex-wrap gap-2">
                         {csForClass.map((cs) => (
-                          <span key={cs.id} className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs">
+                          <span key={cs.id} className="inline-flex items-center gap-1 bg-[var(--color-info)]/10 text-[var(--color-info)] px-2 py-1 rounded text-xs">
                             {cs.subject?.name || '?'}
-                            {cs.periods_per_week && <span className="text-blue-400">({cs.periods_per_week}/wk)</span>}
-                            <button onClick={() => deleteClassSubject(cs.id)} className="text-blue-300 hover:text-red-500 ml-1">&times;</button>
+                            {cs.periods_per_week && <span className="text-[var(--color-info)]">({cs.periods_per_week}/wk)</span>}
+                            <button onClick={() => deleteClassSubject(cs.id)} className="text-blue-300 hover:text-[var(--color-danger)] ml-1">&times;</button>
                           </span>
                         ))}
                       </div>
@@ -392,10 +409,10 @@ export default function TimetableSetupPage() {
       {/* Time Slots Tab */}
       {tab === 'slots' && (
         <div className="space-y-4">
-          <div className="bg-white rounded-lg border overflow-x-auto">
+          <div className="bg-[var(--color-bg-card)] rounded-lg border overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="bg-zinc-50">
+                <tr className="bg-[var(--color-bg-secondary)]">
                   <th className="px-3 py-2 text-left">Period</th>
                   {['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map((d) => (
                     <th key={d} className="px-3 py-2 text-center">{d}</th>
@@ -404,20 +421,20 @@ export default function TimetableSetupPage() {
               </thead>
               <tbody className="divide-y">
                 {[...new Set(slots.map((s) => s.period_number))].sort((a, b) => a - b).map((pn) => (
-                  <tr key={pn} className="hover:bg-zinc-50">
-                    <td className="px-3 py-2 font-medium text-zinc-600">{pn}</td>
+                  <tr key={pn} className="hover:bg-[var(--color-bg-secondary)]">
+                    <td className="px-3 py-2 font-medium text-[var(--color-text-secondary)]">{pn}</td>
                     {[1,2,3,4,5].map((d) => {
                       const slot = slots.find((s) => s.day_of_week === d && s.period_number === pn)
                       return (
-                        <td key={d} className="px-3 py-2 text-center text-zinc-500">
+                        <td key={d} className="px-3 py-2 text-center text-[var(--color-text-secondary)]">
                           {slot ? (
-                            <span className={`${slot.is_break ? 'text-amber-500 font-medium' : slot.is_assembly ? 'text-purple-500 font-medium' : ''}`}>
+                            <span className={`${slot.is_break ? 'text-[var(--color-warning)] font-medium' : slot.is_assembly ? 'text-[var(--color-accent)]/70 font-medium' : ''}`}>
                               {slot.start_time.slice(0,5)}-{slot.end_time.slice(0,5)}
                               {slot.is_break && ` (${slot.period_label || 'Break'})`}
                               {slot.is_assembly && ` (${slot.period_label || 'Assembly'})`}
                             </span>
                           ) : (
-                            <span className="text-zinc-300">—</span>
+                            <span className="text-[var(--color-text-muted)]">—</span>
                           )}
                         </td>
                       )
@@ -427,7 +444,7 @@ export default function TimetableSetupPage() {
               </tbody>
             </table>
           </div>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-[var(--color-text-muted)]">
               Mon&ndash;Thu: 40-min periods, Short Break (P4), Long Break (P10), closes 14:20. Fri: 30-min periods, Short Break (P4), Long Break (P9), closes 13:00.
           </p>
         </div>
@@ -436,39 +453,47 @@ export default function TimetableSetupPage() {
       {/* Rooms Tab */}
       {tab === 'rooms' && (
         <div className="space-y-4">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 text-sm text-blue-700">
+          <div className="bg-[var(--color-info)]/10 border border-[var(--color-info)]/30 rounded-lg px-4 py-3 text-sm text-[var(--color-info)]">
             <strong>What is a Room?</strong> A physical location where a class takes place — e.g., <em>Lab A</em> (Science Laboratory), <em>Hall 1</em> (Assembly Hall), <em>JSS1A</em> (classroom), <em>ICT Lab</em> (Computer Lab). Rooms help the timetable avoid double-booking. This is optional — the generator works without rooms.
           </div>
-          <div className="bg-white rounded-lg border p-4 space-y-3">
-            <h3 className="font-medium text-sm text-[#001A4D]">Add Room</h3>
+          <div className="bg-[var(--color-bg-card)] rounded-lg border p-4 space-y-3">
+            <h3 className="font-medium text-sm text-[var(--color-text-primary)]">Add Room</h3>
             <div className="flex flex-wrap gap-2">
               <input placeholder="Room name (e.g. Lab A, Hall 1, JSS1A Classroom)" value={newRoom.name} onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })}
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm w-64" />
+                className="rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm w-64" />
               <select value={newRoom.room_type} onChange={(e) => setNewRoom({ ...newRoom, room_type: e.target.value })}
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm bg-white">
+                className="rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm bg-[var(--color-bg-card)]">
                 <option value="classroom">Classroom</option>
                 <option value="lab">Laboratory</option>
                 <option value="hall">Hall</option>
                 <option value="workshop">Workshop</option>
               </select>
               <input type="number" placeholder="Capacity" value={newRoom.capacity} onChange={(e) => setNewRoom({ ...newRoom, capacity: Number(e.target.value) })}
-                className="rounded-lg border border-zinc-300 px-3 py-2 text-sm w-20" />
-              <button onClick={addRoom} className="inline-flex items-center gap-1 rounded-lg bg-[#001A4D] text-white px-3 py-2 text-sm font-medium hover:bg-blue-900 transition-colors">
+                className="rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm w-20" />
+              <button onClick={addRoom} className="inline-flex items-center gap-1 rounded-lg bg-[var(--color-bg-sidebar)] text-[var(--color-text-sidebar)] px-3 py-2 text-sm font-medium hover:bg-blue-900 transition-colors">
                 <Plus className="h-4 w-4" /> Add
               </button>
             </div>
           </div>
-          <div className="bg-white rounded-lg border divide-y">
+          <div className="bg-[var(--color-bg-card)] rounded-lg border divide-y">
             {rooms.length === 0 ? (
-              <p className="text-sm text-zinc-400 text-center py-8">No rooms defined.</p>
-            ) : rooms.map((r) => (
-              <div key={r.id} className="flex items-center gap-3 px-4 py-3 text-sm">
-                <span className="font-medium w-32">{r.name}</span>
-                <span className="text-xs bg-zinc-100 px-2 py-0.5 rounded capitalize">{r.room_type}</span>
-                <span className="text-xs text-zinc-400">{r.capacity} capacity</span>
-                <button onClick={() => deleteRoom(r.id)} className="ml-auto text-red-400 hover:text-red-600"><Trash2 className="h-4 w-4" /></button>
-              </div>
-            ))}
+              <p className="text-sm text-[var(--color-text-muted)] text-center py-8">No rooms defined.</p>
+            ) : (
+              <CollapsibleSection
+                items={rooms}
+                keyExtractor={(r: Room) => r.id}
+                renderItem={(r: Room) => (
+                  <div className="flex items-center gap-3 px-4 py-3 text-sm">
+                    <span className="font-medium w-32">{r.name}</span>
+                    <span className="text-xs bg-[var(--color-bg-muted)] px-2 py-0.5 rounded capitalize">{r.room_type}</span>
+                    <span className="text-xs text-[var(--color-text-muted)]">{r.capacity} capacity</span>
+                    <button onClick={() => deleteRoom(r.id)} className="ml-auto text-[var(--color-danger)] hover:text-[var(--color-danger)]"><Trash2 className="h-4 w-4" /></button>
+                  </div>
+                )}
+                defaultVisible={5}
+                className="divide-y"
+              />
+            )}
           </div>
         </div>
       )}

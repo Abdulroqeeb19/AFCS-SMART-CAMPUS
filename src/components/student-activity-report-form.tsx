@@ -115,7 +115,7 @@ export function StudentActivityReportForm() {
   if (fetching && classes.length === 0) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-6 w-6 animate-spin text-zinc-400" />
+        <Loader2 className="h-6 w-6 animate-spin text-[var(--color-text-muted)]" />
       </div>
     )
   }
@@ -126,9 +126,9 @@ export function StudentActivityReportForm() {
     return (
       <Card>
         <CardContent className="p-8 text-center">
-          <CheckCircle2 className="h-12 w-12 text-emerald-500 mx-auto mb-3" />
-          <h2 className="text-lg font-semibold text-zinc-900">{result.message}</h2>
-          <p className="text-sm text-zinc-500 mt-1">{formatDate(new Date())}</p>
+          <CheckCircle2 className="h-12 w-12 text-[var(--color-success)] mx-auto mb-3" />
+          <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">{result.message}</h2>
+          <p className="text-sm text-[var(--color-text-secondary)] mt-1">{formatDate(new Date())}</p>
           <Button onClick={() => setResult(null)} variant="outline" className="mt-6">
             Submit Another
           </Button>
@@ -141,8 +141,8 @@ export function StudentActivityReportForm() {
     <Card>
       <CardHeader>
         <div className="flex items-center gap-3 mb-1">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100">
-            <ClipboardCheck className="h-5 w-5 text-amber-600" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--color-warning)]/20">
+            <ClipboardCheck className="h-5 w-5 text-[var(--color-warning)]" />
           </div>
           <div>
             <CardTitle>Student Activities Report</CardTitle>
@@ -154,11 +154,11 @@ export function StudentActivityReportForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {classes.length > 1 && (
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-zinc-700">Class</label>
+              <label className="text-sm font-medium text-[var(--color-text-primary)]">Class</label>
               <select
                 value={selectedClassId}
                 onChange={(e) => setSelectedClassId(e.target.value)}
-                className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                className="w-full rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring-focus)] focus:ring-offset-1"
               >
                 {classes.map((c) => (
                   <option key={c.id} value={c.id}>{c.name} {c.arm}</option>
@@ -168,8 +168,8 @@ export function StudentActivityReportForm() {
           )}
 
           <div className="space-y-1.5">
-            <label htmlFor="sa-activities" className="text-sm font-medium text-zinc-700">
-              Activities Done <span className="text-red-500">*</span>
+            <label htmlFor="sa-activities" className="text-sm font-medium text-[var(--color-text-primary)]">
+              Activities Done <span className="text-[var(--color-danger)]">*</span>
             </label>
             <textarea
               id="sa-activities"
@@ -177,13 +177,13 @@ export function StudentActivityReportForm() {
               value={activities}
               onChange={(e) => setActivities(e.target.value)}
               placeholder="Describe the lessons taught, activities conducted, and topics covered today"
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50 resize-none"
+              className="w-full rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring-focus)] focus:ring-offset-1 disabled:opacity-50 resize-none"
               disabled={loading}
             />
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="sa-challenges" className="text-sm font-medium text-zinc-700">
+            <label htmlFor="sa-challenges" className="text-sm font-medium text-[var(--color-text-primary)]">
               Challenges
             </label>
             <textarea
@@ -192,7 +192,7 @@ export function StudentActivityReportForm() {
               value={challenges}
               onChange={(e) => setChallenges(e.target.value)}
               placeholder="Any challenges faced during lessons (e.g. student absences, lack of materials)"
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50 resize-none"
+              className="w-full rounded-lg border border-[var(--color-border-hover)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-ring-focus)] focus:ring-offset-1 disabled:opacity-50 resize-none"
               disabled={loading}
             />
           </div>
@@ -207,9 +207,9 @@ export function StudentActivityReportForm() {
           />
 
           {result && !result.success && (
-            <div className="flex items-start gap-2 rounded-lg bg-red-50 border border-red-200 p-3 text-sm">
-              <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
-              <span className="text-red-700">{result.message}</span>
+            <div className="flex items-start gap-2 rounded-lg bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/30 p-3 text-sm">
+              <AlertCircle className="h-4 w-4 text-[var(--color-danger)] mt-0.5 shrink-0" />
+              <span className="text-[var(--color-danger)]">{result.message}</span>
             </div>
           )}
 
@@ -219,7 +219,7 @@ export function StudentActivityReportForm() {
               {loading ? 'Saving...' : existingReport ? 'Update Report' : 'Submit Report'}
             </Button>
             {existingReport && (
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-[var(--color-text-muted)]">
                 Submitted at {new Date(existingReport.submitted_at).toLocaleTimeString()}
               </p>
             )}
