@@ -44,6 +44,16 @@ export function QRButton({ id, name, title }: { id: string; name: string; title:
   const [open, setOpen] = useState(false)
   const printRef = useRef<HTMLDivElement>(null)
 
+  useEffect(() => {
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    if (open) {
+      document.addEventListener('keydown', handleEscape)
+      return () => document.removeEventListener('keydown', handleEscape)
+    }
+  }, [open])
+
   return (
     <>
       <button

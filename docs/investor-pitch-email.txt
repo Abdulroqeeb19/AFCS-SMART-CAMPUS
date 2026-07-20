@@ -1,0 +1,40 @@
+Subject: Transforming Nigerian Schools – Invest in AFCS Smart Campus
+
+Dear [Investor Name],
+
+I'm reaching out to share an opportunity to back a school management operating system that's already live, already generating revenue, and ready to scale across Nigeria and beyond.
+
+AFCS Smart Campus is a complete digital platform that handles everything a school needs to run daily operations — attendance, duty rosters, timetables, communications, reporting, and AI-powered automation. It replaces the paper-based chaos and WhatsApp-group confusion that plagues most Nigerian schools.
+
+**The problem is massive.**
+- 21,000+ secondary schools in Nigeria
+- Almost none have an integrated digital operations system
+- Existing edtech platforms only cover grades and fees — they ignore how a school actually runs day-to-day
+
+**Our product is production-proven.**
+- Live at Air Force Comprehensive School since early 2026
+- 80+ staff and 3,000+ students use it daily
+- 12 fully operational modules covering every aspect of school management
+- AI timetable generator, Telegram bot with 25+ commands, automation engine with 13 rules
+
+**The numbers make sense.**
+- NGN 600K/school/year license fee
+- NGN 9B+ annual market potential in Nigeria alone
+- 68% net margins by Year 5
+- Path to NGN 120M ARR within 5 years
+
+**We're raising NGN 50M (~$32K) for:**
+- Multi-tenant architecture (so any school can onboard)
+- Mobile app for staff and parents
+- Sales team to deploy to 100+ schools in 24 months
+
+The product works. The market is ready. The timing is right — the Nigerian government is actively pushing digital transformation in education, and edtech is projected to hit $3.1B by 2028.
+
+I'd love to walk you through a live demo and share our detailed financial projections. Are you available for a brief call this week?
+
+Best regards,
+[Your Name]
+Air Force Comprehensive School, Igbara-Oke
+dewaleprotocols@gmail.com
+
+P.S. Our full pitch deck and financial model are attached. The platform is live at afcs-smart-campus.vercel.app — I'm happy to give you a personal tour.

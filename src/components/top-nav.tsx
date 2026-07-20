@@ -16,6 +16,16 @@ export function TopNav() {
   const { mobileOpen, toggleMobile } = useSidebar()
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
+  useEffect(() => {
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === 'Escape') setUserMenuOpen(false)
+    }
+    if (userMenuOpen) {
+      document.addEventListener('keydown', handleEscape)
+      return () => document.removeEventListener('keydown', handleEscape)
+    }
+  }, [userMenuOpen])
+
   return (
     <header className="sticky top-0 z-30 h-14 border-b border-[var(--color-border)] bg-[var(--color-bg-primary)]/80 backdrop-blur-md">
       <div className="flex h-full items-center gap-3 px-4">
@@ -121,8 +131,15 @@ function NotificationBell() {
         setOpen(false)
       }
     }
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false)
+    }
     document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
+    document.addEventListener('keydown', handleEscape)
+    return () => {
+      document.removeEventListener('mousedown', handleClick)
+      document.removeEventListener('keydown', handleEscape)
+    }
   }, [])
 
   const openDropdown = async () => {

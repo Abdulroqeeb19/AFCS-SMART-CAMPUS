@@ -48,6 +48,7 @@ export function AiAssistant() {
   const [provider, setProvider] = useState<'openai' | 'gemini' | 'ollama'>('openai')
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const saved = localStorage.getItem('afcs_ai_provider') as 'openai' | 'gemini' | 'ollama' | null
@@ -70,6 +71,25 @@ export function AiAssistant() {
 
   useEffect(() => {
     if (open) inputRef.current?.focus()
+  }, [open])
+
+  useEffect(() => {
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    function handleClick(e: MouseEvent) {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    if (open) {
+      document.addEventListener('keydown', handleEscape)
+      document.addEventListener('mousedown', handleClick)
+      return () => {
+        document.removeEventListener('keydown', handleEscape)
+        document.removeEventListener('mousedown', handleClick)
+      }
+    }
   }, [open])
 
   const send = async (content: string) => {
@@ -119,8 +139,17 @@ export function AiAssistant() {
         <span className="text-sm font-medium">AI Assistant</span>
       </button>
 
+      {/* Overlay backdrop */}
+      {open && (
+        <div
+          className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
+          onClick={() => setOpen(false)}
+        />
+      )}
+
       {/* Slide-in panel */}
       <div
+        ref={panelRef}
         className={`fixed top-0 right-0 z-50 h-full w-full sm:w-[420px] bg-[var(--color-bg-card)] shadow-2xl border-l border-[var(--color-border)] flex flex-col transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'}`}
       >
         {/* Header */}
