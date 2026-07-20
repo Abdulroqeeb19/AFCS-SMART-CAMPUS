@@ -9,7 +9,7 @@ AFCS Smart Campus is a complete digital platform that handles everything a schoo
 **The problem is massive.**
 - 21,000+ secondary schools in Nigeria
 - Almost none have an integrated digital operations system
-- Existing edtech platforms only cover grades and fees — they ignore how a school actually runs day-to-day
+- Existing edutech platforms only cover grades and fees — they ignore how a school actually runs day-to-day
 
 **Our product is production-proven.**
 - Live at Air Force Comprehensive School since early 2026
