@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth-utils'
 
 const settingsSchema = z.object({
@@ -46,13 +47,15 @@ export async function POST(request: Request) {
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   const body = parsed.data
 
-  const { data: existing } = await supabase
+  const adminSupabase = createAdminClient()
+
+  const { data: existing } = await adminSupabase
     .from('settings')
     .select('id')
     .single()
 
   if (existing) {
-    const { data, error } = await supabase
+    const { data, error } = await adminSupabase
       .from('settings')
       .update(body)
       .eq('id', existing.id)
@@ -62,7 +65,7 @@ export async function POST(request: Request) {
     return NextResponse.json(data)
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await adminSupabase
     .from('settings')
     .insert(body)
     .select()

@@ -31,6 +31,7 @@ export function SettingsForm() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
   useEffect(() => {
     async function load() {
@@ -52,6 +53,7 @@ export function SettingsForm() {
   const handleSave = async () => {
     setSaving(true)
     setSaved(false)
+    setSaveError('')
     try {
       const res = await fetch('/api/settings', {
         method: 'POST',
@@ -61,7 +63,12 @@ export function SettingsForm() {
       if (res.ok) {
         setSaved(true)
         setTimeout(() => setSaved(false), 3000)
+      } else {
+        const err = await res.json().catch(() => ({ error: 'Save failed' }))
+        setSaveError(err.error || 'Failed to save settings')
       }
+    } catch {
+      setSaveError('Network error. Please try again.')
     } finally {
       setSaving(false)
     }
@@ -205,7 +212,7 @@ export function SettingsForm() {
 
 
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-wrap">
         <Button onClick={handleSave} disabled={saving} size="lg" className="gap-2">
           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
           {saving ? 'Saving...' : 'Save Settings'}
@@ -214,6 +221,9 @@ export function SettingsForm() {
           <Badge variant="success" className="animate-in fade-in">
             Settings saved successfully
           </Badge>
+        )}
+        {saveError && (
+          <p className="text-xs text-[var(--color-danger)]">{saveError}</p>
         )}
       </div>
     </div>
