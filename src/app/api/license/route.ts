@@ -2,8 +2,19 @@ import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth-utils'
+import { isWithinFreePeriod, getFreeDaysRemaining } from '@/lib/license-check'
 
 export async function GET() {
+  if (isWithinFreePeriod()) {
+    return NextResponse.json({
+      free: true,
+      days_remaining: getFreeDaysRemaining(),
+      license_key: null,
+      tier: null,
+      is_expired: false,
+    })
+  }
+
   const supabase = await createServerSupabaseClient()
   const { data, error } = await supabase
     .from('licenses')
@@ -15,6 +26,7 @@ export async function GET() {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   if (!data) {
     return NextResponse.json({
+      free: false,
       license_key: null,
       tier: null,
       school_name: '',
@@ -32,7 +44,7 @@ export async function GET() {
   const daysRemaining = Math.max(0, Math.ceil((expires.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
   const isExpired = now >= expires || !data.is_active
 
-  return NextResponse.json({ ...data, days_remaining: daysRemaining, is_expired: isExpired })
+  return NextResponse.json({ ...data, free: false, days_remaining: daysRemaining, is_expired: isExpired })
 }
 
 export async function POST(request: Request) {

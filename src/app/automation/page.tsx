@@ -50,10 +50,6 @@ export default function AutomationPage() {
   const [running, setRunning] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchRules()
-  }, [])
-
   const fetchRules = async () => {
     setLoading(true)
     try {
@@ -68,6 +64,8 @@ export default function AutomationPage() {
       setLoading(false)
     }
   }
+
+  useEffect(() => { fetchRules() }, [])
 
   const toggleRule = async (key: string, current: boolean) => {
     const newState = !current
