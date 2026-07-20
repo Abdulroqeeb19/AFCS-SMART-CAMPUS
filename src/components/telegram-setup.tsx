@@ -122,8 +122,6 @@ export function TelegramSetup() {
               <ol className="text-xs text-[var(--color-info)] space-y-1 list-decimal ml-4">
                 <li>Search for your bot on Telegram and start a chat</li>
                 <li>Send: <code className="bg-[var(--color-info)]/20 px-1 rounded">/link YOUR_STAFF_ID YOUR_EMAIL</code></li>
-                <li><strong>Your correct staff ID is <code className="bg-[var(--color-info)]/20 px-1 rounded">AFC-0016</code> (for dewaleprotocols@gmail.com)</strong></li>
-                <li>Full example: <code className="bg-[var(--color-info)]/20 px-1 rounded">/link AFC-0016 dewaleprotocols@gmail.com</code></li>
                 <li>The bot will confirm: <em>✅ Linked! You'll now receive notifications here...</em></li>
               </ol>
             </div>

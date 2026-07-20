@@ -9,18 +9,16 @@ const settingsSchema = z.object({
   closing_hour: z.number().int().min(0).max(23).optional(),
   closing_minute: z.number().int().min(0).max(59).optional(),
   school_name: z.string().min(1).max(255).optional(),
-  enable_whatsapp_notifications: z.boolean().optional(),
   enable_qr_checkin: z.boolean().optional(),
   telegram_bot_token: z.string().max(255).optional(),
 })
 
 const DEFAULT_SETTINGS = {
-  cutoff_hour: 8,
-  cutoff_minute: 0,
+  cutoff_hour: 7,
+  cutoff_minute: 30,
   closing_hour: 16,
   closing_minute: 0,
   school_name: 'Air Force Comprehensive School, Igbara-Oke',
-  enable_whatsapp_notifications: false,
   enable_qr_checkin: true,
 }
 

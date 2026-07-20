@@ -19,8 +19,8 @@ export const ROLE_HIERARCHY: Record<Role, number> = {
 }
 
 export const ATTENDANCE_DEFAULTS = {
-  CUTOFF_HOUR: 8,
-  CUTOFF_MINUTE: 0,
+  CUTOFF_HOUR: 7,
+  CUTOFF_MINUTE: 30,
   CLOSING_HOUR: 16,
   CLOSING_MINUTE: 0,
 }

@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth-utils'
-import { ATTENDANCE_DEFAULTS } from '@/lib/constants'
-
 export async function POST(request: Request) {
   try {
     const { student_id, period = 'morning' } = await request.json()
@@ -46,9 +44,17 @@ export async function POST(request: Request) {
       )
     }
 
+    const { data: dbSettings } = await adminSupabase
+      .from('settings')
+      .select('cutoff_hour, cutoff_minute')
+      .limit(1)
+      .maybeSingle()
+
+    const cutoffHour = dbSettings?.cutoff_hour ?? 7
+    const cutoffMinute = dbSettings?.cutoff_minute ?? 30
     const now = new Date()
     const cutoff = new Date()
-    cutoff.setHours(ATTENDANCE_DEFAULTS.CUTOFF_HOUR, ATTENDANCE_DEFAULTS.CUTOFF_MINUTE, 0, 0)
+    cutoff.setHours(cutoffHour, cutoffMinute, 0, 0)
     const status = now > cutoff ? 'late' : 'present'
 
     const { data, error } = await adminSupabase
