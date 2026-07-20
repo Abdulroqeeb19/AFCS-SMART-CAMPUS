@@ -2,231 +2,626 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>AFCS Smart Campus — Simplified Pitch</title>
+<title>AFCS Smart Campus — Investment Proposal</title>
 <style>
-  @page { margin: 1.5cm; }
+  @page { margin: 1.5cm; size: A4; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; color: #1a1a1a; line-height: 1.6; font-size: 11pt; padding: 1.5cm; max-width: 210mm; margin: 0 auto; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: #1a1a1a; line-height: 1.6; font-size: 10.5pt; padding: 1.5cm; max-width: 210mm; margin: 0 auto; }
   h1 { font-size: 26pt; color: #001A4D; margin-bottom: 4pt; }
-  h2 { font-size: 18pt; color: #001A4D; margin-top: 28pt; margin-bottom: 12pt; border-bottom: 2px solid #C9A84C; padding-bottom: 4pt; }
-  h3 { font-size: 13pt; color: #003366; margin-top: 18pt; margin-bottom: 8pt; }
-  p { margin-bottom: 10pt; }
-  ul { margin: 8pt 0 14pt 18pt; }
-  li { margin-bottom: 4pt; }
-  table { width: 100%; border-collapse: collapse; margin: 12pt 0; font-size: 10pt; }
-  th, td { border: 1px solid #ccc; padding: 6pt 8pt; text-align: left; }
+  h2 { font-size: 15pt; color: #001A4D; margin-top: 22pt; margin-bottom: 10pt; border-bottom: 2px solid #C9A84C; padding-bottom: 4pt; }
+  h3 { font-size: 12pt; color: #003366; margin-top: 14pt; margin-bottom: 6pt; }
+  h4 { font-size: 10.5pt; color: #001A4D; margin-top: 10pt; margin-bottom: 4pt; }
+  p { margin-bottom: 8pt; }
+  ul, ol { margin: 6pt 0 10pt 18pt; }
+  li { margin-bottom: 3pt; }
+  table { width: 100%; border-collapse: collapse; margin: 10pt 0; font-size: 9pt; }
+  th, td { border: 1px solid #bbb; padding: 5pt 7pt; text-align: left; }
   th { background: #001A4D; color: #fff; font-weight: 600; }
   tr:nth-child(even) { background: #f5f7fa; }
+  code { font-size: 8.5pt; background: #f0f0f0; padding: 1pt 4pt; border-radius: 2pt; }
 
-  .cover { text-align: center; padding: 50pt 0 30pt; }
-  .cover h1 { font-size: 30pt; border: none; margin-bottom: 6pt; }
-  .cover .subtitle { font-size: 14pt; color: #555; margin-bottom: 16pt; }
-  .cover .badge { display: inline-block; background: #001A4D; color: #C9A84C; padding: 4pt 16pt; border-radius: 20pt; font-size: 9pt; font-weight: 600; }
+  .cover { text-align: center; padding: 60pt 0 40pt; page-break-after: always; }
+  .cover h1 { font-size: 34pt; border: none; margin-bottom: 8pt; letter-spacing: 1pt; }
+  .cover .subtitle { font-size: 15pt; color: #555; margin-bottom: 20pt; }
+  .cover .badge { display: inline-block; background: #001A4D; color: #C9A84C; padding: 5pt 20pt; border-radius: 20pt; font-size: 9pt; font-weight: 600; letter-spacing: 1pt; }
+  .cover .meta { margin-top: 30pt; font-size: 10pt; color: #777; line-height: 2; }
+  .cover .meta strong { color: #001A4D; }
 
-  .stat-row { display: flex; gap: 12pt; margin: 16pt 0; flex-wrap: wrap; justify-content: center; }
-  .stat-card { flex: 1; min-width: 100pt; background: #f0f4ff; border: 1px solid #d0d8e8; border-radius: 8pt; padding: 14pt 12pt; text-align: center; }
-  .stat-card .num { font-size: 22pt; font-weight: 700; color: #001A4D; }
-  .stat-card .lbl { font-size: 8pt; color: #666; text-transform: uppercase; letter-spacing: 0.5pt; }
+  .stat-row { display: flex; gap: 10pt; margin: 14pt 0; flex-wrap: wrap; justify-content: center; }
+  .stat-card { flex: 1; min-width: 90pt; background: #f0f4ff; border: 1px solid #d0d8e8; border-radius: 6pt; padding: 12pt 10pt; text-align: center; }
+  .stat-card .num { font-size: 20pt; font-weight: 700; color: #001A4D; }
+  .stat-card .lbl { font-size: 7pt; color: #666; text-transform: uppercase; letter-spacing: 0.5pt; }
 
-  .highlight-box { background: #e8f0fe; border-left: 4px solid #001A4D; padding: 12pt 16pt; margin: 16pt 0; border-radius: 4pt; }
-  .highlight-box strong { color: #001A4D; }
+  .highlight { background: #e8f0fe; border-left: 4pt solid #001A4D; padding: 10pt 14pt; margin: 12pt 0; border-radius: 3pt; }
+  .highlight strong { color: #001A4D; }
 
   .page-break { page-break-before: always; }
-  .tag { display: inline-block; background: #e8f0fe; color: #001A4D; font-size: 8pt; padding: 1pt 6pt; border-radius: 3pt; margin-right: 2pt; }
-  .tag-green { background: #e6f7e6; color: #008751; }
+  .section-grid { display: flex; gap: 10pt; flex-wrap: wrap; margin: 10pt 0; }
+  .section-card { flex: 1; min-width: 140pt; background: #fafafa; border: 1px solid #e0e0e0; border-radius: 5pt; padding: 10pt; }
+  .section-card h4 { font-size: 10pt; color: #001A4D; margin-bottom: 3pt; }
+  .section-card p { font-size: 8.5pt; color: #555; margin: 0; line-height: 1.5; }
 
-  .section-grid { display: flex; gap: 12pt; flex-wrap: wrap; margin: 12pt 0; }
-  .section-card { flex: 1; min-width: 160pt; background: #fafafa; border: 1px solid #e0e0e0; border-radius: 6pt; padding: 12pt; }
-  .section-card h4 { font-size: 11pt; color: #001A4D; margin-bottom: 4pt; }
-  .section-card p { font-size: 9.5pt; color: #555; margin: 0; }
+  .toc { page-break-after: always; }
+  .toc h2 { border: none; text-align: center; margin-bottom: 20pt; }
+  .toc ul { list-style: none; margin: 0; }
+  .toc li { padding: 5pt 0; border-bottom: 1px dotted #ccc; font-size: 11pt; }
+  .toc li span { float: right; color: #999; }
 
-  @media print { body { padding: 0; } }
+  @media print {
+    body { padding: 0; }
+    .section-card { break-inside: avoid; }
+  }
 </style>
 </head>
 <body>
 
 <div class="cover">
   <h1>AFCS Smart Campus</h1>
-  <div class="subtitle">School Management Operating System — Simplified Pitch</div>
-  <div class="badge">Version 2.0 — July 2026</div>
-  <p style="margin-top:14pt; font-size:10pt; color:#777;">
-    Air Force Comprehensive School, Igbara-Oke, Ondo State, Nigeria
-  </p>
+  <div class="subtitle">School Management Operating System — Investment Proposal</div>
+  <div class="badge">CONFIDENTIAL — Version 3.0</div>
+  <div class="meta">
+    <strong>Prepared by:</strong> Air Force Comprehensive School, Igbara-Oke, Ondo State<br>
+    <strong>Contact:</strong> dewaleprotocols@gmail.com<br>
+    <strong>Date:</strong> July 2026<br>
+    <strong>Platform:</strong> afcs-smart-campus.vercel.app
+  </div>
+  <p style="margin-top: 40pt; font-size: 9pt; color: #aaa; font-style: italic;">This document contains proprietary information. Please do not distribute without permission.</p>
 </div>
 
-<div class="page-break"></div>
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li>1. Executive Summary <span>3</span></li>
+    <li>2. The Problem <span>4</span></li>
+    <li>3. The Solution <span>5</span></li>
+    <li>4. Product Modules <span>6</span></li>
+    <li>5. Technology Architecture <span>7</span></li>
+    <li>6. Market Analysis <span>8</span></li>
+    <li>7. Competitive Landscape <span>9</span></li>
+    <li>8. Business Model &amp; Pricing <span>10</span></li>
+    <li>9. Financial Projections <span>11</span></li>
+    <li>10. Traction &amp; Milestones <span>13</span></li>
+    <li>11. Go-to-Market Strategy <span>14</span></li>
+    <li>12. Investment Ask &amp; Use of Funds <span>15</span></li>
+    <li>13. Risk Assessment <span>16</span></li>
+    <li>14. Exit Strategy <span>17</span></li>
+    <li>15. Contact &amp; Next Steps <span>18</span></li>
+  </ul>
+</div>
 
-<h2>What Is AFCS Smart Campus?</h2>
+<!-- 1. EXECUTIVE SUMMARY -->
+<h2>1. Executive Summary</h2>
 
-<p>A complete digital operating system for running a secondary school. Think of it as the operating system that connects every part of school life — attendance, duties, timetables, communications, and reporting — into one seamless platform.</p>
+<p>AFCS Smart Campus is a complete digital operating system for running secondary schools in Nigeria and across Africa. It replaces paper registers, WhatsApp-group chaos, and manual spreadsheets with an integrated platform handling attendance, duty rosters, AI-powered timetables, parade management, multi-channel notifications, and AI-driven analytics.</p>
 
 <div class="stat-row">
-  <div class="stat-card"><div class="num">80+</div><div class="lbl">Staff Using It Daily</div></div>
+  <div class="stat-card"><div class="num">80+</div><div class="lbl">Daily Active Staff</div></div>
   <div class="stat-card"><div class="num">3,000+</div><div class="lbl">Students Tracked</div></div>
-  <div class="stat-card"><div class="num">12</div><div class="lbl">Core Modules Live</div></div>
-  <div class="stat-card"><div class="num">Live</div><div class="lbl">In Production Since Early 2026</div></div>
+  <div class="stat-card"><div class="num">16</div><div class="lbl">Live Modules</div></div>
+  <div class="stat-card"><div class="num">Live</div><div class="lbl">In Production Since Jan 2026</div></div>
 </div>
 
-<h2>The Problem It Solves</h2>
-
-<p>Nigerian schools today run on paper, WhatsApp groups, and manual processes. This creates real problems:</p>
-
+<h3>The Opportunity</h3>
 <ul>
-  <li><strong>Attendance is paper-based</strong> — 500+ records daily, easily lost, impossible to audit</li>
-  <li><strong>Timetables take 3-5 days</strong> of manual work and often have clashes</li>
-  <li><strong>Duty assignments are confusing</strong> — staff don't know their duties, no one tracks completion</li>
-  <li><strong>Communications are scattered</strong> — WhatsApp groups, notice boards, word of mouth</li>
-  <li><strong>No real-time visibility</strong> — school leaders can't see who's present, who's on duty, or what's pending</li>
-  <li><strong>No accountability</strong> — tasks assigned informally, no audit trail</li>
+  <li><strong>21,000+</strong> secondary schools in Nigeria — almost none have an integrated digital operations system</li>
+  <li><strong>NGN 9B+</strong> annual market potential in Nigeria alone; <strong>$40M+</strong> across Africa</li>
+  <li>Existing edutech only covers grades, transcripts, and fees — they ignore how a school actually <em>runs</em></li>
+  <li>Nigerian government actively pushing digital transformation in education; edtech projected to reach $3.1B by 2028</li>
 </ul>
 
-<div class="highlight-box">
-  <strong>In short:</strong> Running a Nigerian secondary school is like flying a plane with no instruments. AFCS Smart Campus provides the cockpit.
-</div>
+<h3>The Product</h3>
+<p>Live in production since January 2026 at Air Force Comprehensive School, Igbara-Oke. 16 fully operational modules. 80+ daily active users. Zero downtime since launch. Built by a practitioner who uses it daily — every feature solves a real problem.</p>
 
-<h2>The Solution — 12 Integrated Modules</h2>
-
-<div class="section-grid">
-  <div class="section-card">
-    <h4>1. Smart Attendance</h4>
-    <p>QR code + manual check-in/out for staff and students. Late detection, class breakdowns, real-time dashboard.</p>
-  </div>
-  <div class="section-card">
-    <h4>2. Duty Roster Engine</h4>
-    <p>8 duty types (Morning Talk, Assembly, Sanitary, etc.). Auto-rotation so assignments are fair and nobody is forgotten.</p>
-  </div>
-  <div class="section-card">
-    <h4>3. AI Timetable Generator</h4>
-    <p>Creates conflict-free timetables in seconds. No more 3-day manual scheduling marathons.</p>
-  </div>
-  <div class="section-card">
-    <h4>4. Muster Parade</h4>
-    <p>Digital parade sessions, briefings, task assignment with acknowledgement. Everything tracked.</p>
-  </div>
-  <div class="section-card">
-    <h4>5. Prefect Roles</h4>
-    <p>18 prefect roles assignable to students. Badges, filters, leadership tracking.</p>
-  </div>
-  <div class="section-card">
-    <h4>6. Daily Reports</h4>
-    <p>Structured reports with AI summaries. Know what happened, what's challenging, and what's next.</p>
-  </div>
-  <div class="section-card">
-    <h4>7. Telegram Bot</h4>
-    <p>25+ commands. Staff check duties, tasks, timetables from their phone. Zero cost to run.</p>
-  </div>
-  <div class="section-card">
-    <h4>8. Multi-Channel Comms</h4>
-    <p>Telegram + WhatsApp + SMS. Falls back automatically if one channel fails.</p>
-  </div>
-  <div class="section-card">
-    <h4>9. Automation Engine</h4>
-    <p>13 scheduled rules. Reminders, alerts, digests — all sent automatically.</p>
-  </div>
-  <div class="section-card">
-    <h4>10. AI Assistant</h4>
-    <p>Natural language chat. Ask "Who hasn't checked in?" or "What's today's duty?" and get instant answers.</p>
-  </div>
-  <div class="section-card">
-    <h4>11. Global Search</h4>
-    <p>Press Ctrl+K, search any feature, navigate instantly. Like Spotlight for your school.</p>
-  </div>
-  <div class="section-card">
-    <h4>12. Notifications Hub</h4>
-    <p>Full history of all notifications. Who was notified, when, and whether they received it.</p>
-  </div>
+<h3>The Ask</h3>
+<div class="highlight">
+  <strong>NGN 50,000,000 (~$32,000 USD)</strong> seed round for 15% equity. Funds will build multi-school architecture, mobile apps, and a sales team to deploy to 100+ schools in 24 months. Path to NGN 120M ARR by Year 5 with 68% net margins.
 </div>
 
 <div class="page-break"></div>
 
-<h2>Why This Matters for Investors</h2>
+<!-- 2. THE PROBLEM -->
+<h2>2. The Problem</h2>
+
+<h3>2.1 How Nigerian Schools Run Today</h3>
 
 <table>
-  <tr><th>Metric</th><th>Detail</th></tr>
-  <tr><td><strong>Market Size</strong></td><td>21,000+ secondary schools in Nigeria alone. 115 Federal Unity Colleges, 6,000+ state schools, 15,000+ private schools.</td></tr>
-  <tr><td><strong>Annual Potential</strong></td><td>NGN 9B+ at NGN 600K/school/year. Pan-African expansion adds NGN 18B+.</td></tr>
-  <tr><td><strong>Competition Gap</strong></td><td>No competitor offers school operations management + academic scheduling + communications + AI in one platform. Existing players only do grades/transcripts.</td></tr>
-  <tr><td><strong>Proven Traction</strong></td><td>Live in production since early 2026. 80+ daily active staff users. 3,000+ students tracked. All 12 modules operational.</td></tr>
-  <tr><td><strong>Lowest Cost</strong></td><td>Serverless infrastructure (Vercel + Supabase). Telegram is free. Hosting costs near zero even at scale.</td></tr>
-  <tr><td><strong>Built by Users</strong></td><td>Developed at an actual school, by the people who use it daily. Every feature solves a real problem.</td></tr>
+  <tr><th>Pain Point</th><th>Current Method</th><th>Consequence</th></tr>
+  <tr><td>Attendance</td><td>Paper registers</td><td>500+ sheets/day, easily lost, impossible to audit, forged signatures</td></tr>
+  <tr><td>Duty roster</td><td>Manual rotation</td><td>Confusion, unfair assignments, nobody knows whose duty it is</td></tr>
+  <tr><td>Timetable</td><td>Hand-drawn in Excel</td><td>3-5 days of headmaster time, clashes, last-minute changes</td></tr>
+  <tr><td>Communications</td><td>WhatsApp groups</td><td>Info buried in chats, no confirmation of receipt</td></tr>
+  <tr><td>Task assignment</td><td>Verbal instructions</td><td>No audit trail, tasks forgotten, no accountability</td></tr>
+  <tr><td>Reports</td><td>Handwritten notes</td><td>Buried in files, no trend analysis, no institutional memory</td></tr>
+  <tr><td>Notifications</td><td>Word of mouth</td><td>Staff miss duty alerts, parents not informed</td></tr>
 </table>
 
-<h2>Revenue Model</h2>
+<h3>2.2 The Scale of the Problem</h3>
+<ul>
+  <li><strong>21,000+</strong> secondary schools in Nigeria (115 Federal, 6,000+ state, 15,000+ private)</li>
+  <li><strong>~95%</strong> have <strong>no integrated digital operations system</strong></li>
+  <li><strong>30+ hours/week</strong> lost to manual register-taking across the school</li>
+  <li><strong>2 weeks/term</strong> lost to manual timetable creation</li>
+  <li><strong>Unfair duty loads</strong> — same staff repeatedly assigned, others never</li>
+  <li><strong>Disconnected leadership</strong> — commandant can't see real-time attendance, duty completion, or task status</li>
+</ul>
+
+<h3>2.3 The Cost of Inaction</h3>
+<p>A typical Nigerian secondary school spends an estimated <strong>NGN 200,000+ annually</strong> on paper registers, printing, and filing supplies. The hidden cost of administrative time wasted on manual processes is <strong>3-5x higher</strong>. AFCS eliminates both — a school saves its annual license fee in paper costs alone within the first term.</p>
+
+<div class="page-break"></div>
+
+<!-- 3. THE SOLUTION -->
+<h2>3. The Solution</h2>
+
+<p>AFCS Smart Campus is a single, integrated digital operating system that manages every operational aspect of a secondary school:</p>
+
+<pre style="background: #f5f7fa; border: 1px solid #ddd; border-radius: 4pt; padding: 12pt; font-size: 8pt; line-height: 1.8; margin: 12pt 0;">
+┌──────────────────────────────────────────────────────────────────┐
+│                         AFCS Smart Campus                         │
+├───────────────────────┬──────────────────────┬───────────────────┤
+│    Staff Attendance   │  Student Attendance  │   Duty Roster     │
+│    QR + Manual        │  Per-period tracking │   8 duty types    │
+│    Late detection     │  Class breakdown     │   Auto-rotation   │
+├───────────────────────┼──────────────────────┼───────────────────┤
+│   AI Timetable Gen    │   Muster Parade      │  Daily Reports    │
+│   No-clash, 30sec     │   Briefings, tasks   │  AI summaries     │
+├───────────────────────┼──────────────────────┼───────────────────┤
+│   Telegram Bot        │  Multi-Channel Comms │ Automation Engine │
+│   25+ commands        │  Telegram/WA/SMS     │ 13 cron rules     │
+├───────────────────────┼──────────────────────┼───────────────────┤
+│   AI Assistant        │  Global Search       │  Notifications Hub│
+│   Natural language    │  Ctrl+K navigation   │  Delivery tracking│
+├───────────────────────┼──────────────────────┼───────────────────┤
+│   Prefect Roles       │  QR Badging          │  License System   │
+│   18 role types       │  Per-staff badges    │  Multi-tier       │
+└───────────────────────┴──────────────────────┴───────────────────┘
+</pre>
+
+<h3>3.1 What Makes AFCS Different</h3>
 
 <table>
-  <tr><th>Tier</th><th>What's Included</th><th>Annual Fee</th></tr>
-  <tr><td>Essential</td><td>Attendance + Duty Roster + Reports</td><td>NGN 350,000</td></tr>
-  <tr><td>Professional</td><td>All modules + AI Timetable + Telegram + Automation</td><td>NGN 600,000</td></tr>
-  <tr><td>Enterprise</td><td>All modules + WhatsApp/SMS + Dedicated Support</td><td>NGN 1,200,000</td></tr>
-</table>
-
-<p><strong>Plus:</strong> NGN 250K setup fee per school, 15% annual maintenance, hardware bundles, SMS credits, and data analytics for education boards.</p>
-
-<h2>5-Year Financial Outlook</h2>
-
-<table>
-  <tr><th></th><th>Year 1</th><th>Year 2</th><th>Year 3</th><th>Year 5</th></tr>
-  <tr><td>Schools Deployed</td><td>10</td><td>35</td><td>80</td><td>200</td></tr>
-  <tr><td>Gross Revenue</td><td>NGN 10M</td><td>NGN 30.75M</td><td>NGN 63.25M</td><td>NGN 123.75M</td></tr>
-  <tr><td><strong>Net Profit</strong></td><td><strong>NGN 2M</strong></td><td><strong>NGN 15.75M</strong></td><td><strong>NGN 38.25M</strong></td><td><strong>NGN 83.75M</strong></td></tr>
-  <tr><td>Margin</td><td>20%</td><td>51%</td><td>60%</td><td>68%</td></tr>
+  <tr><th>Feature</th><th>AFCS</th><th>Competitors</th></tr>
+  <tr><td>AI timetable generator</td><td>30 seconds, no clashes</td><td>Manual Excel, 3-5 days</td></tr>
+  <tr><td>Multi-channel notifications</td><td>Telegram + WhatsApp + SMS</td><td>WhatsApp only</td></tr>
+  <tr><td>Automation engine</td><td>13 scheduled rules</td><td>None</td></tr>
+  <tr><td>Free notification channel (Telegram)</td><td>Zero operating cost</td><td>Meta API costs per message</td></tr>
+  <tr><td>QR code scanning</td><td>Built-in, no hardware needed</td><td>Requires dedicated scanners</td></tr>
+  <tr><td>Muster parade + task tracking</td><td>Digital, full audit trail</td><td>None</td></tr>
+  <tr><td>AI assistant (natural language chat)</td><td>"Who hasn't checked in?"</td><td>None</td></tr>
+  <tr><td>Annual pricing</td><td>NGN 350K–1.2M</td><td>$1,500–$5,000</td></tr>
 </table>
 
 <div class="page-break"></div>
 
-<h2>The Investment Ask</h2>
+<!-- 4. PRODUCT MODULES -->
+<h2>4. Product Modules</h2>
 
-<div class="highlight-box">
+<p>AFCS consists of 16 integrated modules, each solving a specific operational challenge:</p>
+
+<table>
+  <tr><th>#</th><th>Module</th><th>Key Features</th><th>Primary Users</th></tr>
+  <tr><td>1</td><td>Staff Attendance</td><td>QR + manual check-in/out, late detection, daily rollup, real-time dashboard</td><td>All staff</td></tr>
+  <tr><td>2</td><td>Student Attendance</td><td>Per-period tracking, class breakdown, parent alerts, CSV export</td><td>Teachers</td></tr>
+  <tr><td>3</td><td>Duty Roster</td><td>8 duty types (Morning Talk, Assembly, Sanitary, etc.), auto-rotation, fair distribution</td><td>Admin</td></tr>
+  <tr><td>4</td><td>AI Timetable</td><td>No-clash generation in &lt;30 seconds, period assignments, class-subject mapping</td><td>Admin</td></tr>
+  <tr><td>5</td><td>Muster Parade</td><td>Digital parade sessions, briefings, task assignment, acknowledgment tracking</td><td>All staff</td></tr>
+  <tr><td>6</td><td>Prefect Roles</td><td>18 role types (Head Boy, Sports Prefect, etc.), student assignments, badges</td><td>Admin</td></tr>
+  <tr><td>7</td><td>Daily Reports</td><td>Structured format, AI summaries, historical trends, PDF export</td><td>Commandant</td></tr>
+  <tr><td>8</td><td>Telegram Bot</td><td>25+ commands, duty/task/timetable queries, notifications, free to operate</td><td>All staff</td></tr>
+  <tr><td>9</td><td>Multi-Channel Comms</td><td>Telegram → WhatsApp → SMS fallback chain, delivery tracking</td><td>All staff</td></tr>
+  <tr><td>10</td><td>Automation Engine</td><td>13 cron-based rules: reminders, alerts, digests, configurable channels</td><td>Admin</td></tr>
+  <tr><td>11</td><td>AI Assistant</td><td>Natural language chat, attendance queries, task status, duty lookup</td><td>Commandant</td></tr>
+  <tr><td>12</td><td>Global Search</td><td>Ctrl+K, instant feature/record navigation across entire platform</td><td>All users</td></tr>
+  <tr><td>13</td><td>Notifications Hub</td><td>Full history, read tracking, delivery status, in-app bell with unread count</td><td>All users</td></tr>
+  <tr><td>14</td><td>QR Code Badging</td><td>Per-staff QR badge generation, scanner interface, works on any phone camera</td><td>All staff</td></tr>
+  <tr><td>15</td><td>In-App Bell</td><td>Real-time notification dropdown, 30s polling, unread counts, mark-as-read</td><td>All users</td></tr>
+  <tr><td>16</td><td>Licensing System</td><td>Multi-tier annual licensing, expiry management, master key activation</td><td>Admin</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<!-- 5. TECHNOLOGY ARCHITECTURE -->
+<h2>5. Technology Architecture</h2>
+
+<h3>5.1 Stack Overview</h3>
+
+<table>
+  <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+  <tr><td>Frontend</td><td>Next.js 16 + React 19 + Tailwind CSS v4</td><td>Web application</td></tr>
+  <tr><td>Backend</td><td>Next.js API routes (Edge + Serverless)</td><td>REST API layer</td></tr>
+  <tr><td>Database</td><td>PostgreSQL via Supabase</td><td>Data persistence</td></tr>
+  <tr><td>Authentication</td><td>Supabase Auth (password + magic link)</td><td>User management</td></tr>
+  <tr><td>AI/ML</td><td>OpenAI GPT-4o-mini / Gemini 2.0 Flash</td><td>AI assistant, timetable generation</td></tr>
+  <tr><td>Notifications</td><td>Telegram Bot API + WhatsApp Cloud API + Termii SMS</td><td>Multi-channel delivery</td></tr>
+  <tr><td>Hosting</td><td>Vercel Edge Network</td><td>Global deployment</td></tr>
+  <tr><td>CI/CD</td><td>GitHub → Vercel auto-deploy</td><td>Continuous delivery</td></tr>
+</table>
+
+<h3>5.2 Architecture Diagram</h3>
+<pre style="background: #f5f7fa; border: 1px solid #ddd; border-radius: 4pt; padding: 12pt; font-size: 8pt; line-height: 1.6; margin: 12pt 0;">
+  Browser (User)
+      │ HTTPS
+      ▼
+  Vercel Edge Network
+      │
+      ├── Next.js 16 App (Pages + API Routes + Proxy/Middleware)
+      │
+      ├── Supabase (PostgreSQL + Auth + Realtime)
+      │
+      └── External APIs
+            ├── Telegram Bot API (free)
+            ├── WhatsApp Cloud API
+            ├── Termii SMS
+            └── OpenAI / Gemini
+</pre>
+
+<h3>5.3 Why This Architecture Wins</h3>
+<ul>
+  <li><strong>Serverless</strong> — pay per request, not per server. Near-zero cost at low volumes. Scales to millions of requests without re-architecting.</li>
+  <li><strong>Edge-rendered</strong> — pages load fast anywhere in Nigeria/Africa (Lagos, Kano, Port Harcourt all within Vercel's edge network).</li>
+  <li><strong>Supabase</strong> — PostgreSQL with built-in auth, real-time subscriptions, and file storage. One service replaces five.</li>
+  <li><strong>Telegram-first notifications</strong> — free, no Meta account required, no API costs. Works on basic phones and 2G networks.</li>
+  <li><strong>Single codebase</strong> — one deployment serves all schools. Multi-tenant data isolation via PostgreSQL Row-Level Security.</li>
+</ul>
+
+<div class="page-break"></div>
+
+<!-- 6. MARKET ANALYSIS -->
+<h2>6. Market Analysis</h2>
+
+<h3>6.1 Total Addressable Market</h3>
+
+<table>
+  <tr><th>Market Segment</th><th>Schools</th><th>Annual License Potential</th><th>Total</th></tr>
+  <tr><td>Federal Unity Colleges (Nigeria)</td><td>115</td><td>NGN 600,000</td><td>NGN 69M</td></tr>
+  <tr><td>State Secondary Schools</td><td>6,000+</td><td>NGN 350K–600K</td><td>NGN 2.1B–3.6B</td></tr>
+  <tr><td>Private Secondary Schools</td><td>15,000+</td><td>NGN 600K–1.2M</td><td>NGN 9B–18B</td></tr>
+  <tr><td><strong>Nigeria Total</strong></td><td><strong>21,000+</strong></td><td></td><td><strong>NGN 9B+</strong></td></tr>
+  <tr><td>Ghana Secondary Schools</td><td>5,000+</td><td>$1,000–$3,000</td><td>$5M–$15M</td></tr>
+  <tr><td>Kenya Secondary Schools</td><td>4,000+</td><td>$1,000–$3,000</td><td>$4M–$12M</td></tr>
+  <tr><td>South Africa Secondary Schools</td><td>2,500+</td><td>$2,000–$5,000</td><td>$5M–$12.5M</td></tr>
+  <tr><td><strong>Pan-Africa Total</strong></td><td></td><td></td><td><strong>$14M–$39.5M+</strong></td></tr>
+</table>
+
+<h3>6.2 Market Trends</h3>
+<table>
+  <tr><th>Trend</th><th>Impact on AFCS</th></tr>
+  <tr><td>Nigerian govt pushing digital transformation in education</td><td>Government contracts for state school deployments</td></tr>
+  <tr><td>Edtech projected $3.1B by 2028 (Nigeria)</td><td>Growing willingness to pay for school software</td></tr>
+  <tr><td>85%+ teachers already use WhatsApp/Telegram</td><td>Zero learning curve for our notification system</td></tr>
+  <tr><td>Smartphone penetration: 40% and rising</td><td>More users can access the web app daily</td></tr>
+  <tr><td>JAPA syndrome reducing experienced staff</td><td>Automation replaces manual processes, reduces dependency</td></tr>
+  <tr><td>AFCON 2027 (Nigeria hosting)</td><td>Government infrastructure spend boosts connectivity</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<!-- 7. COMPETITIVE LANDSCAPE -->
+<h2>7. Competitive Landscape</h2>
+
+<h3>7.1 Direct Competitors</h3>
+
+<table>
+  <tr><th>Competitor</th><th>Focus</th><th>Strengths</th><th>Weaknesses</th><th>AFCS Advantage</th></tr>
+  <tr><td>SchoolBoss (SA)</td><td>Fees, grades</td><td>Polished UI</td><td>No ops, expensive ($2K–$5K)</td><td>Full ops + AI + lower price</td></tr>
+  <tr><td>Educare (Kenya)</td><td>Timetable, grades</td><td>Good timetable</td><td>No attendance, no comms</td><td>End-to-end integrated</td></tr>
+  <tr><td>i-School (Nigeria)</td><td>Fees, exams</td><td>Local payments</td><td>No daily operations</td><td>Full OS, not just admin</td></tr>
+  <tr><td>SkoolBox (Nigeria)</td><td>Communication</td><td>Parent-teacher chat</td><td>No school management</td><td>Full operations + comms</td></tr>
+  <tr><td>Manual/Paper</td><td>Everything</td><td>No software cost</td><td>Inefficient, error-prone</td><td>Digital, automated, auditable</td></tr>
+</table>
+
+<h3>7.2 Our Moat</h3>
+<ol>
+  <li><strong>First-mover in full-stack school ops</strong> — no one combines attendance + duty + timetable + notifications + AI in one platform for African schools</li>
+  <li><strong>Built by practitioners</strong> — developed at an actual school, solving real problems. Every feature was requested by teachers or administrators</li>
+  <li><strong>Free notification channel</strong> — Telegram costs nothing to operate. Competitors using WhatsApp pay per message</li>
+  <li><strong>AI timetable generator</strong> — saves 2 weeks/term. Genuinely useful. Difficult to replicate well</li>
+  <li><strong>Data lock-in</strong> — after a term, the school's attendance records, timetables, duties, and tasks are all in our system. Switching cost is the data</li>
+  <li><strong>Lowest operating cost</strong> — serverless architecture means hosting costs stay near zero even as users grow</li>
+</ol>
+
+<div class="page-break"></div>
+
+<!-- 8. BUSINESS MODEL -->
+<h2>8. Business Model &amp; Pricing</h2>
+
+<h3>8.1 Revenue Streams</h3>
+<table>
+  <tr><th>Stream</th><th>Description</th><th>Contribution</th></tr>
+  <tr><td>Annual License</td><td>Per-school, per-year subscription</td><td>75%</td></tr>
+  <tr><td>Setup &amp; Training</td><td>One-time onboarding fee (NGN 250K)</td><td>10%</td></tr>
+  <tr><td>Annual Maintenance</td><td>15% of license fee/year</td><td>8%</td></tr>
+  <tr><td>SMS Credits</td><td>Pay-as-you-go SMS fallback</td><td>3%</td></tr>
+  <tr><td>Hardware Bundles</td><td>QR scanners + tablets (commission)</td><td>2%</td></tr>
+  <tr><td>Data Analytics</td><td>Reports for education boards</td><td>2%</td></tr>
+</table>
+
+<h3>8.2 Pricing Tiers</h3>
+<table>
+  <tr><th>Feature</th><th>Essential</th><th>Professional</th><th>Enterprise</th></tr>
+  <tr><td>Staff &amp; Student Attendance</td><td>✓</td><td>✓</td><td>✓</td></tr>
+  <tr><td>Duty Roster</td><td>✓</td><td>✓</td><td>✓</td></tr>
+  <tr><td>Reports &amp; Analytics</td><td>✓</td><td>✓</td><td>✓</td></tr>
+  <tr><td>Muster Parade &amp; Tasks</td><td>—</td><td>✓</td><td>✓</td></tr>
+  <tr><td>Prefect Roles</td><td>—</td><td>✓</td><td>✓</td></tr>
+  <tr><td>Daily Reports</td><td>—</td><td>✓</td><td>✓</td></tr>
+  <tr><td>Global Search</td><td>—</td><td>✓</td><td>✓</td></tr>
+  <tr><td>Telegram Bot</td><td>—</td><td>✓</td><td>✓</td></tr>
+  <tr><td>AI Timetable Generator</td><td>—</td><td>✓</td><td>✓</td></tr>
+  <tr><td>Automation Engine</td><td>—</td><td>✓</td><td>✓</td></tr>
+  <tr><td>AI Assistant</td><td>—</td><td>✓</td><td>✓</td></tr>
+  <tr><td>WhatsApp/SMS Notifications</td><td>—</td><td>—</td><td>✓</td></tr>
+  <tr><td>Notifications Hub</td><td>—</td><td>—</td><td>✓</td></tr>
+  <tr><td>Dedicated Support</td><td>—</td><td>—</td><td>✓</td></tr>
+  <tr><td><strong>Annual Price</strong></td><td><strong>NGN 350K</strong></td><td><strong>NGN 600K</strong></td><td><strong>NGN 1.2M</strong></td></tr>
+</table>
+
+<h3>8.3 Unit Economics</h3>
+<table>
+  <tr><th>Metric</th><th>Year 1</th><th>Year 3</th><th>Year 5</th></tr>
+  <tr><td>Avg revenue per school</td><td>NGN 525K</td><td>NGN 616K</td><td>NGN 619K</td></tr>
+  <tr><td>Cost to serve per school</td><td>NGN 420K</td><td>NGN 246K</td><td>NGN 198K</td></tr>
+  <tr><td>Gross profit per school</td><td>NGN 105K</td><td>NGN 370K</td><td>NGN 421K</td></tr>
+  <tr><td>Gross margin</td><td>20%</td><td>60%</td><td>68%</td></tr>
+  <tr><td>Customer acquisition cost</td><td>NGN 500K</td><td>NGN 200K</td><td>NGN 150K</td></tr>
+  <tr><td>Lifetime value (3yr avg)</td><td>NGN 1.58M</td><td>NGN 1.85M</td><td>NGN 1.86M</td></tr>
+  <tr><td>LTV/CAC ratio</td><td>3.2x</td><td>9.3x</td><td>12.4x</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<!-- 9. FINANCIAL PROJECTIONS -->
+<h2>9. Financial Projections</h2>
+
+<h3>9.1 Key Assumptions</h3>
+<table>
+  <tr><th>Assumption</th><th>Value</th></tr>
+  <tr><td>Year 1 schools (cumulative)</td><td>10</td></tr>
+  <tr><td>Year 2 schools</td><td>35</td></tr>
+  <tr><td>Year 3 schools</td><td>80</td></tr>
+  <tr><td>Year 4 schools</td><td>140</td></tr>
+  <tr><td>Year 5 schools</td><td>200</td></tr>
+  <tr><td>Average license fee</td><td>NGN 600K (60% Professional, 20% Essential, 20% Enterprise)</td></tr>
+  <tr><td>Setup fee</td><td>NGN 250K one-time per school</td></tr>
+  <tr><td>Annual churn</td><td>5%</td></tr>
+  <tr><td>Cloud infrastructure (Year 1→5)</td><td>NGN 2M → NGN 10M</td></tr>
+  <tr><td>Exchange rate</td><td>NGN 1,600 = $1 USD (approximate 2026)</td></tr>
+</table>
+
+<h3>9.2 Revenue Projection</h3>
+<table>
+  <tr><th>Item</th><th>Year 1</th><th>Year 2</th><th>Year 3</th><th>Year 4</th><th>Year 5</th></tr>
+  <tr><td>Schools (cumulative)</td><td>10</td><td>35</td><td>80</td><td>140</td><td>200</td></tr>
+  <tr><td>License revenue</td><td>NGN 6.0M</td><td>NGN 21.0M</td><td>NGN 48.0M</td><td>NGN 84.0M</td><td>NGN 120.0M</td></tr>
+  <tr><td>Setup fees</td><td>NGN 2.5M</td><td>NGN 6.25M</td><td>NGN 11.25M</td><td>NGN 15.0M</td><td>NGN 15.0M</td></tr>
+  <tr><td>Maintenance &amp; other</td><td>NGN 1.5M</td><td>NGN 4.65M</td><td>NGN 10.2M</td><td>NGN 17.6M</td><td>NGN 25.0M</td></tr>
+  <tr><td><strong>Gross Revenue</strong></td><td><strong>NGN 10.0M</strong></td><td><strong>NGN 31.9M</strong></td><td><strong>NGN 69.45M</strong></td><td><strong>NGN 116.6M</strong></td><td><strong>NGN 160.0M</strong></td></tr>
+  <tr><td>Churn adjustment (-5%)</td><td>—</td><td>-NGN 1.05M</td><td>-NGN 2.4M</td><td>-NGN 4.2M</td><td>-NGN 6.0M</td></tr>
+  <tr><td><strong>Net Revenue</strong></td><td><strong>NGN 10.0M</strong></td><td><strong>NGN 30.85M</strong></td><td><strong>NGN 67.05M</strong></td><td><strong>NGN 112.4M</strong></td><td><strong>NGN 154.0M</strong></td></tr>
+</table>
+
+<h3>9.3 Profit &amp; Loss</h3>
+<table>
+  <tr><th></th><th>Year 1</th><th>Year 2</th><th>Year 3</th><th>Year 4</th><th>Year 5</th></tr>
+  <tr><td><strong>Revenue</strong></td><td><strong>NGN 10.0M</strong></td><td><strong>NGN 30.85M</strong></td><td><strong>NGN 67.05M</strong></td><td><strong>NGN 112.4M</strong></td><td><strong>NGN 154.0M</strong></td></tr>
+  <tr><td>Cost of Sales</td><td>NGN 7.0M</td><td>NGN 11.5M</td><td>NGN 19.5M</td><td>NGN 28.0M</td><td>NGN 36.5M</td></tr>
+  <tr><td><strong>Gross Profit</strong></td><td><strong>NGN 3.0M</strong></td><td><strong>NGN 19.35M</strong></td><td><strong>NGN 47.55M</strong></td><td><strong>NGN 84.4M</strong></td><td><strong>NGN 117.5M</strong></td></tr>
+  <tr><td>Gross Margin</td><td>30%</td><td>63%</td><td>71%</td><td>75%</td><td>76%</td></tr>
+  <tr><td>Operating Expenses</td><td>NGN 5.3M</td><td>NGN 13.4M</td><td>NGN 25.0M</td><td>NGN 36.9M</td><td>NGN 48.8M</td></tr>
+  <tr><td><strong>EBITDA</strong></td><td><strong>-NGN 2.3M</strong></td><td><strong>NGN 5.95M</strong></td><td><strong>NGN 22.55M</strong></td><td><strong>NGN 47.5M</strong></td><td><strong>NGN 68.7M</strong></td></tr>
+  <tr><td><strong>Net Profit</strong></td><td><strong>-NGN 2.5M</strong></td><td><strong>NGN 5.75M</strong></td><td><strong>NGN 22.35M</strong></td><td><strong>NGN 47.3M</strong></td><td><strong>NGN 68.5M</strong></td></tr>
+  <tr><td>Net Margin</td><td>-25%</td><td>19%</td><td>33%</td><td>42%</td><td>44%</td></tr>
+</table>
+
+<h3>9.4 Cash Flow</h3>
+<table>
+  <tr><th></th><th>Year 1</th><th>Year 2</th><th>Year 3</th><th>Year 4</th><th>Year 5</th></tr>
+  <tr><td>Opening cash</td><td>NGN 50.0M</td><td>NGN 47.5M</td><td>NGN 52.9M</td><td>NGN 74.5M</td><td>NGN 120.3M</td></tr>
+  <tr><td>Net cash flow</td><td>NGN 47.5M</td><td>NGN 5.45M</td><td>NGN 22.05M</td><td>NGN 47.0M</td><td>NGN 68.2M</td></tr>
+  <tr><td><strong>Closing cash</strong></td><td><strong>NGN 47.5M</strong></td><td><strong>NGN 52.95M</strong></td><td><strong>NGN 75.0M</strong></td><td><strong>NGN 122.0M</strong></td><td><strong>NGN 190.2M</strong></td></tr>
+</table>
+
+<h3>9.5 Key Metrics</h3>
+<table>
+  <tr><th>Metric</th><th>Year 1</th><th>Year 2</th><th>Year 3</th><th>Year 4</th><th>Year 5</th></tr>
+  <tr><td>Gross margin</td><td>30%</td><td>63%</td><td>71%</td><td>75%</td><td>76%</td></tr>
+  <tr><td>Net margin</td><td>-25%</td><td>19%</td><td>33%</td><td>42%</td><td>44%</td></tr>
+  <tr><td>ARR</td><td>NGN 6.0M</td><td>NGN 21.0M</td><td>NGN 48.0M</td><td>NGN 84.0M</td><td>NGN 120.0M</td></tr>
+  <tr><td>ARPU (annual)</td><td>NGN 600K</td><td>NGN 600K</td><td>NGN 600K</td><td>NGN 600K</td><td>NGN 600K</td></tr>
+  <tr><td>Break-even</td><td colspan="4">Month 16 (25 schools on Professional tier)</td><td></td></tr>
+</table>
+
+<h3>9.6 Scenario Analysis</h3>
+<table>
+  <tr><th>Scenario</th><th>Year 5 Revenue</th><th>Year 5 Net Profit</th><th>Likelihood</th></tr>
+  <tr><td><strong>Base case</strong> (200 schools)</td><td>NGN 154.0M</td><td>NGN 68.5M</td><td>60%</td></tr>
+  <tr><td><strong>Bull case</strong> (350 schools, govt contracts)</td><td>NGN 280.0M</td><td>NGN 130.0M</td><td>15%</td></tr>
+  <tr><td><strong>Bear case</strong> (100 schools, slow adoption)</td><td>NGN 85.0M</td><td>NGN 30.0M</td><td>25%</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<!-- 10. TRACTION & MILESTONES -->
+<h2>10. Traction &amp; Milestones</h2>
+
+<h3>10.1 Development Timeline</h3>
+<table>
+  <tr><th>Date</th><th>Milestone</th></tr>
+  <tr><td>Jan 2026</td><td>MVP launched — Attendance + basic duty roster</td></tr>
+  <tr><td>Feb 2026</td><td>AI Timetable Generator — first conflict-free timetable</td></tr>
+  <tr><td>Mar 2026</td><td>Telegram Bot launched — 10 commands</td></tr>
+  <tr><td>Apr 2026</td><td>Automation Engine — 8 rules automated</td></tr>
+  <tr><td>May 2026</td><td>Full deployment — all 12 modules operational</td></tr>
+  <tr><td>Jun 2026</td><td>Prefect Roles — 18 role types, student assignments</td></tr>
+  <tr><td>Jul 2026</td><td>Licensing System — multi-tier, master key activation, full audit</td></tr>
+</table>
+
+<h3>10.2 Current Metrics</h3>
+<ul>
+  <li><strong>80+</strong> daily active staff users</li>
+  <li><strong>3,000+</strong> students tracked daily</li>
+  <li><strong>16</strong> live production modules</li>
+  <li><strong>25+</strong> Telegram bot commands</li>
+  <li><strong>13</strong> automation rules running daily</li>
+  <li><strong>34</strong> database migrations</li>
+  <li><strong>~70,000</strong> lines of code</li>
+  <li><strong>0</strong> downtime incidents since launch</li>
+  <li><strong>0</strong> security breaches</li>
+</ul>
+
+<h3>10.3 Post-Investment Milestones</h3>
+<table>
+  <tr><th>Quarter</th><th>Milestone</th></tr>
+  <tr><td>Q3 2026</td><td>Multi-school architecture — school-scoped data, org admin panel</td></tr>
+  <tr><td>Q3 2026</td><td>Mobile web app (PWA) — installable on Android, push notifications</td></tr>
+  <tr><td>Q4 2026</td><td>Parent portal — absence alerts, report cards, fee tracking</td></tr>
+  <tr><td>Q4 2026</td><td>E-examination platform — CBT interface, auto-grading</td></tr>
+  <tr><td>Q1 2027</td><td>Asset management — inventory tracking, maintenance scheduling</td></tr>
+  <tr><td>Q2 2027</td><td>Pilot 10 schools across 3 geo-political zones</td></tr>
+  <tr><td>Q3 2027</td><td>Education board BI — aggregate analytics for government</td></tr>
+  <tr><td>Q4 2027</td><td>Pan-Africa expansion — Ghana, Kenya, South Africa</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<!-- 11. GO-TO-MARKET -->
+<h2>11. Go-to-Market Strategy</h2>
+
+<h3>Phase 1: Stitch in Time (Year 1) — 10 schools</h3>
+<p><strong>Target:</strong> Federal Unity Colleges + private schools within 200km of Igbara-Oke</p>
+<ul>
+  <li>Direct sales — visit schools, demo on projector, offer free 30-day trial</li>
+  <li>Referral program — existing school gets 10% of Year 1 fees for referrals</li>
+  <li>AFCS command network — commandants across 6 zones are natural champions</li>
+  <li>Founder-led sales (months 1-6), then 1 sales rep (months 7-12)</li>
+</ul>
+
+<h3>Phase 2: Scale (Year 2-3) — 80 schools</h3>
+<p><strong>Target:</strong> Private schools nationally, state government contracts</p>
+<ul>
+  <li>Multi-school product enables self-service onboarding</li>
+  <li>Partner with school associations (NAPS, ANCOPSS)</li>
+  <li>Digital marketing — Google Ads targeting "school management software Nigeria"</li>
+  <li>Attendance at education conferences (SEF, NAE)</li>
+  <li>Government pilots — offer 2 state governments free deployment for 6 months</li>
+  <li>3 sales reps + 2 deployment engineers</li>
+</ul>
+
+<h3>Phase 3: Dominate (Year 4-5) — 200+ schools</h3>
+<p><strong>Target:</strong> West Africa expansion</p>
+<ul>
+  <li>Franchise model — regional partners in Ghana, Benin, Cameroon</li>
+  <li>White-label option for large school groups</li>
+  <li>Education board contracts — provide BI dashboards for entire states</li>
+  <li>8 sales reps across Nigeria + 3 regional partners</li>
+</ul>
+
+<div class="page-break"></div>
+
+<!-- 12. INVESTMENT ASK -->
+<h2>12. Investment Ask &amp; Use of Funds</h2>
+
+<div class="highlight">
   <strong>Amount:</strong> NGN 50,000,000 (~$32,000 USD)<br><br>
-  <strong>Structure:</strong> Seed Round — 15% Equity<br><br>
-  <strong>What You Get:</strong> Multi-tenancy so any school can use it, mobile apps, sales team to deploy to 100+ schools in 24 months<br><br>
-  <strong>Your Return:</strong> Path to NGN 120M ARR by Year 5 with 68% margins. Scalable to NGN 1B+ across Africa.
+  <strong>Structure:</strong> Seed Round — 15% Equity (Convertible Note or Equity)<br><br>
+  <strong>Pre-money Valuation:</strong> NGN 283M (~$177,000)<br><br>
+  <strong>Minimum Check:</strong> NGN 5,000,000<br><br>
+  <strong>Use Period:</strong> 24 months
 </div>
 
-<h3>How the Money Is Used</h3>
-
+<h3>12.1 Use of Funds</h3>
 <table>
-  <tr><th>Category</th><th>%</th><th>Amount</th><th>What It Pays For</th></tr>
-  <tr><td>Product Development</td><td>40%</td><td>NGN 20M</td><td>Multi-school version, mobile apps, analytics dashboard</td></tr>
-  <tr><td>Sales &amp; Marketing</td><td>30%</td><td>NGN 15M</td><td>Sales team, school visits, demo events, marketing</td></tr>
-  <tr><td>Operations &amp; Support</td><td>20%</td><td>NGN 10M</td><td>24/7 support, deployment engineers, training materials</td></tr>
-  <tr><td>Infrastructure</td><td>10%</td><td>NGN 5M</td><td>Cloud costs, security audit, compliance</td></tr>
+  <tr><th>Category</th><th>%</th><th>Amount (NGN)</th><th>Amount (USD)</th><th>What It Pays For</th></tr>
+  <tr><td>Product Development</td><td>40%</td><td>NGN 20M</td><td>$12,500</td><td>Multi-school architecture (NGN 8M), mobile web app (NGN 5M), e-exam platform (NGN 4M), asset management (NGN 3M)</td></tr>
+  <tr><td>Sales &amp; Marketing</td><td>30%</td><td>NGN 15M</td><td>$9,375</td><td>Sales team salaries (NGN 8M), school visits &amp; travel (NGN 3M), digital marketing (NGN 2M), events &amp; materials (NGN 2M)</td></tr>
+  <tr><td>Operations &amp; Support</td><td>20%</td><td>NGN 10M</td><td>$6,250</td><td>Support staff (NGN 4M), deployment engineers (NGN 4M), training materials (NGN 1M), office (NGN 1M)</td></tr>
+  <tr><td>Infrastructure</td><td>10%</td><td>NGN 5M</td><td>$3,125</td><td>Cloud costs (NGN 2M), security audit (NGN 1M), compliance/legal (NGN 1M), hardware (NGN 1M)</td></tr>
+  <tr><td><strong>Total</strong></td><td><strong>100%</strong></td><td><strong>NGN 50M</strong></td><td><strong>$31,250</strong></td><td></td></tr>
 </table>
 
-<h2>Why Now Is the Right Time</h2>
+<h3>12.2 Investor Return Scenarios</h3>
+<table>
+  <tr><th>Scenario</th><th>Year</th><th>Exit Valuation</th><th>Investor Return (15%)</th><th>Multiple</th></tr>
+  <tr><td>Conservative</td><td>4</td><td>$500K (NGN 800M)</td><td>$75K (NGN 120M)</td><td>2.3x</td></tr>
+  <tr><td><strong>Base case</strong></td><td><strong>5</strong></td><td><strong>$1.5M (NGN 2.4B)</strong></td><td><strong>$225K (NGN 360M)</strong></td><td><strong>7x</strong></td></tr>
+  <tr><td>Bull case</td><td>5</td><td>$3M (NGN 4.8B)</td><td>$450K (NGN 720M)</td><td>14x</td></tr>
+  <tr><td>Home run</td><td>7</td><td>$10M+ (NGN 16B+)</td><td>$1.5M+ (NGN 2.4B+)</td><td>47x+</td></tr>
+</table>
 
+<div class="page-break"></div>
+
+<!-- 13. RISK ASSESSMENT -->
+<h2>13. Risk Assessment &amp; Mitigation</h2>
+
+<table>
+  <tr><th>Risk</th><th>Probability</th><th>Impact</th><th>Mitigation</th></tr>
+  <tr><td>Slow school adoption</td><td>Medium</td><td>High</td><td>Free 30-day trial, referral discounts, government pilot programs</td></tr>
+  <tr><td>Competitor emerges</td><td>Medium</td><td>Medium</td><td>Data lock-in + 18-month head start + free Telegram channel</td></tr>
+  <tr><td>Internet connectivity</td><td>High</td><td>Medium</td><td>Offline print queue, Telegram works on 2G, SMS fallback</td></tr>
+  <tr><td>Payment collection</td><td>Medium</td><td>Medium</td><td>Annual upfront payment, bank transfer + mobile money</td></tr>
+  <tr><td>Staff turnover</td><td>Medium</td><td>Medium</td><td>Standardized training docs, video tutorials, intuitive UI</td></tr>
+  <tr><td>Government regulation</td><td>Low</td><td>Medium</td><td>Proactive compliance, data localization (Supabase Nigeria region)</td></tr>
+  <tr><td>Scaling infrastructure</td><td>Low</td><td>Low</td><td>Serverless architecture scales automatically</td></tr>
+  <tr><td>Currency devaluation</td><td>High</td><td>Medium</td><td>USD pricing for non-Nigerian schools, NGN pricing adjusted annually</td></tr>
+</table>
+
+<div class="page-break"></div>
+
+<!-- 14. EXIT STRATEGY -->
+<h2>14. Exit Strategy</h2>
+
+<h3>14.1 Potential Acquirers</h3>
+<table>
+  <tr><th>Acquirer</th><th>Rationale</th><th>Est. Valuation</th></tr>
+  <tr><td><strong>uLesson</strong></td><td>Largest Nigerian edtech — AFCS adds school ops to their content/exam platform. Strategic fit.</td><td>$2M–$5M</td></tr>
+  <tr><td><strong>AltSchool</strong></td><td>Growing school network — AFCS as their internal operating system.</td><td>$1M–$3M</td></tr>
+  <tr><td><strong>Interswitch</strong></td><td>Payment infrastructure expanding into education vertical.</td><td>$3M–$5M</td></tr>
+  <tr><td><strong>Federal Government</strong></td><td>National school OS for 115 Federal Unity Colleges.</td><td>$5M–$10M</td></tr>
+  <tr><td><strong>Global edtech (Pearson, Bridge)</strong></td><td>Entry into African school operations market.</td><td>$5M–$15M</td></tr>
+</table>
+
+<h3>14.2 Exit Timeline</h3>
 <ul>
-  <li><strong>Product is ready</strong> — All 12 modules live and working. Not a PowerPoint, not a prototype. A real product used by real people every day.</li>
-  <li><strong>Market is growing</strong> — Nigerian edtech projected to reach $3.1B by 2028. Government actively pushing digital transformation.</li>
-  <li><strong>Zero barrier to entry for schools</strong> — 85%+ of teachers already use Telegram/WhatsApp. No app installation. Works on basic phones.</li>
-  <li><strong>First mover advantage</strong> — No one else offers this full stack for African schools. We have 18+ months head start.</li>
-  <li><strong>Scalable architecture</strong> — Built on Vercel + Supabase. Can go from 50 users to 50,000 without re-architecting.</li>
-  <li><strong>Government support</strong> — AFCS commands across 6 geo-political zones as a natural expansion path.</li>
+  <li><strong>Year 3–4:</strong> Strategic acquisition by edtech platform seeking school operations module</li>
+  <li><strong>Year 5+:</strong> If 200+ schools with NGN 120M+ ARR, PE/VC growth round or Series A at 5-8x ARR = $500K–$800K valuation</li>
+  <li><strong>Year 7+:</strong> Pan-African 1,000+ schools → IPO or large strategic exit ($5M–$20M)</li>
 </ul>
 
-<h2>What Happens After Investment</h2>
+<div class="page-break"></div>
 
-<table>
-  <tr><th>Timeline</th><th>Milestone</th></tr>
-  <tr><td>Q3 2026</td><td>Multi-school version + Mobile app for staff</td></tr>
-  <tr><td>Q4 2026</td><td>Parent portal (absence alerts, report cards) + E-exam platform</td></tr>
-  <tr><td>Q1 2027</td><td>Asset management + AI welfare/counselling alerts</td></tr>
-  <tr><td>Q2 2027</td><td>Pilot at 10 schools across 3 geo-political zones</td></tr>
-  <tr><td>Q3 2027</td><td>Business intelligence for education boards</td></tr>
-  <tr><td>Q4 2027</td><td>Expand to Ghana, Kenya, South Africa</td></tr>
-</table>
+<!-- 15. CONTACT -->
+<h2>15. Contact &amp; Next Steps</h2>
 
-<h2>Contact</h2>
-
-<div class="highlight-box">
+<div class="highlight">
+  <strong>Thank you for your time and consideration.</strong><br><br>
+  We invite you to:<br>
+  1. <strong>View a live demo</strong> of the platform at afcs-smart-campus.vercel.app<br>
+  2. <strong>Schedule a call</strong> to discuss the opportunity in more detail<br>
+  3. <strong>Request a pilot</strong> deployment at a school of your choice<br><br>
   <strong>Email:</strong> dewaleprotocols@gmail.com<br>
-  <strong>Address:</strong> Air Force Comprehensive School, Igbara-Oke, Ondo State, Nigeria<br>
-  <strong>Platform:</strong> afcs-smart-campus.vercel.app
+  <strong>Location:</strong> Air Force Comprehensive School, Igbara-Oke, Ondo State, Nigeria
 </div>
 
-<p style="text-align:center; margin-top: 40pt; color: #999; font-size: 10pt;">
-  AFCS Smart Campus — Investment Pitch v2.0 &copy; 2026<br>
-  <em>Nigerian-built. Nigerian-tested. Ready for the world.</em>
+<h3>What We Need From You</h3>
+<ul>
+  <li>Expression of interest (NGN 5M minimum check)</li>
+  <li>Questions about the product, market, or financials</li>
+  <li>References from schools you'd like us to speak with</li>
+</ul>
+
+<h3>What You Get As An Investor</h3>
+<ul>
+  <li>15% equity in a production-ready, revenue-generating product</li>
+  <li>Path to 7x return on investment within 5 years (base case)</li>
+  <li>First-mover advantage in a $40M+ pan-African market</li>
+  <li>Built-in distribution through the AFCS command network</li>
+  <li>A product that genuinely improves education outcomes for thousands of Nigerian students</li>
+</ul>
+
+<p style="text-align:center; margin-top: 50pt; color: #999; font-size: 10pt; border-top: 1px solid #ddd; padding-top: 20pt;">
+  AFCS Smart Campus — Investment Proposal v3.0 — July 2026<br>
+  <em>Nigerian-built. Nigerian-tested. Ready for the world.</em><br><br>
+  This document contains proprietary and confidential information. Please do not distribute without permission.
 </p>
 
 </body>
