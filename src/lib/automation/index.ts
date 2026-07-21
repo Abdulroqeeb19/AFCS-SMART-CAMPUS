@@ -726,7 +726,7 @@ async function handleEndOfDayDigest(supabase: ReturnType<typeof createAdminClien
       `🔴 High Priority Pending: ${highPriorityTasks ?? 0}\n` +
       `━━━━━━━━━━━━━━━\n` +
       `🔗 Portal: https://afcs-smart-campus.vercel.app\n` +
-      `_Air Force Comprehensive School, Igbara-Oke_`
+      `_Air Force Comprehensive School_`
 
     const result = await sendTelegramMessage(a.telegram_chat_id!, msg)
     if (result.success) sent++

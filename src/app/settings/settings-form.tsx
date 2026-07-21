@@ -22,7 +22,7 @@ const defaults: SystemSettings = {
   cutoff_minute: 30,
   closing_hour: 16,
   closing_minute: 0,
-  school_name: 'Air Force Comprehensive School, Igbara-Oke',
+  school_name: 'Air Force Comprehensive School',
   enable_qr_checkin: true,
 }
 

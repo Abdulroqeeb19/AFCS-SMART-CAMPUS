@@ -1,5 +1,5 @@
 export const APP_NAME = 'AFCS Smart Campus'
-export const APP_SCHOOL = 'Air Force Comprehensive School, Igbara-Oke'
+export const APP_SCHOOL = 'Air Force Comprehensive School'
 export const APP_STATE = 'Ondo State, Nigeria'
 
 export const ROLES = {

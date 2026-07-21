@@ -78,7 +78,7 @@ export async function POST(request: Request) {
       .insert({
         license_key: licenseKey,
         tier: 'enterprise',
-        school_name: 'Air Force Comprehensive School, Igbara-Oke',
+        school_name: 'Air Force Comprehensive School',
         expires_at: expiresAt.toISOString(),
         features: ['attendance', 'duty_roster', 'reports', 'ai_timetable', 'telegram_bot', 'automation', 'muster_parade', 'prefect_roles', 'daily_reports', 'global_search', 'ai_assistant', 'whatsapp_sms', 'notifications_hub', 'dedicated_support'],
         is_active: true,

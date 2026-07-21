@@ -45,7 +45,7 @@ export function LoginForm() {
             AFCS Smart Campus
           </CardTitle>
           <CardDescription>
-            Air Force Comprehensive School, Igbara-Oke
+            Air Force Comprehensive School
           </CardDescription>
           <div className="flex items-center justify-center gap-2 mt-2">
             <span className="h-1.5 w-6 rounded-full bg-[var(--color-bg-sidebar)]" />

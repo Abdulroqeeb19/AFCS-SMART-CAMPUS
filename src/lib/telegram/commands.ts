@@ -475,7 +475,7 @@ export async function handleTelegramCommand(
       `━━━━━━━━━━━━━━━\n` +
       `${todayParade ? `🚩 Today's parade: ${todayParade.status}` : '🚩 No parade today'}\n` +
       `━━━━━━━━━━━━━━━\n` +
-      `_Air Force Comprehensive School, Igbara-Oke_`
+      `_Air Force Comprehensive School_`
     )
     return
   }

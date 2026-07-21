@@ -91,7 +91,7 @@ export default function Home() {
                 <p className="text-[var(--color-accent)] text-base md:text-lg font-medium mt-1">
                   Air Force Comprehensive School
                 </p>
-                <p className="text-blue-200/80 text-sm">Igbara-Oke, Ondo State, Nigeria</p>
+                <p className="text-blue-200/80 text-sm">Nigeria</p>
               </div>
             </div>
 
@@ -159,8 +159,8 @@ export default function Home() {
               <span className="h-0.5 w-8 bg-[var(--color-bg-sidebar)]" />
             </div>
             <p className="text-[var(--color-text-secondary)] max-w-2xl mx-auto leading-relaxed">
-              A comprehensive digital transformation solution for Air Force Comprehensive School,
-              Igbara-Oke. Automating staff and student attendance, timetable generation,
+      A comprehensive digital transformation solution for Air Force Comprehensive Schools
+               across Nigeria. Automating staff and student attendance, timetable generation,
               duty rosters, parade management, and administrative reporting.
             </p>
           </div>
@@ -169,7 +169,7 @@ export default function Home() {
             {[
               {
                 icon: MapPin, title: 'Our Location',
-                desc: 'Air Force Comprehensive School, Igbara-Oke, Ondo State. A premier Nigerian Air Force educational institution.',
+                desc: 'Air Force Comprehensive Schools across Nigeria. Premier Nigerian Air Force educational institutions.',
               },
               {
                 icon: Award, title: 'Our Mission',
@@ -268,8 +268,8 @@ export default function Home() {
                 </div>
               </div>
               <p className="text-xs text-blue-300/80 leading-relaxed">
-                A digital transformation initiative for the Nigerian Air Force Comprehensive School,
-                Igbara-Oke, Ondo State.
+A digital transformation initiative for Nigerian Air Force Comprehensive Schools
+                 across Nigeria.
               </p>
             </div>
             <div>
@@ -285,7 +285,7 @@ export default function Home() {
               <ul className="space-y-2 text-xs">
                 <li className="flex items-center gap-2">
                   <MapPin className="h-3 w-3 text-[var(--color-accent)]" />
-                  Igbara-Oke, Ondo State, Nigeria
+                  Nigeria
                 </li>
                 <li className="flex items-center gap-2">
                   <Phone className="h-3 w-3 text-[var(--color-accent)]" />
@@ -300,7 +300,7 @@ export default function Home() {
           </div>
           <div className="border-t border-[var(--color-bg-sidebar)] pt-6 text-center">
             <p className="text-xs text-[var(--color-info)]">
-              &copy; {new Date().getFullYear()} AFCS Smart Campus. Air Force Comprehensive School, Igbara-Oke. All rights reserved.
+              &copy; {new Date().getFullYear()} AFCS Smart Campus. Air Force Comprehensive Schools. All rights reserved.
             </p>
           </div>
         </div>

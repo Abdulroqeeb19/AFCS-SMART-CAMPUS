@@ -129,7 +129,7 @@ function buildMessageBody(staffName: string, taskType: string, taskDescription: 
   if (details) body += `📝 ${details}\n`
   body += `━━━━━━━━━━━━━━━\n\n`
   body += `Please log in to the Smart Campus portal to update your task status.\n\n`
-  body += `_Air Force Comprehensive School, Igbara-Oke_`
+  body += `_Air Force Comprehensive School_`
   return body
 }
 
@@ -140,7 +140,7 @@ function buildPlainBody(staffName: string, taskType: string, taskDescription: st
   body += `Date: ${date}`
   if (deadline) body += `, Deadline: ${deadline}`
   if (details) body += `. ${details}`
-  body += `. Login to update status. - AFCS Igbara-Oke`
+  body += `. Login to update status.`
   return body
 }
 
@@ -378,7 +378,7 @@ export async function sendParadeStartedNotification(
     `${conductorName ? `Conducted by: ${conductorName}\n` : ''}\n` +
     `Please proceed to the parade ground.\n` +
     `━━━━━━━━━━━━━━━\n\n` +
-    `_Air Force Comprehensive School, Igbara-Oke_`
+    `_Air Force Comprehensive School_`
 
   const plainBody = messageBody.replace(/\*+/g, '').replace(/[━─]+/g, '')
 
@@ -422,7 +422,7 @@ export async function sendParadeCancelledNotification(
     `The *${label} Parade* for ${date} has been cancelled.\n\n` +
     `Please check the portal for further updates.\n` +
     `━━━━━━━━━━━━━━━\n\n` +
-    `_Air Force Comprehensive School, Igbara-Oke_`
+    `_Air Force Comprehensive School_`
 
   const plainBody = messageBody.replace(/\*+/g, '').replace(/[━─]+/g, '')
 
@@ -475,7 +475,7 @@ export async function sendDailyReportNotification(
     `📝 ${preview}\n` +
     `━━━━━━━━━━━━━━━\n\n` +
     `View all reports on the portal.\n\n` +
-    `_Air Force Comprehensive School, Igbara-Oke_`
+    `_Air Force Comprehensive School_`
 
   const plainBody = messageBody.replace(/\*+/g, '').replace(/[━─]+/g, '')
 

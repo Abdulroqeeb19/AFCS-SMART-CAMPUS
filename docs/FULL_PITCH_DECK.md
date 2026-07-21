@@ -161,8 +161,8 @@ A **single, integrated digital operating system** that manages every operational
 
 ```
                     ┌──────────────────┐
-                    │ Automation Engine │
-                    │ (13 cron rules)   │
+                    │ Automation Engine│
+                    │ (13 cron rules)  │
                     └────────┬─────────┘
                              │
                              ▼
@@ -208,13 +208,13 @@ A **single, integrated digital operating system** that manages every operational
                           │ HTTPS
                           ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                  Vercel Edge Network                         │
+│                  Vercel Edge Network                        │
 │  ┌─────────────────────────────────────────────────────┐    │
-│  │              Next.js 16 App Router                   │    │
-│  │  ┌──────────┐ ┌──────────┐ ┌──────────────────┐    │    │
-│  │  │   Pages  │ │ API Rts │ │  Middleware       │    │    │
+│  │              Next.js 16 App Router                  │    │
+│  │  ┌──────────┐ ┌──────────┐ ┌──────────────────┐     │    │
+│  │  │   Pages  │ │ API Rts │ │  Middleware       │     │    │
 │  │  │          │ │          │ │  (Auth + License) │    │    │
-│  │  └──────────┘ └──────────┘ └──────────────────┘    │    │
+│  │  └──────────┘ └──────────┘ └──────────────────┘     │    │
 │  └─────────────────────────────────────────────────────┘    │
 └─────────────────────────┬───────────────────────────────────┘
                           │

@@ -11,7 +11,7 @@ const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash'
 const OLLAMA_BASE_URL = (process.env.OLLAMA_BASE_URL || 'http://localhost:11434').replace(/\/+$/, '')
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'qwen3:4b'
 
-const SYSTEM_PROMPT = `You are AFCS AI, the official AI assistant for Air Force Comprehensive School, Igbara-Oke (AFCS Smart Campus). You help administrators, commandants, and teachers with:
+const SYSTEM_PROMPT = `You are AFCS AI, the official AI assistant for Air Force Comprehensive Schools (AFCS Smart Campus). You help administrators, commandants, and teachers with:
 
 1. **Attendance analytics** — query today's staff/student attendance, check who is present/late/absent, view class-level breakdowns
 2. **Student information** — look up student details by name or class
