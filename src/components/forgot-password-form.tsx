@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
@@ -10,6 +11,7 @@ import {
 } from 'lucide-react'
 
 export function ForgotPasswordForm() {
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -38,6 +40,7 @@ export function ForgotPasswordForm() {
       }
 
       setSent(true)
+      setLoading(false)
     } catch {
       setError('Network error. Please try again.')
       setLoading(false)
@@ -63,7 +66,7 @@ export function ForgotPasswordForm() {
               try again
             </button>.
           </p>
-          <Button onClick={() => window.location.href = '/login'} className="w-full">
+          <Button onClick={() => router.push('/login')} className="w-full">
             Back to Login
           </Button>
         </CardContent>
