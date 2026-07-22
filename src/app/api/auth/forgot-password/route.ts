@@ -16,13 +16,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Email is required' }, { status: 400 })
   }
 
-  const proto = request.headers.get('x-forwarded-proto') || 'https'
+  const proto = request.headers.get('x-forwarded-proto') || 'http'
   const host = request.headers.get('x-forwarded-host')
     || request.headers.get('host')
     || process.env.NEXT_PUBLIC_SITE_URL?.replace(/^https?:\/\//, '')
     || 'localhost:3000'
 
-  const redirectTo = `${proto}://${host}/reset-password`
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+  const redirectTo = siteUrl
+    ? `${siteUrl.replace(/\/+$/, '')}/reset-password`
+    : `${proto}://${host}/reset-password`
+
+  console.log(`[forgot-password] Sending reset email to ${email.trim()} with redirectTo: ${redirectTo}`)
 
   const supabase = await createServerSupabaseClient()
   const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
@@ -30,9 +35,15 @@ export async function POST(request: Request) {
   })
 
   if (error) {
-    console.error('Password reset error:', error.message)
-    return NextResponse.json({ error: 'Failed to send reset email' }, { status: 500 })
+    console.error('[forgot-password] Supabase error:', error.message)
+    return NextResponse.json({
+      error: process.env.NEXT_PUBLIC_DEV_MODE === 'true'
+        ? `Failed to send reset email: ${error.message}`
+        : 'Failed to send reset email',
+    }, { status: 500 })
   }
+
+  console.log(`[forgot-password] Reset email sent successfully to ${email.trim()}`)
 
   return NextResponse.json({ success: true })
 }
